@@ -1,4 +1,4 @@
-jbloomberg
+jBloomberg
 ==========
 
 jBloomberg is a high-level API that wraps the low level Bloomberg API.
