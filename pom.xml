@@ -54,21 +54,21 @@
             <artifactId>blpapi</artifactId>
             <version>3.5.1.1</version>
         </dependency>
+
+        <!-- TESTS -->
+
         <dependency>
             <groupId>com.googlecode.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>0.999.19</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- TESTS -->
-
-<!--        <dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>test</scope>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -95,8 +95,8 @@
                     <forkMode>always</forkMode>
                     <argLine>
                         <!--     -XX:-UseSplitVerifier to avoid conflict between cobertura and TestNg - comment out to test single files in netbeans -->
-<!--                        -Dorg.slf4j.simpleLogger.defaultLogLevel=debug
-                        -Dorg.slf4j.simpleLogger.logFile=System.out-->
+                        -Dorg.slf4j.simpleLogger.defaultLogLevel=debug
+                        -Dorg.slf4j.simpleLogger.logFile=System.out
                     </argLine>
                 </configuration>
             </plugin>
