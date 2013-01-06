@@ -24,7 +24,7 @@ public final class SubscriptionBuilder {
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
     private double throttle = 0;
 
-    public BloombergService getServiceType() {
+    BloombergService getServiceType() {
         return DefaultBloombergSession.BloombergService.MARKET_DATA;
     }
 
@@ -107,25 +107,25 @@ public final class SubscriptionBuilder {
         return this;
     }
 
-    public Set<DataChangeListener> getListeners() {
+    Set<DataChangeListener> getListeners() {
         return ImmutableSet.copyOf(listeners);
     }
 
-    public Set<String> getSecurities() {
+    Set<String> getSecurities() {
         return ImmutableSet.copyOf(securities);
     }
 
-    public Set<RealtimeField> getFields() {
+    Set<RealtimeField> getFields() {
         return Sets.immutableEnumSet(fields);
     }
 
-    public Set<String> getFieldsAsString() {
+    Set<String> getFieldsAsString() {
         ImmutableSet.Builder<String> set = ImmutableSet.builder();
         for (RealtimeField f : fields) {set.add(f.toString());}
         return set.build();
     }
 
-    public double getThrottle() {
+    double getThrottle() {
         return throttle;
     }
 }

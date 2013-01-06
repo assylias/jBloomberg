@@ -2,14 +2,11 @@
  * Copyright (C) 2012 - present by Yann Le Tallec.
  * Please see distribution for license.
  */
-
-package assylias.jbloomberg;
-
 /**
  * jBloomberg is a high-level API that wraps the low level Bloomberg API. Although most features of the
  * underlying Bloomberg API are available, some options might not be reachable through the jBloomberg API.
  * <p>
- * A typical use is to start a BloombergSession and start submitting static or historical requests or subscribe to real
+ * A typical use is to start a BloombergSession and to submit static or historical requests or to subscribe to real
  * time updates. Once the session is not in use any longer, it can be stopped. Note that in the below examples, sessions
  * are started then stopped right after a request has been sent. In practice, starting a session can be a time consuming
  * operation and once a session has been opened, it is preferable to reuse it unless it is not going to be used for a
@@ -54,3 +51,4 @@ package assylias.jbloomberg;
  * session.stop();
  * } </pre>
  */
+package assylias.jbloomberg;
