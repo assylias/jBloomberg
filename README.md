@@ -9,7 +9,7 @@ Source dependencies:
 - guava
 - jodatime
 - slf4j
-- Bloomberg API
+- Bloomberg API (tested with 3.5.1.1)
 
 Test dependencies:
 
