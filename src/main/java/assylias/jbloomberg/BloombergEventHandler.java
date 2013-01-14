@@ -154,7 +154,6 @@ final class BloombergEventHandler implements EventHandler {
             this.evtType = evtType;
         }
 
-//        abstract void processEvent();
         static EventTypeEnum get(Event evt) {
             return map.get(evt.eventType());
         }

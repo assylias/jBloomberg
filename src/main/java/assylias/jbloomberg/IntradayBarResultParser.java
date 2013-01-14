@@ -9,8 +9,6 @@ import com.bloomberglp.blpapi.Name;
 import java.util.HashSet;
 import java.util.Set;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ final class IntradayBarResultParser extends AbstractResultParser {
     private static final Name BAR_DATA = new Name("barData");
     private static final Name BAR_TICK_DATA = new Name("barTickData");
     private static final Name DATE = new Name("date");
-    private static final DateTimeFormatter BLOOMBERG_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
     private final String security;
 
     /**
@@ -104,7 +102,7 @@ final class IntradayBarResultParser extends AbstractResultParser {
             if (!BarTickDataElements.TIME.asName().equals(field.name())) {
                 throw new AssertionError("Time field is supposed to be first but got: " + field.name());
             }
-            DateTime date = BLOOMBERG_DATE_FORMATTER.parseDateTime(field.getValueAsString());
+            DateTime date = BB_RESULT_DATE_TIME_FORMATTER.parseDateTime(field.getValueAsString());
 
             for (int j = 1; j < fieldData.numElements(); j++) {
                 field = fieldData.getElement(j);

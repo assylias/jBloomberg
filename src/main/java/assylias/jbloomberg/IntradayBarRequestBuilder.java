@@ -5,12 +5,8 @@
 package assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.Service;
-import com.bloomberglp.blpapi.Session;
 import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * This class enables to build an intraday historical request while ensuring argument safety. Typically, instead of passing
@@ -21,7 +17,7 @@ import org.joda.time.format.DateTimeFormatter;
  * <p/>
  * Once the request has been built, the RequestBuilder can be submitted to a BloombergSession.
  */
-public final class IntradayBarRequestBuilder implements RequestBuilder {
+public final class IntradayBarRequestBuilder extends AbstractRequestBuilder {
 
     //Required parameters
     private final String ticker;
@@ -153,24 +149,17 @@ public final class IntradayBarRequestBuilder implements RequestBuilder {
     }
 
     @Override
-    public DefaultBloombergSession.BloombergService getServiceType() {
-        return DefaultBloombergSession.BloombergService.REFERENCE_DATA;
+    public BloombergServiceType getServiceType() {
+        return BloombergServiceType.REFERENCE_DATA;
     }
 
     @Override
-    public DefaultBloombergSession.BloombergRequest getRequestType() {
-        return DefaultBloombergSession.BloombergRequest.INTRADAY_BAR;
+    public BloombergRequestType getRequestType() {
+        return BloombergRequestType.INTRADAY_BAR;
     }
 
     @Override
-    public Request buildRequest(Session session) {
-        Service service = session.getService(getServiceType().getUri());
-        Request request = service.createRequest(getRequestType().toString());
-        buildRequest(request);
-        return request;
-    }
-
-    private void buildRequest(Request request) {
+    protected void buildRequest(Request request) {
         request.set("security", ticker);
         request.set("eventType", eventType.name());
         request.set("interval", period);
@@ -179,11 +168,8 @@ public final class IntradayBarRequestBuilder implements RequestBuilder {
         request.set("adjustmentAbnormal", adjustAbnormal);
         request.set("adjustmentSplit", adjustSplit);
         request.set("adjustmentFollowDPDF", adjustDefault);
-
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
-
-        request.set("startDateTime", startDateTime.toString(fmt));
-        request.set("endDateTime", endDateTime.toString(fmt));
+        request.set("startDateTime", startDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
+        request.set("endDateTime", endDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
     }
 
     @Override

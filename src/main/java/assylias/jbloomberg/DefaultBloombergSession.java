@@ -69,7 +69,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * Collection that keeps track of services that have been asynchronously started. They might not be started yet.
      * Each service is attributed a unique Correlation ID
      */
-    private final Map<BloombergService, CorrelationID> openingServices = new EnumMap<>(BloombergService.class);
+    private final Map<BloombergServiceType, CorrelationID> openingServices = new EnumMap<>(BloombergServiceType.class);
     private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
         private final AtomicInteger threadId = new AtomicInteger();
 
@@ -173,7 +173,7 @@ public class DefaultBloombergSession implements BloombergSession {
         Callable<RequestResult> task = new Callable<RequestResult>() {
             @Override
             public RequestResult call() throws Exception {
-                BloombergService serviceType = request.getServiceType();
+                BloombergServiceType serviceType = request.getServiceType();
                 CorrelationID cId = getNextCorrelationId();
                 try {
                     openService(serviceType);
@@ -215,7 +215,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * @throws IOException          if the service could not be opened (Bloomberg API exception)
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
-    private synchronized void openService(final BloombergService serviceType) throws IOException, InterruptedException {
+    private synchronized void openService(final BloombergServiceType serviceType) throws IOException, InterruptedException {
         if (openingServices.containsKey(serviceType)) {
             return; //only start the session once
         }
@@ -275,51 +275,5 @@ public class DefaultBloombergSession implements BloombergSession {
             status = "NOT STARTED";
         }
         return "Session #" + sessionId + " [" + status + "]";
-    }
-
-    static enum BloombergService {
-
-        REFERENCE_DATA("//blp/refdata"),
-        MARKET_DATA("//blp/mktdata"),
-        CUSTOM_VWAP("//blp/mktvwap"),
-        MARKET_BAR("//blp/mktbar"),
-        API_FIELD_INFORMATION("//blp/apiflds"),
-        PAGE_DATA("//blp/pagedata"),
-        TECHNICAL_ANALYSIS("//blp/tasvc"),
-        API_AUTHORIZATION("//blp/apiauth");
-        private final String serviceUri;
-
-        BloombergService(String serviceUri) {
-            this.serviceUri = serviceUri;
-        }
-
-        /**
-         * @return the uri of the service, for example "//blp/refdata"
-         */
-        public String getUri() {
-            return serviceUri;
-        }
-    }
-
-    static enum BloombergRequest {
-
-        HISTORICAL_DATA("HistoricalDataRequest"),
-        INTRADAY_TICK("IntradayTickRequest"),
-        INTRADAY_BAR("IntradayBarRequest"),
-        REFERENCE_DATA("ReferenceDataRequest"),
-        PORTFOLIO_DATA("PortfolioDataRequest");
-        private final String requestName;
-
-        BloombergRequest(String requestName) {
-            this.requestName = requestName;
-        }
-
-        /**
-         * @return the type of request, for example "HistoricalDataRequest"
-         */
-        @Override
-        public String toString() {
-            return requestName;
-        }
     }
 }

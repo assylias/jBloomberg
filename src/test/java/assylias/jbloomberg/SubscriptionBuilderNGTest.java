@@ -6,8 +6,8 @@ package assylias.jbloomberg;
 
 import assylias.jbloomberg.SubscriptionBuilder;
 import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergRequest;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergRequestType;
+import assylias.jbloomberg.BloombergServiceType;
 import assylias.jbloomberg.RealtimeField;
 import assylias.jbloomberg.DataChangeEvent;
 import assylias.jbloomberg.DataChangeListener;
@@ -89,7 +89,7 @@ public class SubscriptionBuilderNGTest {
 
     @Test(groups = "unit")
     public void testService() {
-        assertEquals(new SubscriptionBuilder().getServiceType(), DefaultBloombergSession.BloombergService.MARKET_DATA);
+        assertEquals(new SubscriptionBuilder().getServiceType(), BloombergServiceType.MARKET_DATA);
     }
 
     @Test(groups = "unit")

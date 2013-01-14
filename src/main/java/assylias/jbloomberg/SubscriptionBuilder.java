@@ -4,7 +4,7 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergServiceType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -24,8 +24,8 @@ public final class SubscriptionBuilder {
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
     private double throttle = 0;
 
-    BloombergService getServiceType() {
-        return DefaultBloombergSession.BloombergService.MARKET_DATA;
+    BloombergServiceType getServiceType() {
+        return BloombergServiceType.MARKET_DATA;
     }
 
     /**

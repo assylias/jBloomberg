@@ -14,11 +14,11 @@ import java.util.concurrent.TimeoutException;
  * Once the final response has been received, the noMoreMessage method must be called to allow the parser to start its
  * parsing job.
  * </p>
- * Users of this API should not need to implement this interface.
+ * This interface has been made public for convenience but users should not need to implement it.
  * </p>
  * All implementations are thread safe.
  */
-interface ResultParser {
+public interface ResultParser {
 
     /**
      * @return the result of the parsing of all the received messages. This method blocks until a result is available

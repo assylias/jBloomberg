@@ -127,12 +127,12 @@ public class HistoricalRequestBuilderNGTest {
     @Test(groups="unit")
     public void testServiceType() {
         assertEquals(new HistoricalRequestBuilder("ABC", "DEF", new DateTime(), new DateTime()).getServiceType(),
-                DefaultBloombergSession.BloombergService.REFERENCE_DATA);
+                BloombergServiceType.REFERENCE_DATA);
     }
 
     @Test(groups="unit")
     public void testRequestType() {
         assertEquals(new HistoricalRequestBuilder("ABC", "DEF", new DateTime(), new DateTime()).getRequestType(),
-                DefaultBloombergSession.BloombergRequest.HISTORICAL_DATA);
+                BloombergRequestType.HISTORICAL_DATA);
     }
 }

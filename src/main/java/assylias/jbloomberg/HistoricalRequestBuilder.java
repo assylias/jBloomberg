@@ -4,10 +4,7 @@
  */
 package assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.Service;
-import com.bloomberglp.blpapi.Session;
 import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,8 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 /**
  * This class enables to build a historical request while ensuring argument safety. Typically, instead of passing
@@ -28,7 +23,7 @@ import org.joda.time.format.DateTimeFormatter;
  * <p/>
  * Once the request has been built, the HistoricalRequestBuilder can be submitted to a BloombergSession.
  */
-public final class HistoricalRequestBuilder implements RequestBuilder {
+public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
 
     //Required parameters
     private final Set<String> tickers = new HashSet<>();
@@ -203,32 +198,19 @@ public final class HistoricalRequestBuilder implements RequestBuilder {
     }
 
     @Override
-    public DefaultBloombergSession.BloombergService getServiceType() {
-        return DefaultBloombergSession.BloombergService.REFERENCE_DATA;
+    public BloombergServiceType getServiceType() {
+        return BloombergServiceType.REFERENCE_DATA;
     }
 
     @Override
-    public DefaultBloombergSession.BloombergRequest getRequestType() {
-        return DefaultBloombergSession.BloombergRequest.HISTORICAL_DATA;
+    public BloombergRequestType getRequestType() {
+        return BloombergRequestType.HISTORICAL_DATA;
     }
 
     @Override
-    public Request buildRequest(Session session) {
-        Service service = session.getService(getServiceType().getUri());
-        Request request = service.createRequest(getRequestType().toString());
-        buildRequest(request);
-        return request;
-    }
-
-    private void buildRequest(Request request) {
-        Element securitiesElt = request.getElement("securities");
-        for (String ticker : tickers) {
-            securitiesElt.appendValue(ticker);
-        }
-        Element fieldsElt = request.getElement("fields");
-        for (String field : fields) {
-            fieldsElt.appendValue(field);
-        }
+    protected void buildRequest(Request request) {
+        addCollectionToElement(request, tickers, "securities");
+        addCollectionToElement(request, fields, "fields");
 
         request.set("periodicityAdjustment", periodicityAdjustment.toString());
         request.set("periodicitySelection", period.toString());
@@ -244,11 +226,8 @@ public final class HistoricalRequestBuilder implements RequestBuilder {
         request.set("adjustmentAbnormal", adjAbnormal);
         request.set("adjustmentSplit", adjSplit);
         request.set("adjustmentFollowDPDF", adjDefault);
-
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMMdd");
-
-        request.set("startDate", startDate.toString(fmt));
-        request.set("endDate", endDate.toString(fmt));
+        request.set("startDate", startDate.toString(BB_REQUEST_DATE_FORMATTER));
+        request.set("endDate", endDate.toString(BB_REQUEST_DATE_FORMATTER));
     }
 
     @Override

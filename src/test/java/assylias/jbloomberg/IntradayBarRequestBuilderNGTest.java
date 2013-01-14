@@ -6,8 +6,8 @@ package assylias.jbloomberg;
 
 import assylias.jbloomberg.IntradayBarRequestBuilder;
 import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergRequest;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergRequestType;
+import assylias.jbloomberg.BloombergServiceType;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Session;
 import java.util.Arrays;
@@ -80,12 +80,12 @@ public class IntradayBarRequestBuilderNGTest {
     @Test(groups="unit")
     public void testServiceType() {
         assertEquals(new IntradayBarRequestBuilder("ABC", new DateTime(), new DateTime()).getServiceType(),
-                DefaultBloombergSession.BloombergService.REFERENCE_DATA);
+                BloombergServiceType.REFERENCE_DATA);
     }
 
     @Test(groups="unit")
     public void testRequestType() {
         assertEquals(new IntradayBarRequestBuilder("ABC", new DateTime(), new DateTime()).getRequestType(),
-                DefaultBloombergSession.BloombergRequest.INTRADAY_BAR);
+                BloombergRequestType.INTRADAY_BAR);
     }
 }

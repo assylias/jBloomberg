@@ -5,7 +5,7 @@
 package assylias.jbloomberg;
 
 import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergServiceType;
 import assylias.jbloomberg.RequestBuilder;
 import assylias.jbloomberg.ResultParser;
 import assylias.jbloomberg.AbstractResultParser;
@@ -21,19 +21,19 @@ import mockit.MockUp;
  */
 public class MockRequestBuilder extends MockUp<RequestBuilder> {
 
-    private BloombergService serviceType;
+    private BloombergServiceType serviceType;
 
-    public MockRequestBuilder serviceType(DefaultBloombergSession.BloombergService serviceType) {
+    public MockRequestBuilder serviceType(BloombergServiceType serviceType) {
         this.serviceType = serviceType;
         return this;
     }
 
     @Mock
-    public DefaultBloombergSession.BloombergService getServiceType() {
+    public BloombergServiceType getServiceType() {
         return serviceType;
     }
 
-    public DefaultBloombergSession.BloombergRequest getRequestType() {
+    public BloombergRequestType getRequestType() {
         return null;
     }
 

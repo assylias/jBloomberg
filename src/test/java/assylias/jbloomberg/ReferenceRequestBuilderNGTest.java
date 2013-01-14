@@ -6,8 +6,8 @@ package assylias.jbloomberg;
 
 import assylias.jbloomberg.ReferenceRequestBuilder;
 import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergRequest;
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergRequestType;
+import assylias.jbloomberg.BloombergServiceType;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Session;
 import java.util.Arrays;
@@ -96,12 +96,12 @@ public class ReferenceRequestBuilderNGTest {
     @Test(groups="unit")
     public void testServiceType() {
         assertEquals(new ReferenceRequestBuilder("ABC", "DEF").getServiceType(),
-                DefaultBloombergSession.BloombergService.REFERENCE_DATA);
+                BloombergServiceType.REFERENCE_DATA);
     }
 
     @Test(groups="unit")
     public void testRequestType() {
         assertEquals(new ReferenceRequestBuilder("ABC", "DEF").getRequestType(),
-                DefaultBloombergSession.BloombergRequest.REFERENCE_DATA);
+                BloombergRequestType.REFERENCE_DATA);
     }
 }

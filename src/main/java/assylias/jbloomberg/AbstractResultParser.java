@@ -4,6 +4,7 @@
  */
 package assylias.jbloomberg;
 
+import static assylias.jbloomberg.AbstractResultParser.SecurityDataElements.*;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.InvalidConversionException;
 import com.bloomberglp.blpapi.InvalidRequestException;
@@ -17,6 +18,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,8 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractResultParser implements ResultParser {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractResultParser.class);
+    protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
+    protected final static DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     /**
      * lock used to access messages and parsedData
      */
@@ -208,4 +213,39 @@ abstract class AbstractResultParser implements ResultParser {
      *                 empty).
      */
     protected abstract void parseResponseNoResponseError(Element response);
+
+    protected void parseSecurityData(Element securityData) {
+        String security = securityData.getElementAsString(SECURITY);
+        if (securityData.hasElement(SECURITY_ERROR.asName(), true)) {
+            Element errorInfo = securityData.getElement(SECURITY_ERROR.asName());
+            logger.info("Security error on {}: {}", security, errorInfo);
+            addSecurityError(security);
+        } else if (securityData.hasElement(FIELD_EXCEPTIONS.asName(), true)) {
+            Element fieldExceptionsArray = securityData.getElement(FIELD_EXCEPTIONS.asName());
+            parseFieldExceptionsArray(fieldExceptionsArray);
+        }
+        if (securityData.hasElement(FIELD_DATA.asName(), true)) {
+            Element fieldDataArray = securityData.getElement(FIELD_DATA.asName());
+            parseFieldDataArray(security, fieldDataArray);
+        }
+    }
+
+    /**
+     * Adds the field exceptions to the RequestResult object. Assumes that one field can't generate more than one
+     * exception.
+     * In other words, we assume that if there are several exceptions, each corresponds to a different field.
+     */
+    protected void parseFieldExceptionsArray(Element fieldExceptionsArray) {
+        for (int i = 0; i < fieldExceptionsArray.numValues(); i++) {
+            Element fieldException = fieldExceptionsArray.getValueAsElement(i);
+            String field = fieldException.getElementAsString("fieldId");
+            Element errorInfo = fieldException.getElement(ERROR_INFO);
+            logger.info("Field exception on {}: {}", field, errorInfo);
+            addFieldError(field);
+        }
+    }
+
+    protected void parseFieldDataArray(String security, Element fieldDataArray) {
+        //does nothing here - needs to be implemented by subclasses if required
+    }
 }

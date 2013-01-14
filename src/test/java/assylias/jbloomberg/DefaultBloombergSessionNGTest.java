@@ -4,7 +4,7 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.DefaultBloombergSession.BloombergService;
+import assylias.jbloomberg.BloombergServiceType;
 import com.bloomberglp.blpapi.Session;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -95,7 +95,7 @@ public class DefaultBloombergSessionNGTest {
     @Test(groups = "unit", expectedExceptions = IllegalStateException.class,
     expectedExceptionsMessageRegExp = ".*session.*")
     public void testSubmit_SessionNotStarted() throws Exception {
-        MockRequestBuilder mock = new MockRequestBuilder().serviceType(BloombergService.PAGE_DATA);
+        MockRequestBuilder mock = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
 
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.submit(mock.getMockInstance()).get(2, TimeUnit.SECONDS);
@@ -113,7 +113,7 @@ public class DefaultBloombergSessionNGTest {
     @Test(groups = "unit", expectedExceptions = BloombergException.class)
     public void testSubmit_ServiceThrows() throws Exception {
         new MockBloombergUtils(true);
-        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergService.PAGE_DATA);
+        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
         new MockSession().simulateStartAsyncOk();
 
         DefaultBloombergSession session = new DefaultBloombergSession();
@@ -129,7 +129,7 @@ public class DefaultBloombergSessionNGTest {
     @Test(groups = "unit", expectedExceptions = CancellationException.class)
     public void testSubmit_RequestCancelled() throws Exception {
         new MockBloombergUtils(true);
-        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergService.PAGE_DATA);
+        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
 
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.start();

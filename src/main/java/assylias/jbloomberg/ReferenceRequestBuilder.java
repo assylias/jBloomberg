@@ -6,8 +6,6 @@ package assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.Service;
-import com.bloomberglp.blpapi.Session;
 import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +24,7 @@ import java.util.Set;
  * <p/>
  * Once the request has been built, the ReferenceRequestBuilder can be submitted to a BloombergSession.
  */
-public final class ReferenceRequestBuilder implements RequestBuilder {
+public final class ReferenceRequestBuilder extends AbstractRequestBuilder {
 
     //Required parameters
     private final Set<String> tickers = new HashSet<>();
@@ -93,33 +91,19 @@ public final class ReferenceRequestBuilder implements RequestBuilder {
     }
 
     @Override
-    public DefaultBloombergSession.BloombergService getServiceType() {
-        return DefaultBloombergSession.BloombergService.REFERENCE_DATA;
+    public BloombergServiceType getServiceType() {
+        return BloombergServiceType.REFERENCE_DATA;
     }
 
     @Override
-    public DefaultBloombergSession.BloombergRequest getRequestType() {
-        return DefaultBloombergSession.BloombergRequest.REFERENCE_DATA;
+    public BloombergRequestType getRequestType() {
+        return BloombergRequestType.REFERENCE_DATA;
     }
 
     @Override
-    public Request buildRequest(Session session) {
-        Service service = session.getService(getServiceType().getUri());
-        Request request = service.createRequest(getRequestType().toString());
-        buildRequest(request);
-        return request;
-    }
-
-    private void buildRequest(Request request) {
-        Element securitiesElt = request.getElement("securities");
-        for (String ticker : tickers) {
-            securitiesElt.appendValue(ticker);
-        }
-
-        Element fieldsElt = request.getElement("fields");
-        for (String field : fields) {
-            fieldsElt.appendValue(field);
-        }
+    protected void buildRequest(Request request) {
+        addCollectionToElement(request, tickers, "securities");
+        addCollectionToElement(request, fields, "fields");
 
         Element overridesElt = request.getElement("overrides");
         for (Map.Entry<String, String> e : overrides.entrySet()) {
