@@ -30,7 +30,6 @@ public class ReferenceResultParserNGTest {
 
     @BeforeClass(groups = "requires-bloomberg")
     public void beforeClass() throws BloombergException {
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
         session = new DefaultBloombergSession();
         session.start();
     }

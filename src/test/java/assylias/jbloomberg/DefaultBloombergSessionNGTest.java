@@ -4,7 +4,6 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.BloombergServiceType;
 import com.bloomberglp.blpapi.Session;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -25,7 +24,6 @@ public class DefaultBloombergSessionNGTest {
 
     @BeforeClass
     public void beforeClass() {
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
 
     @Test(groups = "unit", expectedExceptions = {BloombergException.class},

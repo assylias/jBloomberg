@@ -4,15 +4,6 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.SubscriptionBuilder;
-import assylias.jbloomberg.EventsManager;
-import assylias.jbloomberg.ConcurrentConflatedEventsManager;
-import assylias.jbloomberg.DataChangeEvent;
-import assylias.jbloomberg.DataChangeListener;
-import assylias.jbloomberg.RealtimeField;
-import assylias.jbloomberg.Data;
-import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.SubscriptionManager;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;
@@ -26,20 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import mockit.Verifications;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -58,7 +43,6 @@ public class SubscriptionManagerNGTest {
 
     @BeforeClass
     public void beforeClass() {
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
 
     @BeforeMethod(groups = "unit")

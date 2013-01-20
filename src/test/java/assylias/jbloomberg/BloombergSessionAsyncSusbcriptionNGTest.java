@@ -33,8 +33,8 @@ public class BloombergSessionAsyncSusbcriptionNGTest {
 
     @BeforeClass
     public void beforeClass() {
-        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
+
     @BeforeMethod(groups = "requires-bloomberg")
     public void beforeMethod() throws Exception{
         latch = new CountDownLatch(1);
