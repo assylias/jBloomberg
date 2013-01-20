@@ -22,6 +22,8 @@ import org.joda.time.DateTime;
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
  * <p/>
  * Once the request has been built, the HistoricalRequestBuilder can be submitted to a BloombergSession.
+ * <p/>
+ * <b>This class is not thread safe.</b>
  */
 public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
 
@@ -40,7 +42,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
     private boolean adjNormal = false;
     private boolean adjAbnormal = false;
     private boolean adjSplit = false;
-    private boolean adjDefault = true;
+    private boolean adjDefault = false;
 
     /**
      * Equivalent to calling
@@ -150,45 +152,38 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
     }
 
     /**
-     * Default setting: true
-     * @param adjDefault If true, historical pricing is adjusted based on the DPDF<GO> BLOOMBERG PROFESSIONAL service
-     *                   function.
+     * Adjust historical pricing based on the DPDF<GO> BLOOMBERG PROFESSIONAL service function.
      */
-    public HistoricalRequestBuilder adjustDefault(boolean adjDefault) {
-        this.adjDefault = adjDefault;
+    public HistoricalRequestBuilder adjustDefault() {
+        this.adjDefault = true;
         return this;
     }
 
     /**
-     * Default setting: false
-     * @param adjAbnormal If true, historical pricing is adjusted to reflect: Special Cash, Liquidation, Capital Gains,
-     *                    Long-Term Capital Gains, Short-Term Capital Gains, Memorial, Return of Capital, Rights
-     *                    Redemption, Miscellaneous, Return Premium, Preferred Rights Redemption, Proceeds/Rights,
-     *                    Proceeds/Shares, Proceeds/ Warrants.
+     * Adjust historical pricing to reflect: Special Cash, Liquidation, Capital Gains, Long-Term Capital Gains,
+     * Short-Term Capital Gains, Memorial, Return of Capital, Rights Redemption, Miscellaneous, Return Premium,
+     * Preferred Rights Redemption, Proceeds/Rights, Proceeds/Shares, Proceeds/ Warrants.
      */
-    public HistoricalRequestBuilder adjustAbnormalDistributions(boolean adjAbnormal) {
-        this.adjAbnormal = adjAbnormal;
+    public HistoricalRequestBuilder adjustAbnormalDistributions() {
+        this.adjAbnormal = true;
         return this;
     }
 
     /**
-     * Default setting: false
-     * @param adjNormal if true, historical pricing is adjusted to reflect: Regular Cash, Interim, 1st Interim, 2nd
-     *                  Interim, 3rd Interim, 4th Interim, 5th Interim, Income, Estimated, Partnership Distribution,
-     *                  Final, Interest on Capital, Distribution, Prorated.
+     * Adjust historical pricing to reflect: Regular Cash, Interim, 1st Interim, 2nd Interim, 3rd Interim, 4th Interim,
+     * 5th Interim, Income, Estimated, Partnership Distribution, Final, Interest on Capital, Distribution, Prorated.
      */
-    public HistoricalRequestBuilder adjustNormalDistributions(boolean adjNormal) {
-        this.adjNormal = adjNormal;
+    public HistoricalRequestBuilder adjustNormalDistributions() {
+        this.adjNormal = true;
         return this;
     }
 
     /**
-     * Default setting: false
-     * @param adjSplit if true, historical pricing and/or volume are adjusted to reflect: Spin-Offs, Stock
-     *                 Splits/Consolidations, Stock Dividend/Bonus, Rights Offerings/ Entitlement.
+     * Adjust historical pricing and/or volume are adjusted to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
+     * Dividend/Bonus, Rights Offerings/ Entitlement.
      */
-    public HistoricalRequestBuilder adjustSplits(boolean adjSplit) {
-        this.adjSplit = adjSplit;
+    public HistoricalRequestBuilder adjustSplits() {
+        this.adjSplit = true;
         return this;
     }
 

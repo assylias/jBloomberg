@@ -112,10 +112,10 @@ public class HistoricalRequestBuilderNGTest {
     @Test(groups="unit")
     public void testConstructor_AllOk_WithOverrides() {
         HistoricalRequestBuilder builder = new HistoricalRequestBuilder("IBM US Equity", "PX_LAST", new DateTime(), new DateTime());
-        builder.adjustAbnormalDistributions(true)
-                .adjustDefault(true)
-                .adjustNormalDistributions(true)
-                .adjustSplits(true)
+        builder.adjustAbnormalDistributions()
+                .adjustDefault()
+                .adjustNormalDistributions()
+                .adjustSplits()
                 .currency(Currency.getInstance("USD"))
                 .days(HistoricalRequestBuilder.Days.ACTIVE_DAYS_ONLY)
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
