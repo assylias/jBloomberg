@@ -23,6 +23,8 @@ import java.util.Set;
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
  * <p/>
  * Once the request has been built, the ReferenceRequestBuilder can be submitted to a BloombergSession.
+ * <p/>
+ * <b>This class is not thread safe.</b>
  */
 public final class ReferenceRequestBuilder extends AbstractRequestBuilder {
 
