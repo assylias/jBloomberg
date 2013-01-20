@@ -6,6 +6,8 @@ jBloomberg is a high-level API that wraps the <a href="http://www.openbloomberg.
 More information is available on <a href="http://assylias.github.com/jBloomberg/">the project  page</a>, including
 a link to the <a href="http://assylias.github.com/jBloomberg/apidocs/index.html"> javadoc</a>.
 <p>
+Note that the API is not stable yet and its design could be subject to changes in the future.
+<p>
 Source dependencies:
 
 - guava
