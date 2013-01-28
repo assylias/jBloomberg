@@ -12,30 +12,78 @@
  * operation and once a session has been opened, it is preferable to reuse it unless it is not going to be used for a
  * long time.
  * <p>
- * <b> Example: submit a request to retrieve historical data synchronously</b>
+ *
+ * <b> Example: start and stop a session</b>
  * <pre> {@code
  * BloombergSession session = new DefaultBloombergSession();
  * session.start();
- * HistoricalRequestBuilder builder = new HistoricalRequestBuilder("SPX Index",
+ * session.stop();
+ * }</pre>
+ *
+ * <b> Example: retrieve the last price of the S&P 500 in Yen</b>
+ * <pre> {@code
+ * RequestBuilder<ReferenceData> hrb = new ReferenceRequestBuilder(
+ *         "SPX Index", "CRNCY_ADJ_PX_LAST")
+ *         .addOverride("EQY_FUND_CRNCY", "JPY");
+ * ReferenceData result = session.submit(hrb).get();
+ * double priceInYen = (double) result.forSecurity("SPX Index").forField("CRNCY_ADJ_PX_LAST");
+ * System.out.println("SPX in Yen = " + priceInYen);
+ * }</pre>
+ *
+ * <b> Example: retrieve historical data synchronously</b>
+ * <pre> {@code
+ * RequestBuilder<HistoricalData> hrb = new HistoricalRequestBuilder("SPX Index",
  *         "PX_LAST", DateTime.now().minusDays(7),
  *         DateTime.now())
  *         .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
  *         .days(HistoricalRequestBuilder.Days.ALL_CALENDAR_DAYS);
- * RequestResult result = session.submit(builder).get(); //one should check that no ExecutionException is thrown here
+ * HistoricalData result = session.submit(hrb).get();
  * Map<DateTime, Object> data = result.forSecurity("SPX Index").forField("PX_LAST").get();
  * for (Map.Entry<DateTime, Object> e : data.entrySet()) {
  *     DateTime dt = e.getKey();
  *     double price = (Double) e.getValue();
  *     System.out.println("[" + dt + "] " + price);
  * }
- * session.stop();
- * } </pre>
+ * }</pre>
+ *
+ * <b> Example: retrieve 60 minutes bar for the S&P 500 over the past week </b>
+ * <pre> {@code
+ * RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index",
+ *         DateTime.now().minusDays(7),
+ *         DateTime.now())
+ *         .adjustSplits()
+ *         .fillInitialBar()
+ *         .period(1, TimeUnit.HOURS);
+ * IntradayBarData result = session.submit(hrb).get();
+ * Map<DateTime, Object> data = result.forField(IntradayBarField.CLOSE).get();
+ * for (Map.Entry<DateTime, Object> e : data.entrySet()) {
+ *     DateTime dt = e.getKey();
+ *     double price = (Double) e.getValue();
+ *     System.out.println("[" + dt + "] " + price);
+ * }
+ * }</pre>
+ *
+ *
+ * <b> Example: retrieve tick data for the S&P 500 over the past 2 hours </b>
+ * <pre> {@code
+ * RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index",
+ *         DateTime.now().minusHours(2),
+ *         DateTime.now())
+ *         .includeBrokerCodes()
+ *         .includeConditionCodes();
+ * IntradayTickData result = session.submit(hrb).get();
+ * Multimap<DateTime, Object> data = result.forField(IntradayTickField.VALUE);
+ * for (Map.Entry<DateTime, Object> e : data.entries()) {
+ *     DateTime dt = e.getKey();
+ *     double price = (Double) e.getValue();
+ *     System.out.println("[" + dt + "] " + price);
+ * }
+ * }</pre>
  *
  * <b> Example: subscribe to real time price updates </b>
  * <pre> {@code
- * BloombergSession session = new DefaultBloombergSession();
- * session.start();
  * DataChangeListener lst = new DataChangeListener() {
+ *     @Override
  *     public void dataChanged(DataChangeEvent e) {
  *         System.out.println(e);
  *     }
@@ -47,8 +95,7 @@
  *         .addField(RealtimeField.ASK_SIZE)
  *         .addListener(lst);
  * session.subscribe(builder);
- * Thread.sleep(3000);
- * session.stop();
- * } </pre>
+ * Thread.sleep(3000); //to allow data to start coming in
+ * }</pre>
  */
 package assylias.jbloomberg;
