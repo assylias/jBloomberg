@@ -1,10 +1,13 @@
 jBloomberg
 ==========
 
-jBloomberg is a high-level API that wraps the low level Bloomberg API (http://www.openbloomberg.com/open-api/).
-More information is available on this page: http://assylias.github.com/jBloomberg/
-Link to the javadoc: http://assylias.github.com/jBloomberg/apidocs/index.html
-
+jBloomberg is a high-level API that wraps the <a href="http://www.openbloomberg.com/open-api/">low level Bloomberg API</a>.
+<p>
+More information is available on <a href="http://assylias.github.com/jBloomberg/">the project  page</a>, including
+a link to the <a href="http://assylias.github.com/jBloomberg/apidocs/index.html"> javadoc</a>.
+<p>
+Note that the API is not stable yet and its design could be subject to changes in the future.
+<p>
 Source dependencies:
 
 - guava
