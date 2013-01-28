@@ -4,44 +4,19 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.RequestResult;
-import assylias.jbloomberg.RequestResult.ResultForSecurity;
 import java.util.Map;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
-public class RequestResultTest {
+public class HistoricalDataTest {
 
-    private RequestResult data;
+    private HistoricalData data;
 
     @BeforeMethod(groups = "unit")
     public void beforeMethod() {
-        data = new RequestResult();
-    }
-
-    @Test(groups = "unit")
-    public void testHasErrors_None() {
-        assertFalse(data.hasErrors());
-    }
-
-    @Test(groups = "unit")
-    public void testHasError_Security() {
-        data.addSecurityError("Sec");
-        assertTrue(data.hasErrors());
-        assertTrue(data.getSecurityErrors().contains("Sec"));
-    }
-
-    @Test(groups = "unit")
-    public void testHasError_Field() {
-        data.addFieldError("Field");
-        assertTrue(data.hasErrors());
-        assertTrue(data.getFieldErrors().contains("Field"));
+        data = new HistoricalData();
     }
 
     @Test(groups = "unit")

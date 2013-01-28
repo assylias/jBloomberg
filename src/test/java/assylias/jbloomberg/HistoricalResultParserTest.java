@@ -4,10 +4,6 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.RequestResult;
-import assylias.jbloomberg.HistoricalRequestBuilder;
-import assylias.jbloomberg.BloombergException;
-import assylias.jbloomberg.DefaultBloombergSession;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,10 +15,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class HistoricalResultParserTest {
 
     private DefaultBloombergSession session = null;

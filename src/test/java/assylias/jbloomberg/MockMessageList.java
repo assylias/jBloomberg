@@ -4,23 +4,10 @@
  */
 package assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.CorrelationID;
-import com.bloomberglp.blpapi.Datetime;
-import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.Message.Fragment;
-import com.bloomberglp.blpapi.Name;
-import com.bloomberglp.blpapi.Service;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Yann Le Tallec
- */
 class MockMessageList {
     private final String[] messages;
 

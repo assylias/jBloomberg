@@ -17,10 +17,6 @@ import java.io.Writer;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class MockMessage extends Message {
     private String type;
     private String toString;

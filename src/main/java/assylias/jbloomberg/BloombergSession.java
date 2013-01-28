@@ -20,7 +20,8 @@ import java.util.concurrent.Future;
  * could prevent the JVM from exiting.
  * </ul>
  *
- * Note that long running requests might delay real time subscriptions. It is recommended to use at least one session for
+ * Note that long running requests might delay real time subscriptions. It is recommended to use at least one session
+ * for
  * real time subscriptions and one for static or historical requests.
  */
 public interface BloombergSession {
@@ -42,7 +43,8 @@ public interface BloombergSession {
     void stop();
 
     /**
-     * Submits a request to the Bloomberg Session and returns immediately.
+     * Submits a request to the Bloomberg Session and returns immediately. The generic paramater enables to distinguish
+     * between single and multiple securities requests. The RequestResult object will be based on that type.
      *
      * Calling get() on the returned future may block forever - it is advised to use the get(timeout) version.<br>
      * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
@@ -60,7 +62,7 @@ public interface BloombergSession {
      * @throws NullPointerException  if request is null
      *
      */
-    Future<RequestResult> submit(final RequestBuilder request);
+    <T extends RequestResult> Future<T> submit(RequestBuilder<T> request);
 
     /**
      * Subscribes to a stream of real time update. The SubscriptionBuilder object is used to specify the securities and

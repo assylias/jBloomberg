@@ -15,11 +15,14 @@ import org.slf4j.LoggerFactory;
  *
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
-final class ReferenceResultParser extends AbstractResultParser {
+final class ReferenceResultParser extends AbstractResultParser<ReferenceData> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceResultParser.class);
-    private final DateTime now = new DateTime();
 
+    @Override
+    protected ReferenceData getRequestResult() {
+        return new ReferenceData();
+    }
 
     @Override
     protected void parseResponseNoResponseError(Element response) {
@@ -46,7 +49,7 @@ final class ReferenceResultParser extends AbstractResultParser {
         int numberOfFields = fieldDataArray.numElements();
         for (int i = 0; i < numberOfFields; i++) {
             Element field = fieldDataArray.getElement(i);
-            addField(now, security, field);
+            addField(security, field);
         }
     }
 }

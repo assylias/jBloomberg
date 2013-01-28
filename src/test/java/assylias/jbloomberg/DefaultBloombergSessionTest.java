@@ -16,10 +16,6 @@ import org.joda.time.DateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class DefaultBloombergSessionTest {
 
     @BeforeClass
@@ -191,8 +187,8 @@ public class DefaultBloombergSessionTest {
         }));
 
         latch.await(); //wait until the real time data starts coming in
-        Future<RequestResult> future = session2.submit(new IntradayBarRequestBuilder("ESA Index", DateTime.now().minusDays(6), DateTime.now()));
-        RequestResult result = future.get();
+        Future<IntradayBarData> future = session2.submit(new IntradayBarRequestBuilder("ESA Index", DateTime.now().minusDays(6), DateTime.now()));
+        IntradayBarData result = future.get();
         session1.stop();
         session2.stop();
     }

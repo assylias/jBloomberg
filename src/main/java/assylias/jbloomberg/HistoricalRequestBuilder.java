@@ -15,7 +15,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 
 /**
- * This class enables to build a historical request while ensuring argument safety. Typically, instead of passing
+ * This class enables to build a HistoricalData request while ensuring argument safety. Typically, instead of passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
  * <p/>
@@ -25,7 +25,7 @@ import org.joda.time.DateTime;
  * <p/>
  * <b>This class is not thread safe.</b>
  */
-public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
+public final class HistoricalRequestBuilder extends AbstractRequestBuilder<HistoricalData> {
 
     //Required parameters
     private final Set<String> tickers = new HashSet<>();
@@ -226,7 +226,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder {
     }
 
     @Override
-    public ResultParser getResultParser() {
+    public ResultParser<HistoricalData> getResultParser() {
         return new HistoricalResultParser();
     }
 

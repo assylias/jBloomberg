@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
-final class IntradayBarResultParser extends AbstractResultParser {
+final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData> {
 
     private final static Logger logger = LoggerFactory.getLogger(IntradayBarResultParser.class);
     /**
@@ -26,7 +26,6 @@ final class IntradayBarResultParser extends AbstractResultParser {
      */
     private static final Name BAR_DATA = new Name("barData");
     private static final Name BAR_TICK_DATA = new Name("barTickData");
-    private static final Name DATE = new Name("date");
 
     private final String security;
 
@@ -42,6 +41,11 @@ final class IntradayBarResultParser extends AbstractResultParser {
         throw new UnsupportedOperationException("Intraday Bar Requests can't report a field exception");
     }
 
+    @Override
+    protected IntradayBarData getRequestResult() {
+        return new IntradayBarData(security);
+    }
+
     /**
      * Only the fields we are interested in - the numEvents and value fields will be discarded
      */
@@ -52,19 +56,9 @@ final class IntradayBarResultParser extends AbstractResultParser {
         HIGH("high"),
         LOW("low"),
         CLOSE("close"),
-        VOLUME("volume");
+        VOLUME("volume"),
+        NUM_EVENTS("numEvents");
         private final Name elementName;
-        private static final Set<Name> retainedNames = new HashSet<>(values().length, 1);
-
-        static {
-            for (BarTickDataElements e : values()) {
-                retainedNames.add(e.asName());
-            }
-        }
-
-        private static boolean retainField(Element field) {
-            return retainedNames.contains(field.name());
-        }
 
         private BarTickDataElements(String elementName) {
             this.elementName = new Name(elementName);
@@ -106,9 +100,7 @@ final class IntradayBarResultParser extends AbstractResultParser {
 
             for (int j = 1; j < fieldData.numElements(); j++) {
                 field = fieldData.getElement(j);
-                if (BarTickDataElements.retainField(field)) {
-                    addField(date, security, field);
-                }
+                addField(date, field);
             }
         }
     }

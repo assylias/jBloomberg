@@ -18,7 +18,7 @@ import java.util.concurrent.TimeoutException;
  * </p>
  * All implementations are thread safe.
  */
-public interface ResultParser {
+public interface ResultParser<T extends RequestResult> {
 
     /**
      * @return the result of the parsing of all the received messages. This method blocks until a result is available
@@ -29,7 +29,7 @@ public interface ResultParser {
      *                                 happen if
      *                                 the request was malformed (which should not happen if this API is used properly) or the service is down.
      */
-    RequestResult getResult() throws InterruptedException;
+    T getResult() throws InterruptedException;
 
     /**
      * @return the result of the parsing of all the received messages. This method blocks until a result is available or
@@ -45,7 +45,7 @@ public interface ResultParser {
      *                                 the request was malformed (which should not happen if this API is used properly) or the service is down.
      * @throws TimeoutException        if the specified waiting time elapses before the result could be computed
      */
-    RequestResult getResult(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
+    T getResult(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
 
     /**
      * Adds msg to the list of messages to parse

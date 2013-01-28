@@ -4,39 +4,18 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.BloombergEventHandler;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.MessageIterator;
-import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.Session;
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import mockit.Capturing;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrictExpectations;
 import mockit.Verifications;
 import static org.testng.Assert.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class BloombergEventHandlerTest {
 
     private CountDownLatch latch;

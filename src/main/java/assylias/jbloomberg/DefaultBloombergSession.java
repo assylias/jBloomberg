@@ -164,20 +164,20 @@ public class DefaultBloombergSession implements BloombergSession {
      *
      */
     @Override
-    public Future<RequestResult> submit(final RequestBuilder request) {
+    public <T extends RequestResult> Future<T> submit(final RequestBuilder<T> request) {
         Objects.requireNonNull(request, "request cannot be null");
         if (!isSessionStarting) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         logger.debug("Submitting request {}", request);
-        Callable<RequestResult> task = new Callable<RequestResult>() {
+        Callable<T> task = new Callable<T>() {
             @Override
-            public RequestResult call() throws Exception {
+            public T call() throws Exception {
                 BloombergServiceType serviceType = request.getServiceType();
                 CorrelationID cId = getNextCorrelationId();
                 try {
                     openService(serviceType);
-                    ResultParser parser = request.getResultParser();
+                    ResultParser<T> parser = request.getResultParser();
                     eventHandler.setParser(cId, parser);
                     sendRequest(request, cId);
                     return parser.getResult();
@@ -238,7 +238,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * @throws IOException                     If any error occurs while sending the request
      * @throws DuplicateCorrelationIDException If the specified correlationId is already active for this Session
      */
-    private CorrelationID sendRequest(final RequestBuilder request, CorrelationID cId) throws IOException {
+    private CorrelationID sendRequest(final RequestBuilder<?> request, CorrelationID cId) throws IOException {
         Request bbRequest = request.buildRequest(session);
         session.sendRequest(bbRequest, cId);
         return cId;

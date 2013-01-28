@@ -4,37 +4,28 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.RequestResult;
-import assylias.jbloomberg.AbstractResultParser;
-import assylias.jbloomberg.BloombergException;
-import assylias.jbloomberg.DefaultBloombergSession;
 import com.bloomberglp.blpapi.Element;
-import com.bloomberglp.blpapi.Message;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import mockit.MockUp;
-import mockit.Mocked;
-import org.joda.time.DateTime;
 import static org.testng.Assert.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class AbstractResultParserTest {
 
     private AbstractResultParser parser;
 
     @BeforeMethod(groups="unit")
     public void beforeMethod() {
-        parser = new AbstractResultParser() {
+        parser = new AbstractResultParser () {
             @Override
             protected void parseResponseNoResponseError(Element response) {
                 throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            protected AbstractRequestResult getRequestResult() {
+                return null;
             }
         };
     }

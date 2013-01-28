@@ -4,25 +4,12 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.SubscriptionBuilder;
-import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.BloombergRequestType;
-import assylias.jbloomberg.BloombergServiceType;
-import assylias.jbloomberg.RealtimeField;
-import assylias.jbloomberg.DataChangeEvent;
-import assylias.jbloomberg.DataChangeListener;
-import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.Session;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class SubscriptionBuilderTest {
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class)

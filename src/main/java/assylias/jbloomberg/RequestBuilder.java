@@ -12,7 +12,7 @@ import com.bloomberglp.blpapi.Session;
  * this interface.
  * <p>This interface has been made public for convenience but users should not need to implement it.
  */
-public interface RequestBuilder {
+public interface RequestBuilder<T extends RequestResult> {
 
     /**
      *
@@ -37,5 +37,5 @@ public interface RequestBuilder {
      *
      * @return the parser that should be used to parse the result returned by the Bloomberg session
      */
-    ResultParser getResultParser();
+    ResultParser<T> getResultParser();
 }

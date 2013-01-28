@@ -4,24 +4,13 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.HistoricalRequestBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-/**
- *
- * @author Yann Le Tallec
- */
 
 public class HistoricalRequestBuilderTest {
 

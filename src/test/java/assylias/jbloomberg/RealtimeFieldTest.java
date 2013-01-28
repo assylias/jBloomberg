@@ -4,14 +4,9 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.RealtimeField;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author yannletallec
- */
 public class RealtimeFieldTest {
 
     @Test(groups = "unit")

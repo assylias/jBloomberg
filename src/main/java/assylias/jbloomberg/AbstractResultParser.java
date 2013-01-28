@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Base class to parse results from requests.
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
-abstract class AbstractResultParser implements ResultParser {
+abstract class AbstractResultParser<T extends AbstractRequestResult> implements ResultParser<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractResultParser.class);
     protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
@@ -47,7 +47,7 @@ abstract class AbstractResultParser implements ResultParser {
     /**
      * The result of the parsing operation - guarded by lock
      */
-    private RequestResult result;
+    private T result;
 
     @Override
     public void addMessage(Message msg) {
@@ -68,22 +68,23 @@ abstract class AbstractResultParser implements ResultParser {
     }
 
     @Override
-    public RequestResult getResult() throws InterruptedException {
+    public T getResult() throws InterruptedException {
         noMoreMessages.await();
         return getResultNoWait();
     }
 
     @Override
-    public RequestResult getResult(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+    public T getResult(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         if (!noMoreMessages.await(timeout, unit)) {
             throw new TimeoutException("Could not compute the result within " + timeout + " " + unit.toString().toLowerCase(Locale.ENGLISH));
         }
         return getResultNoWait();
     }
 
-    private RequestResult getResultNoWait() {
+    private T getResultNoWait() {
         synchronized (lock) {
             if (result == null) {
+                result = getRequestResult();
                 parse(messages);
             }
         }
@@ -134,18 +135,9 @@ abstract class AbstractResultParser implements ResultParser {
         }
     }
 
-    /**
-     * The parsing process has been written as close as possible as the HistoricalDataResponse specs in the
-     * Schema section of the API docs.
-     *
-     * @param messages
-     *
-     * @return
-     *
-     * @throws InvalidRequestException if a ResponseError is received
-     */
+    protected abstract T getRequestResult();
+
     private void parse(List<Message> messages) {
-        result = new RequestResult();
         for (Message msg : messages) {
             Element response = msg.asElement();
             parseResponse(response);
@@ -198,6 +190,18 @@ abstract class AbstractResultParser implements ResultParser {
         result.add(date, security, fieldName, value);
     }
 
+    protected void addField(DateTime date, Element field) {
+        String fieldName = field.name().toString();
+        Object value = BloombergUtils.getSpecificObjectOf(field);
+        result.add(date, fieldName, value);
+    }
+
+    protected void addField(String security, Element field) {
+        String fieldName = field.name().toString();
+        Object value = BloombergUtils.getSpecificObjectOf(field);
+        result.add(security, fieldName, value);
+    }
+
     protected void addSecurityError(String security) {
         result.addSecurityError(security);
     }
@@ -231,7 +235,8 @@ abstract class AbstractResultParser implements ResultParser {
     }
 
     /**
-     * Adds the field exceptions to the RequestResult object. Assumes that one field can't generate more than one
+     * Adds the field exceptions to the MultipleRequestResult object. Assumes that one field can't generate more than
+     * one
      * exception.
      * In other words, we assume that if there are several exceptions, each corresponds to a different field.
      */

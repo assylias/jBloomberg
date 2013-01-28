@@ -4,14 +4,9 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.BloombergUtils;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class MockBloombergUtils extends MockUp<BloombergUtils> {
 
     private final boolean started;

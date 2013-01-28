@@ -4,26 +4,16 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.RequestResult;
-import assylias.jbloomberg.ReferenceRequestBuilder;
-import assylias.jbloomberg.BloombergException;
-import assylias.jbloomberg.DefaultBloombergSession;
-import com.bloomberglp.blpapi.Element;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class ReferenceResultParserTest {
 
     private DefaultBloombergSession session = null;
@@ -82,11 +72,11 @@ public class ReferenceResultParserTest {
 
     @Test(groups = "requires-bloomberg")
     public void testParse_TwoSecuritiesTwoFieldsOk() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
+        RequestBuilder<ReferenceData> hrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST", "CRNCY_ADJ_MKT_CAP"));
-        RequestResult data = session.submit(hrb).get(60, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(60, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
-        assertTrue((double) data.forSecurity("IBM US Equity").forField("PX_LAST").get().values().iterator().next() > 0);
+        assertTrue((double) data.forSecurity("IBM US Equity").forField("PX_LAST") > 0);
     }
 
     @Test(groups = "requires-bloomberg")

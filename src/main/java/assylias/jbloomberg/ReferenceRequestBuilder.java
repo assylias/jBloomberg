@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class enables to build a reference data request while ensuring argument safety. Typically, instead of passing
+ * This class enables to build a ReferenceData request while ensuring argument safety. Typically, instead of passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
  * <p/>
@@ -26,7 +26,7 @@ import java.util.Set;
  * <p/>
  * <b>This class is not thread safe.</b>
  */
-public final class ReferenceRequestBuilder extends AbstractRequestBuilder {
+public final class ReferenceRequestBuilder extends AbstractRequestBuilder<ReferenceData> {
 
     //Required parameters
     private final Set<String> tickers = new HashSet<>();
@@ -116,7 +116,7 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder {
     }
 
     @Override
-    public ResultParser getResultParser() {
+    public ResultParser<ReferenceData> getResultParser() {
         return new ReferenceResultParser();
     }
 }

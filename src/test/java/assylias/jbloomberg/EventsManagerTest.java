@@ -16,10 +16,6 @@ import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class EventsManagerTest {
 
     private EventsManager em;

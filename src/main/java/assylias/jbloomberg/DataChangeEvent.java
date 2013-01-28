@@ -5,7 +5,7 @@
 package assylias.jbloomberg;
 
 /**
- * A DataChangeEvent gets delivered whenever a real time subscription sends a new value for a tracked data.<br>
+ * A DataChangeEvent gets delivered whenever a real time subscription sends a new value for a tracked data. <br>
  * This class is immutable and thread safe.
  * <p/>
  * Normally DataChangeEvents are accompanied by the name and the old and new value of the changed data. If the new value

@@ -4,7 +4,6 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.BloombergServiceType;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;

@@ -15,9 +15,14 @@ import org.slf4j.LoggerFactory;
  *
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
-final class HistoricalResultParser extends AbstractResultParser {
+final class HistoricalResultParser extends AbstractResultParser<HistoricalData> {
 
     private static final Logger logger = LoggerFactory.getLogger(HistoricalResultParser.class);
+
+    @Override
+    protected HistoricalData getRequestResult() {
+        return new HistoricalData();
+    }
 
     @Override
     protected void parseResponseNoResponseError(Element response) {

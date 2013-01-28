@@ -19,10 +19,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 import mockit.NonStrictExpectations;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class MockSession extends MockUp<Session> {
 
     private EventHandler handler;

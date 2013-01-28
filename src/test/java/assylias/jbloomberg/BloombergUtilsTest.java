@@ -14,10 +14,6 @@ import mockit.NonStrictExpectations;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author yannletallec
- */
 public class BloombergUtilsTest {
 
     @Test(groups = "unit")

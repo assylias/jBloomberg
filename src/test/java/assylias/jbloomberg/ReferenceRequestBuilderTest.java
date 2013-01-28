@@ -4,23 +4,12 @@
  */
 package assylias.jbloomberg;
 
-import assylias.jbloomberg.ReferenceRequestBuilder;
-import assylias.jbloomberg.DefaultBloombergSession;
-import assylias.jbloomberg.BloombergRequestType;
-import assylias.jbloomberg.BloombergServiceType;
-import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.Session;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class ReferenceRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)

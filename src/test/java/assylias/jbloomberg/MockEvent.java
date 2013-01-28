@@ -15,10 +15,6 @@ import java.util.List;
 import mockit.Mock;
 import mockit.MockUp;
 
-/**
- *
- * @author Yann Le Tallec
- */
 public class MockEvent extends Event {
 
     private final EventType type;
