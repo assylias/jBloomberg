@@ -81,9 +81,9 @@
  * }</pre>
  *
  * <b> Example: subscribe to real time price updates </b>
- * <pre> {@code
+ * <pre> <code>
  * DataChangeListener lst = new DataChangeListener() {
- *     @Override
+ *     {@literal @}Override
  *     public void dataChanged(DataChangeEvent e) {
  *         System.out.println(e);
  *     }
@@ -96,6 +96,6 @@
  *         .addListener(lst);
  * session.subscribe(builder);
  * Thread.sleep(3000); //to allow data to start coming in
- * }</pre>
+ * </code></pre>
  */
 package assylias.jbloomberg;

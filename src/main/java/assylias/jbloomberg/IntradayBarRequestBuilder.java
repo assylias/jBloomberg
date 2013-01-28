@@ -36,10 +36,11 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * Creates a RequestBuilder with an event type TRADE. The Builder can be further customised with the provided
      * methods.
      *
-     * @param ticker    a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM
-     *                  US Equity)
-     * @param startDate the start of the date range (inclusive) for which to retrieve data
-     * @param endDate   the end of the date range (inclusive) for which to retrieve data
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
+     *                      IBM
+     *                      US Equity)
+     * @param startDateTime the start of the date range (inclusive) for which to retrieve data
+     * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      *
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
@@ -53,11 +54,12 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
      * <p/>
-     * @param ticker    a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM
-     *                  US Equity)
-     * @param eventType the eventType to retrieve for the selected ticker
-     * @param startDate the start of the date range (inclusive) for which to retrieve data
-     * @param endDate   the end of the date range (inclusive) for which to retrieve data
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
+     *                      IBM
+     *                      US Equity)
+     * @param eventType     the eventType to retrieve for the selected ticker
+     * @param startDateTime the start of the date range (inclusive) for which to retrieve data
+     * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      * <p/>
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
@@ -68,9 +70,10 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     }
 
     /**
-     * @param period Determine the period of the output. Sets the length of each time bar in the response. Once rounded,
-     *               it needs to represent a duration between 1 and 1440 in minutes. If omitted, the request will default
-     *               to one minute. One minute is the lowest possible granularity.
+     * @param period   Determine the period of the output. Sets the length of each time bar in the response. Once
+     *                 rounded, it needs to represent a duration between 1 and 1440 in minutes. If omitted, the request will default
+     *                 to one minute. One minute is the lowest possible granularity.
+     * @param timeUnit The time unit in which period is expressed
      *
      * @throws IllegalArgumentException if period is not between 1 and 1440 minutes
      */

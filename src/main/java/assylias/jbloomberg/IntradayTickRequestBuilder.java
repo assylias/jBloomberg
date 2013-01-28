@@ -9,7 +9,8 @@ import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
 /**
- * This class enables to build an IntradayTickData historical request while ensuring argument safety. Typically, instead of
+ * This class enables to build an IntradayTickData historical request while ensuring argument safety. Typically, instead
+ * of
  * passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
@@ -34,10 +35,10 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder {
      * Creates a RequestBuilder with an event type TRADE. The Builder can be further customised with the provided
      * methods.
      *
-     * @param ticker    a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM
-     *                  US Equity)
-     * @param startDate the start of the date range (inclusive) for which to retrieve data
-     * @param endDate   the end of the date range (inclusive) for which to retrieve data
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
+     *                      IBM US Equity)
+     * @param startDateTime the start of the date range (inclusive) for which to retrieve data
+     * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      *
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
@@ -51,11 +52,11 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder {
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
      * <p/>
-     * @param ticker    a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM
-     *                  US Equity)
-     * @param eventType the eventType to retrieve for the selected ticker
-     * @param startDate the start of the date range (inclusive) for which to retrieve data
-     * @param endDate   the end of the date range (inclusive) for which to retrieve data
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
+     *                      IBM US Equity)
+     * @param eventType     the eventType to retrieve for the selected ticker
+     * @param startDateTime the start of the date range (inclusive) for which to retrieve data
+     * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      * <p/>
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
