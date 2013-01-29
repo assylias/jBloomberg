@@ -25,7 +25,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
 
     //Optional parameters
     private boolean includeConditionCodes;
-    private boolean includeNonPlottable;
+    private boolean includeNonPlottableEvents;
     private boolean includeExchangeCodes;
     private boolean includeBrokerCodes;
     private boolean includeRpsCodes;
@@ -79,16 +79,11 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     }
 
     /**
-     * Include all ticks, including those with condition codes. This override is part of the specification but has been
-     * de-activated because the underlying Bloomberg request returns an exception when it is used.
+     * Include all ticks, including those with condition codes.
      */
-    public IntradayTickRequestBuilder includeNonPlottable() {
-        if (true) { //
-            throw new UnsupportedOperationException("This override is not available");
-        } else {
-            this.includeNonPlottable = true;
-            return this;
-        }
+    public IntradayTickRequestBuilder includeNonPlottableEvents() {
+        this.includeNonPlottableEvents = true;
+        return this;
     }
 
     /**
@@ -142,6 +137,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
         request.set("includeBrokerCodes", includeBrokerCodes);
         request.set("includeRpsCodes", includeRpsCodes);
         request.set("includeBicMicCodes", includeBicMicCodes);
+        request.set("includeNonPlottableEvents", includeNonPlottableEvents);
     }
 
     @Override

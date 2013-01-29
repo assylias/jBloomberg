@@ -53,7 +53,8 @@ public class IntradayTickResultParserTest {
                 .includeBrokerCodes()
                 .includeConditionCodes()
                 .includeExchangeCodes()
-                .includeRpsCodes();
+                .includeRpsCodes()
+                .includeNonPlottableEvents();
         IntradayTickData data = session.submit(builder).get(1, TimeUnit.MINUTES);
         assertFalse(data.hasErrors());
         assertTrue(data.getSecurityErrors().isEmpty());
