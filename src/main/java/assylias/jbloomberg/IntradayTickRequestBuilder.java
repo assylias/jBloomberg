@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
  * <p/>
  * <b>This class is not thread safe.</b>
  */
-public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder {
+public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<IntradayTickData> {
 
     //Optional parameters
     private boolean includeConditionCodes;
