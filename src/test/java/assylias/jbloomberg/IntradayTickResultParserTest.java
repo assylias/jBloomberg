@@ -47,8 +47,8 @@ public class IntradayTickResultParserTest {
 
     @Test(groups = "requires-bloomberg")
     public void testParse_OK() throws Exception {
-        RequestBuilder<IntradayTickData> builder = new IntradayTickRequestBuilder("IBM US Equity", new DateTime().minusDays(5),
-                new DateTime().minusDays(5).plusHours(15))
+        RequestBuilder<IntradayTickData> builder = new IntradayTickRequestBuilder("SPX Index", new DateTime().minusDays(5),
+                new DateTime())
                 .includeBicMicCodes()
                 .includeBrokerCodes()
                 .includeConditionCodes()
