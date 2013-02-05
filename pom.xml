@@ -123,12 +123,11 @@
                 <version>2.9</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>lib</outputDirectory>
+                            <jarOutputDirectory>${project.basedir}</jarOutputDirectory>
                         </configuration>
                     </execution>
                 </executions>
