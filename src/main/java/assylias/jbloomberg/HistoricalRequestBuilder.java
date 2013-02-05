@@ -58,7 +58,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
      * <code> new HistoricalRequestBuilder(Arrays.asList(ticker), fields, startDate, endDate);
      * </code>
      */
-    public HistoricalRequestBuilder(String ticker, List<String> fields, DateTime startDate, DateTime endDate) {
+    public HistoricalRequestBuilder(String ticker, Collection<String> fields, DateTime startDate, DateTime endDate) {
         this(Arrays.asList(ticker), fields, startDate, endDate);
     }
 
@@ -67,7 +67,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
      * <code> new HistoricalRequestBuilder(tickers, Arrays.asList(field), startDate, endDate);
      * </code>
      */
-    public HistoricalRequestBuilder(List<String> tickers, String field, DateTime startDate, DateTime endDate) {
+    public HistoricalRequestBuilder(Collection<String> tickers, String field, DateTime startDate, DateTime endDate) {
         this(tickers, Arrays.asList(field), startDate, endDate);
     }
 

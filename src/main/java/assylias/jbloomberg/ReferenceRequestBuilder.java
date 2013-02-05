@@ -48,7 +48,7 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
      * <code> new ReferenceRequestBuilder(Arrays.asList(ticker), fields);
      * </code>
      */
-    public ReferenceRequestBuilder(String ticker, List<String> fields) {
+    public ReferenceRequestBuilder(String ticker, Collection<String> fields) {
         this(Arrays.asList(ticker), fields);
     }
 
@@ -57,7 +57,7 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
      * <code> new ReferenceRequestBuilder(tickers, Arrays.asList(field));
      * </code>
      */
-    public ReferenceRequestBuilder(List<String> tickers, String field) {
+    public ReferenceRequestBuilder(Collection<String> tickers, String field) {
         this(tickers, Arrays.asList(field));
     }
 
