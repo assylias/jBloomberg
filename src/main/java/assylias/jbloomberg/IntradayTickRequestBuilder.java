@@ -70,8 +70,6 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
      * Include any condition codes that may be associated to a tick. Condition codes identify extraordinary trading and
      * quoting circumstances. Condition codes are returned as a comma delimited list of exchange condition codes
      * associated with the event. Review QR<GO> for more information on each code returned.
-     *
-     * @param includeConditionCodes If true, return any condition codes that may be associated to a tick.
      */
     public IntradayTickRequestBuilder includeConditionCodes() {
         this.includeConditionCodes = true;
