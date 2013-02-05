@@ -131,13 +131,13 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
 
     @Override
     public String toString() {
-        return "IntradayBarRequestBuilder{" + "ticker=" + ticker + ", eventType=" + eventType + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime + ", period=" + period + ", fillInitialBar=" + fillInitialBar + ", adjNormal=" + adjustNormal + ", adjAbnormal=" + adjustAbnormal + ", adjSplit=" + adjustSplit + ", adjDefault=" + adjustDefault + '}';
+        return "IntradayBarRequestBuilder{" + super.toString() + ", period=" + period + ", fillInitialBar=" + fillInitialBar + ", adjNormal=" + adjustNormal + ", adjAbnormal=" + adjustAbnormal + ", adjSplit=" + adjustSplit + ", adjDefault=" + adjustDefault + '}';
     }
 
     @Override
     protected void buildRequest(Request request) {
         super.buildRequest(request);
-        request.set("eventType", eventType);
+        request.set("eventType", getEventType());
         request.set("interval", period);
         request.set("gapFillInitialBar", fillInitialBar);
         request.set("adjustmentNormal", adjustNormal);
@@ -153,7 +153,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
 
     @Override
     public ResultParser<IntradayBarData> getResultParser() {
-        return new IntradayBarResultParser(ticker);
+        return new IntradayBarResultParser(getTicker());
     }
 
     /**

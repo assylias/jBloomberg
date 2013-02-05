@@ -18,7 +18,7 @@ import org.joda.time.DateTime;
  * This implementation uses guava's Tables which are a good fit for the type of structure returned by historical/static
  * data requests (guava's Tables can be thought of as Excel spreadsheets with rows and columns).
  * <br>
- * To continue the analogy with Excel, the data is stored in a sheer which contains one row per security and one column
+ * To continue the analogy with Excel, the data is stored in a sheet which contains one row per security and one column
  * per field.
  * <br>
  * Convenience methods are provided to access one specific rows / columns. Those methods return immutable copies of the

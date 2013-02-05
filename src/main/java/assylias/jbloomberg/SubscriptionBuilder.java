@@ -15,6 +15,8 @@ import java.util.Set;
 
 /**
  * A SubscriptionBuilder is used to build real time streaming subscription requests.
+ *
+ * <strong>This class is not thread safe.</strong>
  */
 public final class SubscriptionBuilder {
 

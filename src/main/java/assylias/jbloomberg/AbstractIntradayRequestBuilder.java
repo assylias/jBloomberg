@@ -14,10 +14,10 @@ import org.joda.time.DateTime;
 abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends AbstractRequestBuilder<T> {
 
     //Required parameters
-    protected final String ticker;
-    protected final String eventType;
-    protected final DateTime startDateTime;
-    protected final DateTime endDateTime;
+    private final String ticker;
+    private final String eventType;
+    private final DateTime startDateTime;
+    private final DateTime endDateTime;
 
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
@@ -52,5 +52,18 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
         request.set("security", ticker);
         request.set("startDateTime", startDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
         request.set("endDateTime", endDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
+    }
+
+    String getEventType() {
+        return eventType;
+    }
+
+    String getTicker() {
+        return ticker;
+    }
+
+    @Override
+    public String toString() {
+        return "ticker=" + ticker + ", eventType=" + eventType + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime;
     }
 }

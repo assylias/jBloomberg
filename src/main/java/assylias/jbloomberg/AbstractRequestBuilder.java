@@ -16,8 +16,8 @@ import org.joda.time.format.DateTimeFormatter;
  */
 abstract class AbstractRequestBuilder<T extends RequestResult> implements RequestBuilder<T> {
 
-    protected final static DateTimeFormatter BB_REQUEST_DATE_FORMATTER = DateTimeFormat.forPattern("yyyyMMdd");
-    protected final static DateTimeFormatter BB_REQUEST_DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+    final static DateTimeFormatter BB_REQUEST_DATE_FORMATTER = DateTimeFormat.forPattern("yyyyMMdd");
+    final static DateTimeFormatter BB_REQUEST_DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     @Override
     public Request buildRequest(Session session) {
@@ -27,7 +27,7 @@ abstract class AbstractRequestBuilder<T extends RequestResult> implements Reques
         return request;
     }
 
-    protected void addCollectionToElement(Request request, Iterable<String> collection, String elementName) {
+    static void addCollectionToElement(Request request, Iterable<String> collection, String elementName) {
         Element element = request.getElement(elementName);
         for (String item : collection) {
             element.appendValue(item);

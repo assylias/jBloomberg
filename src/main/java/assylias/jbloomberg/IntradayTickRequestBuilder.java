@@ -131,7 +131,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     @Override
     protected void buildRequest(Request request) {
         super.buildRequest(request);
-        request.append("eventTypes", eventType);
+        request.append("eventTypes", getEventType());
         request.set("includeConditionCodes", includeConditionCodes);
         request.set("includeExchangeCodes", includeExchangeCodes);
         request.set("includeBrokerCodes", includeBrokerCodes);
@@ -147,7 +147,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
 
     @Override
     public ResultParser<IntradayTickData> getResultParser() {
-        return new IntradayTickResultParser(ticker);
+        return new IntradayTickResultParser(getTicker());
     }
 
     /**

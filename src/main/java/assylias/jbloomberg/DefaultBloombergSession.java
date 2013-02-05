@@ -27,7 +27,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * See the documentation of the parent class for more details.
  * <p>
- * This implementation is thread safe.
+ * This implementation is thread safe. Memory consistency effects: actions in a thread prior to submitting an request or
+ * subscribing to real time information happen-before actions subsequent to the access to the data returned by those
+ * requests / subscriptions.
  */
 public class DefaultBloombergSession implements BloombergSession {
 

@@ -18,28 +18,24 @@ package assylias.jbloomberg;
 public final class DataChangeEvent {
 
     /**
-     * *
      * Previous value for that data field. May be null if not known.
      * <p/>
      * @serial
      */
     private final String sourceString;
     /**
-     * *
      * Name of the data that changed. Cannot be null.
      * <p/>
      * @serial
      */
     private final String dataName;
     /**
-     * *
      * New value for that data field. May be null if not known.
      * <p/>
      * @serial
      */
     private final Object newValue;
     /**
-     * *
      * Previous value for that data field. May be null if not known.
      * <p/>
      * @serial
@@ -47,7 +43,6 @@ public final class DataChangeEvent {
     private final Object oldValue;
 
     /**
-     * *
      * Constructs a new DataChangeEvent.
      * <p/>
      * @param source   The ID of the security that fired the event.
@@ -79,7 +74,6 @@ public final class DataChangeEvent {
     }
 
     /**
-     * *
      * Gets the new value for the data, expressed as an Object.
      * <p/>
      * @return The new value for the data, expressed as an Object. May be null if unknown.
@@ -89,7 +83,6 @@ public final class DataChangeEvent {
     }
 
     /**
-     * *
      * Gets the old value for the data, expressed as an Object.
      * <p/>
      * @return The old value for the data, expressed as an Object. May be null if unknown.
