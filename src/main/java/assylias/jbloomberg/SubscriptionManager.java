@@ -7,6 +7,7 @@ package assylias.jbloomberg;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
+import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,12 +80,19 @@ final class SubscriptionManager {
      */
     synchronized void start(DefaultBloombergSession session) {
         logger.info("Starting the SubscriptionManager for {}", session);
-        this.session = session;
+        this.session = Preconditions.checkNotNull(session, "session can't be null");;
         startDispatching();
     }
 
-    synchronized void stop() {
-        logger.info("Stopping the SubscriptionManager for {}", session);
+    synchronized void stop(DefaultBloombergSession stoppingSession) {
+        if (session == null) {
+            logger.info("Stopping the SubscriptionManager for {}", stoppingSession);
+        } else if (session == stoppingSession) {
+            logger.info("Stopping the SubscriptionManager for {}", session);
+        } else {
+            throw new IllegalStateException("The starting and stopping sessions are not the same: [start] " + session
+                    + " [stop]" + stoppingSession);
+        }
         edt.shutdown();
     }
 

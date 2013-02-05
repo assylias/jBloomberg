@@ -28,6 +28,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+@Test(groups = "unit")
 public class SubscriptionManagerTest {
 
     private SubscriptionManager sm;
@@ -36,12 +37,13 @@ public class SubscriptionManagerTest {
     private CountDownLatch latch;
     private AtomicInteger countEvent;
     private EventsManager eventsManager;
+    private DefaultBloombergSession session;
 
     @BeforeClass
     public void beforeClass() {
     }
 
-    @BeforeMethod(groups = "unit")
+    @BeforeMethod
     public void beforeMethod() {
         queue = new LinkedBlockingQueue<>();
         eventsManager = new ConcurrentConflatedEventsManager();
@@ -65,15 +67,27 @@ public class SubscriptionManagerTest {
                 }
             }
         };
-        sm.start(new DefaultBloombergSession());
+        session = new DefaultBloombergSession();
+        sm.start(session);
     }
 
-    @AfterMethod(groups = "unit")
+    @AfterMethod
     public void afterMethod() {
-        sm.stop();
+        sm.stop(session);
     }
 
-    @Test(groups = {"unit"})
+    @Test(expectedExceptions=NullPointerException.class)
+    public void startNull() {
+        SubscriptionManager sm = new SubscriptionManager(queue, eventsManager);
+        sm.start(null);
+    }
+
+    @Test(expectedExceptions=IllegalStateException.class)
+    public void stopNull() {
+        sm.stop(new DefaultBloombergSession());
+    }
+
+    @Test
     public void testSubscribe_OneSecurityOneFieldThrottle() throws IOException {
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.BID).throttle(5));
 
@@ -84,7 +98,7 @@ public class SubscriptionManagerTest {
         assertEquals(subscriptions.getReSubscriptionsReceived(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testSubscribe_TwoSecuritiesTwoFieldsNoThrottle() throws IOException {
         List<String> tickers = Arrays.asList("ABC", "DEF");
         List<RealtimeField> fields = Arrays.asList(RealtimeField.ASK, RealtimeField.BID);
@@ -99,7 +113,7 @@ public class SubscriptionManagerTest {
         assertEquals(subscriptions.getReSubscriptionsReceived(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testSubscribe_DuplicateSecuritySameFields() throws IOException {
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK));
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK));
@@ -109,7 +123,7 @@ public class SubscriptionManagerTest {
         assertEquals(subscriptions.getReSubscriptionsReceived(), 1);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testReSubscribe_AddFields() throws IOException {
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK));
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.BID));
@@ -119,7 +133,7 @@ public class SubscriptionManagerTest {
         assertEquals(subscriptions.getReSubscriptionsReceived(), 1);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testReSubscribe_ModifyThrottle() throws IOException {
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK));
         assertEquals(subscriptions.getThrottle("ABC"), 0d);
@@ -131,7 +145,7 @@ public class SubscriptionManagerTest {
         assertEquals(subscriptions.getReSubscriptionsReceived(), 2);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testDispatch_1() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
@@ -141,7 +155,7 @@ public class SubscriptionManagerTest {
         assertEquals(countEvent.get(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testDispatch_2() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(2);
@@ -152,7 +166,7 @@ public class SubscriptionManagerTest {
         assertEquals(countEvent.get(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testDispatch_FieldNotSubscribed() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
@@ -162,7 +176,7 @@ public class SubscriptionManagerTest {
         assertNotEquals(countEvent.get(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testDispatch_SecurityNotSubscribed() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
@@ -172,7 +186,7 @@ public class SubscriptionManagerTest {
         assertNotEquals(countEvent.get(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void testDispatch_EventNoChange() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
@@ -183,7 +197,7 @@ public class SubscriptionManagerTest {
         assertEquals(countEvent.get(), 0);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void test1Listener2Securities_AddListeners() throws Exception {
         assertEquals(new CorrelationID(0), new CorrelationID(0)); //necessary for the test to pass
         Sessions.mockStartedSession();
@@ -202,7 +216,7 @@ public class SubscriptionManagerTest {
         assertEquals(expectedInvocations.get(), 2);
     }
 
-    @Test(groups = {"unit"})
+    @Test
     public void test1Listener2Securities_FireEvents() throws Exception {
         Sessions.mockStartedSession();
         final CountDownLatch latch1 = new CountDownLatch(1);
