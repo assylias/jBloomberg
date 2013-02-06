@@ -37,7 +37,7 @@
                     <li> Less string based configuration: whenever possible enums are used to remove the typos issues
                     <li> Less verbose: retrieving historical data literally takes 5 lines of code, whereas when using the Bloomberg API, the code gets quickly cluttered with parsing, error handling and so on
                     <li> Builder based design: most queries to Bloomberg are prepared with builders using the fluent interface pattern
-                    <li> The library takes thread safety seriously (so does the Bloomberg API): all actions / objects are thread safe and can be used in a multi threaded application
+                    <li> The library takes thread safety seriously (so does the Bloomberg API): all actions / objects are thread safe and can be used in a multi threaded application (except the builders - work in progress)
                     <li> Uses the standard java.util.concurrent package objects, so the syntax / way of doing things should look familiar to Java developers. For example, a historical data request returns a Future<HistoricalData>
                 </ul>
             </section>
