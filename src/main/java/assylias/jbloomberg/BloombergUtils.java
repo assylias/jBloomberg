@@ -43,7 +43,8 @@ final class BloombergUtils {
     /**
      * Transforms a Bloomberg Element into the most specific Object (for example: Double, Float, Integer, DateTime,
      * String etc.).<br>
-     * Complex types are returned in the form of collections ({@code List<Object>} for arrays and {@code Map<String, Object>}
+     * Complex types are returned in the form of collections ({@code List<Object>} for arrays and
+     * {@code Map<String, Object>}
      * for sequences).
      */
     public static Object getSpecificObjectOf(Element field) {
