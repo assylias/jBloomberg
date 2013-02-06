@@ -7,6 +7,7 @@ package assylias.jbloomberg;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import static org.testng.Assert.*;
@@ -20,6 +21,7 @@ public class ReferenceResultParserTest {
 
     @BeforeClass(groups = "requires-bloomberg")
     public void beforeClass() throws BloombergException {
+//        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel","trace");
         session = new DefaultBloombergSession();
         session.start();
     }
@@ -50,7 +52,7 @@ public class ReferenceResultParserTest {
     @Test(groups = "requires-bloomberg")
     public void testParse_OneInvalidSecurity() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("XXX", "PX_LAST");
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
         assertTrue(data.getSecurityErrors().contains("XXX"));
     }
@@ -58,7 +60,7 @@ public class ReferenceResultParserTest {
     @Test(groups = "requires-bloomberg")
     public void testParse_OneInvalidField() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("IBM US Equity", "XXX");
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
         assertTrue(data.getFieldErrors().contains("XXX"));
     }
@@ -66,7 +68,7 @@ public class ReferenceResultParserTest {
     @Test(groups = "requires-bloomberg")
     public void testParse_OneSecurityOneFieldOk() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("IBM US Equity", "PX_LAST");
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
@@ -84,7 +86,7 @@ public class ReferenceResultParserTest {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST", "CRNCY_ADJ_MKT_CAP"))
                 .addOverride("EQY_FUND_CRNCY", "USD");
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
@@ -92,7 +94,16 @@ public class ReferenceResultParserTest {
     public void testParse_OtherFieldTypes() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity",
                 Arrays.asList("CUR_EMPLOYEES", "CUR_NUM_EMPLOYEES_AS_PER_DT", "EQY_CONSOLIDATED"));
-        RequestResult data = session.submit(hrb).get(5, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(hrb).get(5, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
+    }
+
+    @Test(groups = "requires-bloomberg")
+    public void testParse_BulkData() throws Exception {
+        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
+        ReferenceData data = session.submit(hrb).get(15, TimeUnit.MINUTES);
+        assertFalse(data.isEmpty());
+        List<Object> list = (List<Object>) data.forSecurity("SIE GY Equity").forField("TOP_20_HOLDERS_PUBLIC_FILINGS");
+        System.out.println(list);
     }
 }

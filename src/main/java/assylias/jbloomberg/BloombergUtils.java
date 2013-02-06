@@ -5,11 +5,16 @@
 package assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
+import com.bloomberglp.blpapi.ElementIterator;
 import com.bloomberglp.blpapi.Schema;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +42,9 @@ final class BloombergUtils {
 
     /**
      * Transforms a Bloomberg Element into the most specific Object (for example: Double, Float, Integer, DateTime,
-     * String etc.).
+     * String etc.).<br>
+     * Complex types are returned in the form of collections ({@code List<Object>} for arrays and {@code Map<String, Object>}
+     * for sequences).
      */
     public static Object getSpecificObjectOf(Element field) {
         if (field.datatype() == Schema.Datatype.FLOAT64) {
@@ -53,12 +60,29 @@ final class BloombergUtils {
             return field.getValueAsInt32();
         } else if (field.datatype() == Schema.Datatype.INT64) {
             return field.getValueAsInt64();
+        } else if (field.datatype() == Schema.Datatype.STRING) {
+            return field.getValueAsString();
         } else if (field.datatype() == Schema.Datatype.DATE
                 || field.datatype() == Schema.Datatype.DATETIME
                 || field.datatype() == Schema.Datatype.TIME) {
             return new DateTime(field.getValueAsDate().calendar());
+        } else if (field.isArray()) {
+            List<Object> list = new ArrayList<>(field.numValues());
+            for (int i = 0; i < field.numValues(); i++) {
+                list.add(getSpecificObjectOf(field.getValueAsElement(i)));
+            }
+            return list;
+        } else if (field.datatype() == Schema.Datatype.SEQUENCE
+                || field.datatype() == Schema.Datatype.CHOICE) { //has to be after array because arrays are sequences...
+            ElementIterator it = field.elementIterator();
+            Map<String, Object> map = new LinkedHashMap<>(field.numElements(), 1.0f);
+            while (it.hasNext()) {
+                Element e = it.next();
+                map.put(e.name().toString(), getSpecificObjectOf(e));
+            }
+            return map;
         } else {
-            return field.getValueAsString();
+            return field.toString(); //always works
         }
     }
 
