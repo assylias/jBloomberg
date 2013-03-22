@@ -69,9 +69,8 @@ public class DefaultBloombergSession implements BloombergSession {
     private final BloombergEventHandler eventHandler = new BloombergEventHandler(subscriptionDataQueue);
     /**
      * Collection that keeps track of services that have been asynchronously started. They might not be started yet.
-     * Each service is attributed a unique Correlation ID
      */
-    private final Map<BloombergServiceType, CorrelationID> openingServices = new EnumMap<>(BloombergServiceType.class);
+    private final Set<BloombergServiceType> openingServices = EnumSet.noneOf(BloombergServiceType.class);
     private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
         private final AtomicInteger threadId = new AtomicInteger();
 
@@ -219,7 +218,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
     private synchronized void openService(final BloombergServiceType serviceType) throws IOException, InterruptedException {
-        if (openingServices.containsKey(serviceType)) {
+        if (openingServices.contains(serviceType)) {
             return; //only start the session once
         }
 
@@ -229,6 +228,7 @@ public class DefaultBloombergSession implements BloombergSession {
         if (!session.openService(serviceType.getUri())) {
             throw new IllegalStateException("The service could not be opened (openService returned false)");
         }
+        openingServices.add(serviceType);
     }
 
     /**
