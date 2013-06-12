@@ -7,15 +7,12 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
-import com.bloomberglp.blpapi.Event.EventType;
 import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.Service;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import mockit.Mock;
-import mockit.MockUp;
 
 public class MockMessage extends Message {
     private String type;

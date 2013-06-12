@@ -4,10 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.HistoricalRequestBuilder;
-import com.assylias.jbloomberg.BloombergException;
-import com.assylias.jbloomberg.DefaultBloombergSession;
-import com.assylias.jbloomberg.RequestResult;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +34,7 @@ public class HistoricalResultParserTest {
 
     @Test(groups = "requires-bloomberg", expectedExceptions = BloombergException.class,
     expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
+    @SuppressWarnings("unchecked")
     public void testParse_NoTickerErrorResponse() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("ABC", "ABC", new DateTime(), new DateTime());
         //Remove the tickers to provoke a ResponseError

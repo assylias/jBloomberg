@@ -4,11 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.ConcurrentConflatedEventsManager;
-import com.assylias.jbloomberg.DataChangeEvent;
-import com.assylias.jbloomberg.RealtimeField;
-import com.assylias.jbloomberg.DataChangeListener;
-import com.assylias.jbloomberg.EventsManager;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.util.HashSet;
 import java.util.Set;

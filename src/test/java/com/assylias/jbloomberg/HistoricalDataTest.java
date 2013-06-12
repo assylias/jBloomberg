@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.HistoricalData;
 import java.util.Map;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;

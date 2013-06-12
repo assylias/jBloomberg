@@ -15,8 +15,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.IntradayBarField;
-import com.assylias.jbloomberg.IntradayBarData;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;

@@ -4,9 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.AbstractResultParser;
-import com.assylias.jbloomberg.AbstractRequestResult;
-import com.assylias.jbloomberg.RequestResult;
 import com.bloomberglp.blpapi.Element;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;

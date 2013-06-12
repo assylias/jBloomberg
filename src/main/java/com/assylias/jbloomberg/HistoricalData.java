@@ -10,9 +10,7 @@ import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.joda.time.DateTime;
 
 /**
@@ -150,7 +148,8 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return an immutable copy of the map corresponding to the security / field column - the map can be empty
              */
             public Map<DateTime, Object> get() {
-                return securityTable == null ? Collections.EMPTY_MAP : ImmutableMap.copyOf(securityTable.column(field));
+                return securityTable == null ? Collections.<DateTime, Object> emptyMap()
+                                             : ImmutableMap.copyOf(securityTable.column(field));
             }
         }
 
@@ -174,7 +173,8 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return a map corresponding to the security / date row - the map can be empty
              */
             public Map<String, Object> get() {
-                return securityTable == null ? Collections.EMPTY_MAP : ImmutableMap.copyOf(securityTable.row(date));
+                return securityTable == null ? Collections.<String, Object> emptyMap()
+                                             : ImmutableMap.copyOf(securityTable.row(date));
             }
         }
     }

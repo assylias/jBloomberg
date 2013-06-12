@@ -4,8 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.ResultParser;
-import com.assylias.jbloomberg.BloombergEventHandler;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Message;

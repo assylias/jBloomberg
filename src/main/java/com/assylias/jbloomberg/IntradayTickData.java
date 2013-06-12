@@ -4,17 +4,12 @@
  */
 package com.assylias.jbloomberg;
 
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joda.time.DateTime;
@@ -82,12 +77,13 @@ public class IntradayTickData extends AbstractRequestResult {
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
     @Override
+    @SuppressWarnings("unchecked")
     synchronized void add(DateTime date, String field, Object value) {
         try {
             IntradayTickField f = IntradayTickField.of(field);
             Object previousValue = data.get(date, f);
             if (previousValue instanceof Collection) { //already several values in a list a list in there
-                ((Collection) previousValue).add(value);
+                ((Collection<Object>) previousValue).add(value);
             } else if (previousValue != null) { //already one value: create a list of values
                 List<Object> list = new ArrayList<> ();
                 list.add(previousValue);

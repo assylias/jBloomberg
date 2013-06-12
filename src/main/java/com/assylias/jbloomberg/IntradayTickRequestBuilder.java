@@ -5,7 +5,6 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
-import com.google.common.base.Preconditions;
 import org.joda.time.DateTime;
 
 /**

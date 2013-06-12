@@ -4,19 +4,13 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.AbstractResultParser;
-import com.assylias.jbloomberg.ResultParser;
-import com.assylias.jbloomberg.RequestBuilder;
-import com.assylias.jbloomberg.BloombergServiceType;
-import com.assylias.jbloomberg.BloombergRequestType;
-import com.assylias.jbloomberg.AbstractRequestResult;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Session;
 import mockit.Mock;
 import mockit.MockUp;
 
-public class MockRequestBuilder extends MockUp<RequestBuilder> {
+public class MockRequestBuilder<T extends AbstractRequestResult> extends MockUp<RequestBuilder<T>> {
 
     private BloombergServiceType serviceType;
 
@@ -38,8 +32,8 @@ public class MockRequestBuilder extends MockUp<RequestBuilder> {
         return null;
     }
 
-    public ResultParser getResultParser() {
-        return new AbstractResultParser() {
+    public ResultParser<T> getResultParser() {
+        return new AbstractResultParser<T> () {
 
             @Override
             protected void parseResponseNoResponseError(Element response) {
@@ -47,7 +41,7 @@ public class MockRequestBuilder extends MockUp<RequestBuilder> {
             }
 
             @Override
-            protected AbstractRequestResult getRequestResult() {
+            protected T getRequestResult() {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };

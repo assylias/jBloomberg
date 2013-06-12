@@ -7,17 +7,12 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.EventHandler;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
-import com.bloomberglp.blpapi.impl.eY;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
 
 public class MockSession extends MockUp<Session> {
 

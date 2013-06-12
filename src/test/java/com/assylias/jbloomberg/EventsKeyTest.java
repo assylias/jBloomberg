@@ -4,8 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.EventsKey;
-import com.assylias.jbloomberg.RealtimeField;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.lang.reflect.Field;
 import java.util.Map;

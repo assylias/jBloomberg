@@ -4,9 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.HistoricalRequestBuilder;
-import com.assylias.jbloomberg.BloombergServiceType;
-import com.assylias.jbloomberg.BloombergRequestType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +16,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
     public void testConstructor_NullTickers() {
-        new HistoricalRequestBuilder((Collection) null, Arrays.asList("a"), new DateTime(), new DateTime());
+        new HistoricalRequestBuilder((Collection<String>) null, Arrays.asList("a"), new DateTime(), new DateTime());
     }
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
@@ -29,7 +26,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyTickers() {
-        new HistoricalRequestBuilder(Collections.EMPTY_LIST, Arrays.asList("a"), new DateTime(), new DateTime());
+        new HistoricalRequestBuilder(Collections.<String>emptyList(), Arrays.asList("a"), new DateTime(), new DateTime());
     }
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty\\sstrings.*")
@@ -39,7 +36,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
     public void testConstructor_NullFields() {
-        new HistoricalRequestBuilder(Arrays.asList("a"), (Collection) null, new DateTime(), new DateTime());
+        new HistoricalRequestBuilder(Arrays.asList("a"), (Collection<String>) null, new DateTime(), new DateTime());
     }
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
@@ -49,7 +46,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyFields() {
-        new HistoricalRequestBuilder(Arrays.asList("a"), Collections.EMPTY_LIST, new DateTime(), new DateTime());
+        new HistoricalRequestBuilder(Arrays.asList("a"), Collections.<String>emptyList(), new DateTime(), new DateTime());
     }
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty\\sstrings.*")

@@ -4,11 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.IntradayBarRequestBuilder;
-import com.assylias.jbloomberg.ResultParser;
-import com.assylias.jbloomberg.BloombergServiceType;
-import com.assylias.jbloomberg.BloombergRequestType;
-import com.assylias.jbloomberg.AbstractIntradayRequestBuilder;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;

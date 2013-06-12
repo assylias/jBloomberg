@@ -4,11 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.BloombergException;
-import com.assylias.jbloomberg.RequestBuilder;
-import com.assylias.jbloomberg.ReferenceRequestBuilder;
-import com.assylias.jbloomberg.DefaultBloombergSession;
-import com.assylias.jbloomberg.ReferenceData;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,6 +35,7 @@ public class ReferenceResultParserTest {
 
     @Test(groups = "requires-bloomberg", expectedExceptions = BloombergException.class,
     expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
+    @SuppressWarnings("unchecked")
     public void testParse_NoTickerErrorResponse() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("ABC", "ABC");
         //Remove the tickers to provoke a ResponseError
@@ -104,6 +100,7 @@ public class ReferenceResultParserTest {
     }
 
     @Test(groups = "requires-bloomberg")
+    @SuppressWarnings("unchecked")
     public void testParse_BulkData() throws Exception {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
         ReferenceData data = session.submit(hrb).get(15, TimeUnit.MINUTES);

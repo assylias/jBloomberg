@@ -4,15 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.ConcurrentConflatedEventsManager;
-import com.assylias.jbloomberg.SubscriptionBuilder;
-import com.assylias.jbloomberg.DataChangeEvent;
-import com.assylias.jbloomberg.RealtimeField;
-import com.assylias.jbloomberg.DataChangeListener;
-import com.assylias.jbloomberg.EventsManager;
-import com.assylias.jbloomberg.Data;
-import com.assylias.jbloomberg.SubscriptionManager;
-import com.assylias.jbloomberg.DefaultBloombergSession;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;

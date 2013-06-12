@@ -7,13 +7,10 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Event.EventType;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.MessageIterator;
-import com.bloomberglp.blpapi.impl.eY;
 import com.bloomberglp.blpapi.impl.eZ;
 import java.util.Iterator;
 import java.util.List;
 import mockit.Mock;
-import mockit.MockUp;
 
 public class MockEvent extends Event {
 

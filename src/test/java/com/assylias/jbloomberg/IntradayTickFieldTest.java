@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.IntradayTickField;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 

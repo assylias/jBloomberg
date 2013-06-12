@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.RealtimeField;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 

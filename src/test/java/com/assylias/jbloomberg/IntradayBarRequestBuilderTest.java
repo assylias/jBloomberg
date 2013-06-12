@@ -4,8 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.IntradayBarRequestBuilder;
-import com.assylias.jbloomberg.BloombergRequestType;
 import java.util.concurrent.TimeUnit;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;

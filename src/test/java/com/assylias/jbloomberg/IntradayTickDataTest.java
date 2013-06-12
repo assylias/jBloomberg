@@ -4,11 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.IntradayTickField;
-import com.assylias.jbloomberg.IntradayTickData;
 import com.google.common.collect.Multimap;
-import java.util.Map;
-import java.util.TreeMap;
 import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;

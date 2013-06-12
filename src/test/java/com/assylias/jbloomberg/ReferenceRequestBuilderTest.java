@@ -4,9 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.ReferenceRequestBuilder;
-import com.assylias.jbloomberg.BloombergServiceType;
-import com.assylias.jbloomberg.BloombergRequestType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +15,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testConstructor_NullTickers() {
-        new ReferenceRequestBuilder((Collection) null, Arrays.asList("a"));
+        new ReferenceRequestBuilder((Collection<String>) null, Arrays.asList("a"));
     }
 
     @Test(expectedExceptions = NullPointerException.class)
@@ -28,7 +25,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyTickers() {
-        new ReferenceRequestBuilder(Collections.EMPTY_LIST, Arrays.asList("a"));
+        new ReferenceRequestBuilder(Collections.<String> emptyList(), Arrays.asList("a"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty\\sstrings.*")
@@ -38,7 +35,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testConstructor_NullFields() {
-        new ReferenceRequestBuilder(Arrays.asList("a"), (Collection) null);
+        new ReferenceRequestBuilder(Arrays.asList("a"), (Collection<String>) null);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
@@ -48,7 +45,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyFields() {
-        new ReferenceRequestBuilder(Arrays.asList("a"), Collections.EMPTY_LIST);
+        new ReferenceRequestBuilder(Arrays.asList("a"), Collections.<String> emptyList());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty\\sstrings.*")

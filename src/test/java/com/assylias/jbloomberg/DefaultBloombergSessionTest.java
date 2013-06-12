@@ -4,17 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.HistoricalRequestBuilder;
-import com.assylias.jbloomberg.SubscriptionBuilder;
-import com.assylias.jbloomberg.DataChangeEvent;
-import com.assylias.jbloomberg.BloombergException;
-import com.assylias.jbloomberg.RealtimeField;
-import com.assylias.jbloomberg.DataChangeListener;
-import com.assylias.jbloomberg.IntradayBarRequestBuilder;
-import com.assylias.jbloomberg.RequestBuilder;
-import com.assylias.jbloomberg.BloombergServiceType;
-import com.assylias.jbloomberg.IntradayBarData;
-import com.assylias.jbloomberg.DefaultBloombergSession;
 import com.bloomberglp.blpapi.Session;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
@@ -100,7 +89,7 @@ public class DefaultBloombergSessionTest {
     @Test(groups = "unit", expectedExceptions = IllegalStateException.class,
     expectedExceptionsMessageRegExp = ".*session.*")
     public void testSubmit_SessionNotStarted() throws Exception {
-        MockRequestBuilder mock = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
+        MockRequestBuilder<?> mock = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
 
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.submit(mock.getMockInstance()).get(2, TimeUnit.SECONDS);
@@ -118,7 +107,7 @@ public class DefaultBloombergSessionTest {
     @Test(groups = "unit", expectedExceptions = BloombergException.class)
     public void testSubmit_ServiceThrows() throws Exception {
         new MockBloombergUtils(true);
-        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
+        MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
         new MockSession().simulateStartAsyncOk();
 
         DefaultBloombergSession session = new DefaultBloombergSession();
@@ -134,7 +123,7 @@ public class DefaultBloombergSessionTest {
     @Test(groups = "unit", expectedExceptions = CancellationException.class)
     public void testSubmit_RequestCancelled() throws Exception {
         new MockBloombergUtils(true);
-        MockRequestBuilder request = new MockRequestBuilder().serviceType(BloombergServiceType.PAGE_DATA);
+        MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
 
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.start();
@@ -159,7 +148,7 @@ public class DefaultBloombergSessionTest {
     @Test(groups = "requires-bloomberg")
     public void testOpenService_allGood() throws Exception {
         final DefaultBloombergSession session = new DefaultBloombergSession();
-        RequestBuilder request = new HistoricalRequestBuilder("a", "a", new DateTime(), new DateTime());
+        RequestBuilder<?> request = new HistoricalRequestBuilder("a", "a", new DateTime(), new DateTime());
         session.start();
         session.submit(request).get(2, TimeUnit.SECONDS);
         session.stop();

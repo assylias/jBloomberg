@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.BloombergUtils;
 import mockit.Mock;
 import mockit.MockUp;
 

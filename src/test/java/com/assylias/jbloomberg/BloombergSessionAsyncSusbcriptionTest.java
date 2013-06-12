@@ -4,11 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.jbloomberg.SubscriptionBuilder;
-import com.assylias.jbloomberg.DataChangeEvent;
-import com.assylias.jbloomberg.DataChangeListener;
-import com.assylias.jbloomberg.RealtimeField;
-import com.assylias.jbloomberg.DefaultBloombergSession;
 import static com.assylias.jbloomberg.RealtimeField.*;
 import java.util.Arrays;
 import java.util.HashSet;
