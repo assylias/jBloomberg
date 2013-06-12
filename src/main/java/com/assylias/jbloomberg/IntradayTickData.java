@@ -41,7 +41,7 @@ public class IntradayTickData extends AbstractRequestResult {
      * a Table of date / field / value, which contains one row per date, one column per field.
      * The values are either a single value or a list of values if there was more than one tick for that datetime.
      */
-    private final Table<DateTime, IntradayTickField, Object> data = TreeBasedTable.create();
+    private final Table<DateTime, IntradayTickField, TypedObject> data = TreeBasedTable.create();
     /**
      * IntradayBar only return one security's data - this is the security
      */
@@ -77,20 +77,20 @@ public class IntradayTickData extends AbstractRequestResult {
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
     @Override
-    @SuppressWarnings("unchecked")
     synchronized void add(DateTime date, String field, Object value) {
         try {
             IntradayTickField f = IntradayTickField.of(field);
-            Object previousValue = data.get(date, f);
-            if (previousValue instanceof Collection) { //already several values in a list a list in there
-                ((Collection<Object>) previousValue).add(value);
-            } else if (previousValue != null) { //already one value: create a list of values
-                List<Object> list = new ArrayList<> ();
+            TypedObject previousValue = data.get(date, f);
+            TypedObject newValue = TypedObject.of(value);
+            if (previousValue == null) { //new value, just add it
+                data.put(date, f, newValue);
+            } else if (previousValue.isList()) { //already several values in a list - add the new value to the list
+                previousValue.asList().add(newValue);
+            } else { //already one value: create a list of values
+                List<TypedObject> list = new ArrayList<> ();
                 list.add(previousValue);
-                list.add(value);
-                data.put(date, f, list);
-            } else { //new value, just add it
-                data.put(date, f, value);
+                list.add(newValue);
+                data.put(date, f, TypedObject.of(list));
             }
         } catch (IllegalArgumentException e) {
             logger.debug("{} - {}", e.getMessage(), value);
@@ -110,20 +110,20 @@ public class IntradayTickData extends AbstractRequestResult {
      * @param field the field for which the data is needed
      * @return a multimap that can contain one or more values per date.
      */
-    public Multimap<DateTime, Object> forField(IntradayTickField field) {
-        Map<DateTime, Object> fieldData = data.column(field);
-        LinkedListMultimap<DateTime, Object> list = LinkedListMultimap.create(fieldData.size());
-        for (Map.Entry<DateTime, Object> e : fieldData.entrySet()) {
-            Object v = e.getValue();
-            if (v instanceof Collection) {
-                for (Object value : (Collection) v) {
-                    list.put(e.getKey(), value);
+    public Multimap<DateTime, TypedObject> forField(IntradayTickField field) {
+        Map<DateTime, TypedObject> fieldData = data.column(field);
+        LinkedListMultimap<DateTime, TypedObject> multimap = LinkedListMultimap.create(fieldData.size());
+        for (Map.Entry<DateTime, TypedObject> e : fieldData.entrySet()) {
+            TypedObject v = e.getValue();
+            if (v.isList()) {
+                for (TypedObject value : v.asList()) {
+                    multimap.put(e.getKey(), value);
                 }
             } else {
-                list.put(e.getKey(), v);
+                multimap.put(e.getKey(), v);
             }
         }
 
-        return list;
+        return multimap;
     }
 }

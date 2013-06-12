@@ -43,7 +43,7 @@ public final class ReferenceData extends AbstractRequestResult {
     /**
      * a Table of ticker / field / value, which contains one row per security, one column per field.
      */
-    private final Table<String, String, Object> data = TreeBasedTable.create();
+    private final Table<String, String, TypedObject> data = TreeBasedTable.create();
 
     @Override
     public synchronized boolean isEmpty() {
@@ -72,7 +72,7 @@ public final class ReferenceData extends AbstractRequestResult {
      */
     @Override
     synchronized void add(String security, String field, Object value) {
-        data.put(security, field, value);
+        data.put(security, field, TypedObject.of(value));
     }
 
     /**
@@ -95,7 +95,7 @@ public final class ReferenceData extends AbstractRequestResult {
      *
      * @return an immutable copy of the whole table - the table can be empty
      */
-    public Table<String, String, Object> get() {
+    public Table<String, String, TypedObject> get() {
         return ImmutableTable.copyOf(data);
     }
 
@@ -111,7 +111,7 @@ public final class ReferenceData extends AbstractRequestResult {
          * @return the value for the selected field / security combination or null if there is no value in
          *         that cell
          */
-        public Object forField(String field) {
+        public TypedObject forField(String field) {
             return data.get(security, field);
         }
 
@@ -120,7 +120,7 @@ public final class ReferenceData extends AbstractRequestResult {
          *
          * @return an immutable copy of the map corresponding to the security - the map can be empty
          */
-        public Map<String, Object> get() {
+        public Map<String, TypedObject> get() {
             return ImmutableMap.copyOf(data.row(security));
         }
     }
@@ -137,7 +137,7 @@ public final class ReferenceData extends AbstractRequestResult {
          * @return the value for the selected field / security combination or null if there is no value in
          *         that cell
          */
-        public Object forSecurity(String security) {
+        public TypedObject forSecurity(String security) {
             return data.get(security, field);
         }
 
@@ -146,7 +146,7 @@ public final class ReferenceData extends AbstractRequestResult {
          *
          * @return an immutable copy of the map corresponding to the fields - the map can be empty
          */
-        public Map<String, Object> get() {
+        public Map<String, TypedObject> get() {
             return ImmutableMap.copyOf(data.column(field));
         }
     }

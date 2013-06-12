@@ -66,18 +66,18 @@ public class IntradayBarDataTest {
     public void testForField() {
         IntradayBarData.ResultForField result = data.forField(IntradayBarField.CLOSE);
         assertEquals(result.get().size(), 2);
-        assertEquals(result.forDate(dt.minusMillis(200)), 4);
-        assertEquals(result.forDate(dt.minusMillis(100)), 8);
+        assertEquals(result.forDate(dt.minusMillis(200)).asInt(), 4);
+        assertEquals(result.forDate(dt.minusMillis(100)).asInt(), 8);
     }
 
     @Test
     public void testForDate() {
         IntradayBarData.ResultForDate result = data.forDate(dt.minusMillis(200));
         assertEquals(result.get().size(), 4);
-        assertEquals(result.forField(IntradayBarField.OPEN), 1);
-        assertEquals(result.forField(IntradayBarField.HIGH), 2);
-        assertEquals(result.forField(IntradayBarField.LOW), 3);
-        assertEquals(result.forField(IntradayBarField.CLOSE), 4);
+        assertEquals(result.forField(IntradayBarField.OPEN).asInt(), 1);
+        assertEquals(result.forField(IntradayBarField.HIGH).asInt(), 2);
+        assertEquals(result.forField(IntradayBarField.LOW).asInt(), 3);
+        assertEquals(result.forField(IntradayBarField.CLOSE).asInt(), 4);
 
         assertEquals(data.forField(IntradayBarField.CLOSE).forDate(dt.minusMillis(100)),
                 data.forDate(dt.minusMillis(100)).forField(IntradayBarField.CLOSE));

@@ -42,16 +42,16 @@ public class IntradayTickDataTest {
 
     @Test
     public void testForField_Size() {
-        Multimap<DateTime, Object> result = data.forField(IntradayTickField.VALUE);
+        Multimap<DateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
         assertEquals(result.size(), 8);
     }
 
     @Test
     public void testForField_Order() {
-        Multimap<DateTime, Object> result = data.forField(IntradayTickField.VALUE);
+        Multimap<DateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
         int i = 0;
-        for (Object o : result.values()) {
-            assertEquals(o, values[i++]);
+        for (TypedObject o : result.values()) {
+            assertEquals(o.asInt(), values[i++]);
         }
     }
 }

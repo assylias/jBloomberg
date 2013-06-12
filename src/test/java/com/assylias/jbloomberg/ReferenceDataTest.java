@@ -32,20 +32,20 @@ public class ReferenceDataTest {
     @Test
     public void testForField() {
         Map<String, Object> map = new TreeMap<> ();
-        map.put("IBM", 123.50);
-        map.put("MSFT", 150);
+        map.put("IBM", TypedObject.of(123.50));
+        map.put("MSFT", TypedObject.of(150));
         assertEquals(data.forField("PRICE").get(), map);
-        assertEquals(data.forField("PRICE").forSecurity("IBM"), 123.5);
-        assertEquals(data.forField("PRICE").forSecurity("MSFT"), 150);
-        assertEquals(data.forField("NAME").forSecurity("IBM"), "IBM Inc");
-        assertEquals(data.forField("NAME").forSecurity("MSFT"), "Microsoft");
+        assertEquals(data.forField("PRICE").forSecurity("IBM").asDouble(), 123.5);
+        assertEquals(data.forField("PRICE").forSecurity("MSFT").asInt(), 150);
+        assertEquals(data.forField("NAME").forSecurity("IBM").asString(), "IBM Inc");
+        assertEquals(data.forField("NAME").forSecurity("MSFT").asString(), "Microsoft");
     }
 
     @Test
     public void testForSecurity() {
         Map<String, Object> map = new TreeMap<> ();
-        map.put("PRICE", 123.50);
-        map.put("NAME", "IBM Inc");
+        map.put("PRICE", TypedObject.of(123.50));
+        map.put("NAME", TypedObject.of("IBM Inc"));
         assertEquals(data.forSecurity("IBM").get(), map);
 
         assertEquals(data.forField("PRICE").forSecurity("IBM"), data.forSecurity("IBM").forField("PRICE"));

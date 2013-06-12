@@ -40,7 +40,7 @@ public final class HistoricalData extends AbstractRequestResult {
     /**
      * a Map of ticker / table. Each table contains one row per date, one column per field.
      */
-    private final Map<String, Table<DateTime, String, Object>> data = new HashMap<>();
+    private final Map<String, Table<DateTime, String, TypedObject>> data = new HashMap<>();
 
     @Override
     public synchronized boolean isEmpty() {
@@ -54,7 +54,7 @@ public final class HistoricalData extends AbstractRequestResult {
             sb.append("{}");
         } else {
             sb.append("{");
-            for (Map.Entry<String, Table<DateTime, String, Object>> e : data.entrySet()) {
+            for (Map.Entry<String, Table<DateTime, String, TypedObject>> e : data.entrySet()) {
                 sb.append("[").append(e.getKey()).append("]");
                 sb.append(e.getValue());
             }
@@ -74,12 +74,12 @@ public final class HistoricalData extends AbstractRequestResult {
      */
     @Override
     synchronized void add(DateTime date, String security, String field, Object value) {
-        Table<DateTime, String, Object> securityTable = data.get(security);
+        Table<DateTime, String, TypedObject> securityTable = data.get(security);
         if (securityTable == null) {
             securityTable = TreeBasedTable.create(); //to have the dates in order
             data.put(security, securityTable);
         }
-        securityTable.put(date, field, value);
+        securityTable.put(date, field, TypedObject.of(value));
     }
 
     /**
@@ -101,9 +101,9 @@ public final class HistoricalData extends AbstractRequestResult {
         /**
          * The table corresponding to the selected security
          */
-        private final Table<DateTime, String, Object> securityTable;
+        private final Table<DateTime, String, TypedObject> securityTable;
 
-        private ResultForSecurity(Table<DateTime, String, Object> securityTable) { //not for public use
+        private ResultForSecurity(Table<DateTime, String, TypedObject> securityTable) { //not for public use
             this.securityTable = securityTable;
         }
 
@@ -124,8 +124,8 @@ public final class HistoricalData extends AbstractRequestResult {
         /**
          * @return an immutable copy of the table for the specified security - the table can be empty
          */
-        public Table<DateTime, String, Object> get() {
-            return securityTable == null ? ImmutableTable.<DateTime, String, Object>of() : ImmutableTable.copyOf(securityTable);
+        public Table<DateTime, String, TypedObject> get() {
+            return securityTable == null ? ImmutableTable.<DateTime, String, TypedObject>of() : ImmutableTable.copyOf(securityTable);
         }
 
         public class ResultForSecurityAndField {
@@ -140,15 +140,15 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return the value for the selected field / security / date combination or null if there is no value in
              *         that cell
              */
-            public Object forDate(DateTime date) {
+            public TypedObject forDate(DateTime date) {
                 return securityTable == null ? null : securityTable.get(date, field);
             }
 
             /**
              * @return an immutable copy of the map corresponding to the security / field column - the map can be empty
              */
-            public Map<DateTime, Object> get() {
-                return securityTable == null ? Collections.<DateTime, Object> emptyMap()
+            public Map<DateTime, TypedObject> get() {
+                return securityTable == null ? Collections.<DateTime, TypedObject> emptyMap()
                                              : ImmutableMap.copyOf(securityTable.column(field));
             }
         }
@@ -165,15 +165,15 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return the value for the selected security / field / date combination or null if there is no value was
              *         found in that cell
              */
-            public Object forField(String field) {
+            public TypedObject forField(String field) {
                 return securityTable == null ? null : securityTable.get(date, field);
             }
 
             /**
              * @return a map corresponding to the security / date row - the map can be empty
              */
-            public Map<String, Object> get() {
-                return securityTable == null ? Collections.<String, Object> emptyMap()
+            public Map<String, TypedObject> get() {
+                return securityTable == null ? Collections.<String, TypedObject> emptyMap()
                                              : ImmutableMap.copyOf(securityTable.row(date));
             }
         }

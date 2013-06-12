@@ -38,7 +38,7 @@ public class IntradayBarData extends AbstractRequestResult {
     /**
      * a Table of date / field / value, which contains one row per date, one column per field.
      */
-    private final Table<DateTime, IntradayBarField, Object> data = TreeBasedTable.create();
+    private final Table<DateTime, IntradayBarField, TypedObject> data = TreeBasedTable.create();
 
     /**
      * IntradayBar only return one security's data - this is the security
@@ -77,7 +77,7 @@ public class IntradayBarData extends AbstractRequestResult {
     @Override
     synchronized void add(DateTime date, String field, Object value) {
         try {
-            data.put(date, IntradayBarField.of(field), value);
+            data.put(date, IntradayBarField.of(field), TypedObject.of(value));
         } catch (IllegalArgumentException e) {
             logger.debug("{} - {}", e.getMessage(), value);
         }
@@ -111,7 +111,7 @@ public class IntradayBarData extends AbstractRequestResult {
      *
      * @return an immutable copy of the whole table - the table can be empty
      */
-    public Table<DateTime, IntradayBarField, Object> get() {
+    public Table<DateTime, IntradayBarField, TypedObject> get() {
         return ImmutableTable.copyOf(data);
     }
 
@@ -127,7 +127,7 @@ public class IntradayBarData extends AbstractRequestResult {
          * @return the value for the selected field / date combination or null if there is no value in
          *         that cell
          */
-        public Object forField(IntradayBarField field) {
+        public TypedObject forField(IntradayBarField field) {
             return data.get(date, field);
         }
 
@@ -136,7 +136,7 @@ public class IntradayBarData extends AbstractRequestResult {
          *
          * @return an immutable copy of the map corresponding to the security - the map can be empty
          */
-        public Map<IntradayBarField, Object> get() {
+        public Map<IntradayBarField, TypedObject> get() {
             return ImmutableMap.copyOf(data.row(date));
         }
     }
@@ -153,7 +153,7 @@ public class IntradayBarData extends AbstractRequestResult {
          * @return the value for the selected field / date combination or null if there is no value in
          *         that cell
          */
-        public Object forDate(DateTime date) {
+        public TypedObject forDate(DateTime date) {
             return data.get(date, field);
         }
 
@@ -162,7 +162,7 @@ public class IntradayBarData extends AbstractRequestResult {
          *
          * @return an immutable copy of the map corresponding to the fields - the map can be empty
          */
-        public Map<DateTime, Object> get() {
+        public Map<DateTime, TypedObject> get() {
             return ImmutableMap.copyOf(data.column(field));
         }
     }

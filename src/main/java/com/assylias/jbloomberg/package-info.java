@@ -26,7 +26,7 @@
  *         "SPX Index", "CRNCY_ADJ_PX_LAST")
  *         .addOverride("EQY_FUND_CRNCY", "JPY");
  * ReferenceData result = session.submit(hrb).get();
- * double priceInYen = (double) result.forSecurity("SPX Index").forField("CRNCY_ADJ_PX_LAST");
+ * double priceInYen = result.forSecurity("SPX Index").forField("CRNCY_ADJ_PX_LAST").asDouble();
  * System.out.println("SPX in Yen = " + priceInYen);
  * }</pre>
  *
@@ -38,10 +38,10 @@
  *         .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
  *         .days(HistoricalRequestBuilder.Days.ALL_CALENDAR_DAYS);
  * HistoricalData result = session.submit(hrb).get();
- * Map<DateTime, Object> data = result.forSecurity("SPX Index").forField("PX_LAST").get();
- * for (Map.Entry<DateTime, Object> e : data.entrySet()) {
+ * Map<DateTime, TypedObject> data = result.forSecurity("SPX Index").forField("PX_LAST").get();
+ * for (Map.Entry<DateTime, TypedObject> e : data.entrySet()) {
  *     DateTime dt = e.getKey();
- *     double price = (Double) e.getValue();
+ *     double price = e.getValue().asDouble();
  *     System.out.println("[" + dt + "] " + price);
  * }
  * }</pre>
@@ -55,10 +55,10 @@
  *         .fillInitialBar()
  *         .period(1, TimeUnit.HOURS);
  * IntradayBarData result = session.submit(hrb).get();
- * Map<DateTime, Object> data = result.forField(IntradayBarField.CLOSE).get();
- * for (Map.Entry<DateTime, Object> e : data.entrySet()) {
+ * Map<DateTime, TypedObject> data = result.forField(IntradayBarField.CLOSE).get();
+ * for (Map.Entry<DateTime, TypedObject> e : data.entrySet()) {
  *     DateTime dt = e.getKey();
- *     double price = (Double) e.getValue();
+ *     double price = e.getValue().asDouble();
  *     System.out.println("[" + dt + "] " + price);
  * }
  * }</pre>
@@ -72,10 +72,10 @@
  *         .includeBrokerCodes()
  *         .includeConditionCodes();
  * IntradayTickData result = session.submit(hrb).get();
- * Multimap<DateTime, Object> data = result.forField(IntradayTickField.VALUE);
- * for (Map.Entry<DateTime, Object> e : data.entries()) {
+ * Multimap<DateTime, TypedObject> data = result.forField(IntradayTickField.VALUE);
+ * for (Map.Entry<DateTime, TypedObject> e : data.entries()) {
  *     DateTime dt = e.getKey();
- *     double price = (Double) e.getValue();
+ *     double price = e.getValue().asDouble();
  *     System.out.println("[" + dt + "] " + price);
  * }
  * }</pre>

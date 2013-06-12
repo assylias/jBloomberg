@@ -50,7 +50,7 @@ public class EventsManagerTest {
         assertTrue(latch.await(10, TimeUnit.MILLISECONDS));
         assertEquals(evt.getDataName(), "ASK");
         assertNull(evt.getOldValue());
-        assertEquals(evt.getNewValue(), 1234);
+        assertEquals(evt.getNewValue().asInt(), 1234);
     }
 
     @Test(groups = "unit")
@@ -62,7 +62,7 @@ public class EventsManagerTest {
         assertFalse(latch.await(10, TimeUnit.MILLISECONDS)); //second event not sent to listener
         assertEquals(evt.getDataName(), "ASK");
         assertNull(evt.getOldValue());
-        assertEquals(evt.getNewValue(), 1234);
+        assertEquals(evt.getNewValue().asInt(), 1234);
     }
 
     @Test(groups = "unit")
@@ -77,8 +77,8 @@ public class EventsManagerTest {
         em.fireEvent(id, field, 234);
         assertTrue(latch.await(10, TimeUnit.MILLISECONDS));
         assertEquals(evt.getDataName(), "ASK");
-        assertEquals(evt.getOldValue(), 1234);
-        assertEquals(evt.getNewValue(), 234);
+        assertEquals(evt.getOldValue().asInt(), 1234);
+        assertEquals(evt.getNewValue().asInt(), 234);
     }
 
     @Test(groups = "unit")
@@ -92,7 +92,7 @@ public class EventsManagerTest {
                 assertEquals(e.getSource(), "SEC 1");
                 assertEquals(e.getDataName(), field.toString());
                 assertEquals(e.getOldValue(), null);
-                assertEquals(e.getNewValue(), 123);
+                assertEquals(e.getNewValue().asInt(), 123);
                 latch.countDown();
             }
         });
@@ -102,7 +102,7 @@ public class EventsManagerTest {
                 assertEquals(e.getSource(), "SEC 2");
                 assertEquals(e.getDataName(), field.toString());
                 assertEquals(e.getOldValue(), null);
-                assertEquals(e.getNewValue(), 456);
+                assertEquals(e.getNewValue().asInt(), 456);
                 latch.countDown();
             }
         });
@@ -123,12 +123,12 @@ public class EventsManagerTest {
                 if (e.getSource().equals("SEC 1")
                         && e.getDataName().equals(field.toString())
                         && e.getOldValue() == null
-                        && e.getNewValue().equals(123)) {
+                        && e.getNewValue().asInt() == 123) {
                     latch1.countDown();
                 } else if (e.getSource().equals("SEC 2")
                         && e.getDataName().equals(field.toString())
                         && e.getOldValue() == null
-                        && e.getNewValue().equals(456)) {
+                        && e.getNewValue().asInt() == 456) {
                     latch2.countDown();
                 } else {
                     fail("Unexpected event received: " + e);
@@ -177,13 +177,13 @@ public class EventsManagerTest {
         executor.awaitTermination(1, TimeUnit.SECONDS);
 
         assertTrue(latch.await(1, TimeUnit.SECONDS), "latch at " + latch.getCount());
-        Set<Integer> newValues = new HashSet<>();
-        Set<Integer> oldValues = new HashSet<>();
+        Set<TypedObject> newValues = new HashSet<>();
+        Set<TypedObject> oldValues = new HashSet<>();
         for (DataChangeEvent e : events) {
             assertEquals(e.getSource(), ticker);
             assertEquals(e.getDataName(), "ASK");
-            newValues.add((Integer) e.getNewValue());
-            oldValues.add((Integer) e.getOldValue());
+            newValues.add(e.getNewValue());
+            oldValues.add(e.getOldValue());
         }
         assertEquals(newValues.size(), NUM_EVENTS);
         assertEquals(oldValues.size(), NUM_EVENTS); //including null

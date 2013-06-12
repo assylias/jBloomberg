@@ -48,9 +48,10 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         String ticker = lst.ticker;
         DataChangeEvent evt = null;
         synchronized (key) { //we can do that because there is only one instance of each possible key
-            if (!value.equals(lst.previousValue)) {
-                evt = new DataChangeEvent(ticker, field.toString(), lst.previousValue, value);
-                lst.previousValue = value;
+            TypedObject newValue = TypedObject.of(value);
+            if (!newValue.equals(lst.previousValue)) {
+                evt = new DataChangeEvent(ticker, field.toString(), lst.previousValue, newValue);
+                lst.previousValue = newValue;
             }
         }
         if (evt != null) lst.fireEvent(evt);
@@ -60,7 +61,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
 
         private final String ticker;
         private final Set<DataChangeListener> listeners = new HashSet<>();
-        private Object previousValue;
+        private TypedObject previousValue;
 
         Listeners(String ticker) {
             this.ticker = ticker;

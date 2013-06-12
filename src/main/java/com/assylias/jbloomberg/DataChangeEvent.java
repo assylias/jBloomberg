@@ -34,13 +34,13 @@ public final class DataChangeEvent {
      * <p/>
      * @serial
      */
-    private final Object newValue;
+    private final TypedObject newValue;
     /**
      * Previous value for that data field. May be null if not known.
      * <p/>
      * @serial
      */
-    private final Object oldValue;
+    private final TypedObject oldValue;
 
     /**
      * Constructs a new DataChangeEvent.
@@ -50,8 +50,7 @@ public final class DataChangeEvent {
      * @param oldValue The old value of the property.
      * @param newValue The new value of the property.
      */
-    public DataChangeEvent(String source, String dataName, Object oldValue, Object newValue) {
-//        super(source);
+    public DataChangeEvent(String source, String dataName, TypedObject oldValue, TypedObject newValue) {
         this.sourceString = source;
         this.dataName = dataName;
         this.newValue = newValue;
@@ -78,7 +77,7 @@ public final class DataChangeEvent {
      * <p/>
      * @return The new value for the data, expressed as an Object. May be null if unknown.
      */
-    public Object getNewValue() {
+    public TypedObject getNewValue() {
         return newValue;
     }
 
@@ -87,7 +86,7 @@ public final class DataChangeEvent {
      * <p/>
      * @return The old value for the data, expressed as an Object. May be null if unknown.
      */
-    public Object getOldValue() {
+    public TypedObject getOldValue() {
         return oldValue;
     }
 

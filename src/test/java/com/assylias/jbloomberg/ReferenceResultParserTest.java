@@ -79,7 +79,7 @@ public class ReferenceResultParserTest {
                 Arrays.asList("PX_LAST", "CRNCY_ADJ_MKT_CAP"));
         ReferenceData data = session.submit(hrb).get(60, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
-        assertTrue((double) data.forSecurity("IBM US Equity").forField("PX_LAST") > 0);
+        assertTrue(data.forSecurity("IBM US Equity").forField("PX_LAST").asDouble() > 0);
     }
 
     @Test(groups = "requires-bloomberg")
@@ -105,7 +105,7 @@ public class ReferenceResultParserTest {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
         ReferenceData data = session.submit(hrb).get(15, TimeUnit.MINUTES);
         assertFalse(data.isEmpty());
-        List<Object> list = (List<Object>) data.forSecurity("SIE GY Equity").forField("TOP_20_HOLDERS_PUBLIC_FILINGS");
+        List<TypedObject> list = data.forSecurity("SIE GY Equity").forField("TOP_20_HOLDERS_PUBLIC_FILINGS").asList();
         System.out.println(list);
     }
 }

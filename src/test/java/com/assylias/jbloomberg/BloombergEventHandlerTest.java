@@ -65,17 +65,4 @@ public class BloombergEventHandlerTest {
             }
         };
     }
-
-    // Can't find a way to test this here - will test in an integration test at a higher level
-
-//    @Test(groups = "requires-bloomberg")
-//    public void testProcessEvent_Subscription() throws Exception {
-//        BlockingQueue<Data> queue = new ArrayBlockingQueue<>(1);
-//        final BloombergEventHandler handler = new BloombergEventHandler(queue);
-//
-//        Message msg = new MockMessage().setCorrelationID(1).setMessageType("SUMMARY").setToString("BID=17.5");
-//        Event evt = new MockEvent(Event.EventType.SUBSCRIPTION_DATA, Arrays.asList(msg));
-//        handler.processEvent(evt, null);
-//        assertFalse(queue.isEmpty());
-//    }
 }

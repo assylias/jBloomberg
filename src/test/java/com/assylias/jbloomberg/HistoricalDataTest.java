@@ -34,11 +34,11 @@ public class HistoricalDataTest {
     public void testGetData() {
         DateTime date = new DateTime();
         data.add(date, "IBM", "PX LAST", 123);
-        Object value = data.forSecurity("IBM").forField("PX LAST").forDate(date);
-        assertEquals(123, value);
+        TypedObject value = data.forSecurity("IBM").forField("PX LAST").forDate(date);
+        assertEquals(123, value.asInt());
 
         value = data.forSecurity("IBM").forDate(date).forField("PX LAST");
-        assertEquals(123, value);
+        assertEquals(123, value.asInt());
     }
 
     @Test(groups = "unit")
@@ -46,9 +46,9 @@ public class HistoricalDataTest {
         DateTime date = new DateTime();
         data.add(date, "IBM", "PX LAST", 123);
         data.add(date, "IBM", "PX VOLUME", 456789);
-        Map<String, Object> values = data.forSecurity("IBM").forDate(date).get();
+        Map<String, TypedObject> values = data.forSecurity("IBM").forDate(date).get();
         assertEquals(2, values.size());
-        assertEquals(123, values.get("PX LAST"));
+        assertEquals(123, values.get("PX LAST").asInt());
     }
 
     @Test(groups = "unit")
@@ -59,9 +59,9 @@ public class HistoricalDataTest {
         data.add(date2, "IBM", "PX LAST", 124);
         data.add(date1, "MSFT", "PX LAST", 456);
         data.add(date2, "MSFT", "PX LAST", 457);
-        Map<DateTime, Object> values = data.forSecurity("IBM").forField("PX LAST").get();
+        Map<DateTime, TypedObject> values = data.forSecurity("IBM").forField("PX LAST").get();
         assertEquals(2, values.size());
-        assertEquals(124, values.get(date2));
+        assertEquals(124, values.get(date2).asInt());
     }
 
     @Test(groups = "unit")

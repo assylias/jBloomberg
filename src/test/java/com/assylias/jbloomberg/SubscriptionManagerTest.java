@@ -225,9 +225,9 @@ public class SubscriptionManagerTest {
 
             @Override
             public void dataChanged(DataChangeEvent e) {
-                if (e.getSource().equals("ABC") && e.getNewValue().equals(123)) {
+                if (e.getSource().equals("ABC") && e.getNewValue().asInt() == 123) {
                     latch1.countDown();
-                } else if (e.getSource().equals("DEF") && e.getNewValue().equals(456)) {
+                } else if (e.getSource().equals("DEF") && e.getNewValue().asInt() == 456) {
                     latch2.countDown();
                 } else {
                     fail("Unexpected event: " + e);
