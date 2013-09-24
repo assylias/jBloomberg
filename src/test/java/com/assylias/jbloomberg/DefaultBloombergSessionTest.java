@@ -23,7 +23,7 @@ public class DefaultBloombergSessionTest {
     }
 
     @Test(groups = "unit", expectedExceptions = {BloombergException.class},
-    expectedExceptionsMessageRegExp = ".*bbcom.*")
+          expectedExceptionsMessageRegExp = ".*bbcom.*")
     public void testStart_noBbComm() throws Exception {
         final DefaultBloombergSession session = new DefaultBloombergSession();
         new MockBloombergUtils(false);
@@ -31,7 +31,7 @@ public class DefaultBloombergSessionTest {
     }
 
     @Test(groups = "unit", expectedExceptions = IllegalStateException.class,
-    expectedExceptionsMessageRegExp = ".*start.*")
+          expectedExceptionsMessageRegExp = ".*start.*")
     public void testStart_calledTwiceOpensOneSession(@Mocked final Session s) throws Exception {
         final DefaultBloombergSession session = new DefaultBloombergSession();
         new MockBloombergUtils(true);
@@ -80,19 +80,34 @@ public class DefaultBloombergSessionTest {
     }
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class,
-    expectedExceptionsMessageRegExp = ".*request.*")
+          expectedExceptionsMessageRegExp = ".*request.*")
     public void testSubmit_NullRequest() throws Exception {
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.submit(null);
     }
 
     @Test(groups = "unit", expectedExceptions = IllegalStateException.class,
-    expectedExceptionsMessageRegExp = ".*session.*")
+          expectedExceptionsMessageRegExp = ".*session.*")
     public void testSubmit_SessionNotStarted() throws Exception {
         MockRequestBuilder<?> mock = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
 
         DefaultBloombergSession session = new DefaultBloombergSession();
         session.submit(mock.getMockInstance()).get(2, TimeUnit.SECONDS);
+    }
+
+    @Test(groups = "unit", expectedExceptions = BloombergException.class,
+          expectedExceptionsMessageRegExp = ".*session.*")
+    public void testSubmit_SessionStartupFailure() throws Exception {
+        MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
+        new MockSession().simulateSessionStartupFailure();
+
+        DefaultBloombergSession session = new DefaultBloombergSession();
+        session.start();
+        try {
+            session.submit(request.getMockInstance()).get(2, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw (Exception) e.getCause();
+        }
     }
 
     @Test(groups = "unit", expectedExceptions = BloombergException.class)
@@ -180,14 +195,15 @@ public class DefaultBloombergSessionTest {
                 .addField(RealtimeField.ASK)
                 .addListener(new DataChangeListener() {
 
-            @Override
-            public void dataChanged(DataChangeEvent e) {
-                latch.countDown();
-            }
-        }));
+                    @Override
+                    public void dataChanged(DataChangeEvent e) {
+                        latch.countDown();
+                    }
+                }));
 
         latch.await(); //wait until the real time data starts coming in
-        Future<IntradayBarData> future = session2.submit(new IntradayBarRequestBuilder("ESA Index", DateTime.now().minusDays(6), DateTime.now()));
+        Future<IntradayBarData> future = session2.submit(new IntradayBarRequestBuilder("ESA Index",
+                DateTime.now().minusDays(6), DateTime.now()));
         IntradayBarData result = future.get();
         session1.stop();
         session2.stop();

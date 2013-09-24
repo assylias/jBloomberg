@@ -26,6 +26,12 @@ public class MockSession extends MockUp<Session> {
         return this;
     }
 
+    public MockSession simulateSessionStartupFailure() {
+        List<Message> messages = new MockMessageList("SessionStartupFailure").getList();
+        this.startAsyncEvent = new MockEvent(Event.EventType.SESSION_STATUS, messages);
+        return this;
+    }
+
     public MockSession setOpenServiceOk() {
         openServiceOk = true;
         return this;

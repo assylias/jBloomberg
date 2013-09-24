@@ -28,9 +28,11 @@ final class BloombergEventHandler implements EventHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(BloombergEventHandler.class);
     private final static Name SESSION_STARTED = new Name("SessionStarted");
+    private final static Name SESSION_STARTUP_FAILURE = new Name("SessionStartupFailure");
     private final BlockingQueue<Data> subscriptionDataQueue;
     private final Map<CorrelationID, ResultParser> parsers = new ConcurrentHashMap<>();
     private volatile Runnable runOnSessionStarted;
+    private volatile Runnable runOnSessionStartupFailure;
 
     public BloombergEventHandler(BlockingQueue<Data> subscriptionDataQueue) {
         this.subscriptionDataQueue = subscriptionDataQueue;
@@ -45,7 +47,10 @@ final class BloombergEventHandler implements EventHandler {
                     for (Message msg : event) {
                         logger.debug("[{}] {}", type, msg);
                         if (msg.messageType().equals(SESSION_STARTED)) {
-                            fireSessionStarted(session);
+                            runOnSessionStarted.run();
+                        }
+                        if (msg.messageType().equals(SESSION_STARTUP_FAILURE)) {
+                            runOnSessionStartupFailure.run();
                         }
                     }
                     break;
@@ -106,16 +111,20 @@ final class BloombergEventHandler implements EventHandler {
         }
     }
 
-    protected void fireSessionStarted(Session session) {
-        runOnSessionStarted.run();
-    }
-
     /**
      *
      * @param runOnSessionStarted this runnable will be run as soon as the session is started
      */
     void onSessionStarted(Runnable runOnSessionStarted) {
         this.runOnSessionStarted = runOnSessionStarted;
+    }
+
+    /**
+     *
+     * @param runnable a runnable to run if the session startup process fails
+     */
+    void onSessionStartupFailure(Runnable runOnSessionStartupFailure) {
+        this.runOnSessionStartupFailure = runOnSessionStartupFailure;
     }
 
     void setParser(CorrelationID requestId, ResultParser parser) {

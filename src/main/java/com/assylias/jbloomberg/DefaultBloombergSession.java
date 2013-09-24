@@ -8,7 +8,11 @@ import com.bloomberglp.blpapi.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -19,6 +23,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,14 +57,15 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     private final int sessionId = sessionIdGenerator.incrementAndGet();
     /**
-     * Used to avoid starting the session more than once (which would throw an exception) - once set to true, it remains
-     * true.
+     * Used to check if the session startup process is over (in which case either the session is started or startup
+     * failed)
      */
-    private volatile boolean isSessionStarting = false;
+    private final CountDownLatch sessionStartup = new CountDownLatch(1);
     /**
-     * Used to check if the session is started
+     * The state of this session - Also used to avoid starting the session more than once (which would throw an
+     * exception).
      */
-    private final CountDownLatch sessionStarted = new CountDownLatch(1);
+    private final AtomicReference<SessionState> state = new AtomicReference<>(SessionState.NEW);
     /**
      * The queue that is used to transfer subscription data from Bloomberg to the interested parties
      */
@@ -96,24 +103,32 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     @Override
     public synchronized void start() throws BloombergException {
-        if (isSessionStarting) {
+        if (state.get() != NEW) {
             throw new IllegalStateException("Session has already been started: " + this);
         }
         if (!BloombergUtils.startBloombergProcessIfNecessary()) { //could not be started for some reason
-            isSessionStarting = false;
+            state.set(STARTUP_FAILED);
             throw new BloombergException("Failed to start session: bbcomm process could not be started");
         }
         logger.info("Starting Bloomberg session #{} with options: {}", sessionId, getOptions());
         try {
             eventHandler.onSessionStarted(new Runnable() {
-                @Override
-                public void run() {
+                @Override public void run() {
                     subscriptionManager.start(DefaultBloombergSession.this); //needs to be before the countdown (see subscribe method)
-                    sessionStarted.countDown();
+                    state.set(STARTED);
+                    sessionStartup.countDown();
                 }
             });
+            eventHandler.onSessionStartupFailure(new Runnable() {
+                @Override public void run() {
+                    state.set(STARTUP_FAILED);
+                    sessionStartup.countDown();
+                }
+            });
+            if (!state.compareAndSet(NEW, STARTING)) {
+                throw new AssertionError("State was expected to be NEW but found " + state.get());
+            }
             session.startAsync();
-            isSessionStarting = true;
             logger.info("Session #{} started asynchronously", sessionId);
         } catch (IOException | IllegalStateException e) {
             throw new BloombergException("Failed to start session", e);
@@ -126,16 +141,18 @@ public class DefaultBloombergSession implements BloombergSession {
 
     /**
      * Closes the session. If the session has not been started yet, does nothing. This call will block until the session
-     * is actually stopped.
+     * is actually stopped.<br>
+     * A stopped session can't be restarted.
      */
     @Override
     public synchronized void stop() {
-        if (!isSessionStarting) {
+        if (state.get() == NEW) {
             logger.warn("Ignoring call to stop: session not started");
             return;
         }
         try {
             logger.info("Stopping Bloomberg session #{}", sessionId);
+            state.set(STOPPED);
             executor.shutdown();
             subscriptionManager.stop(this);
             session.stop(AbstractSession.StopOption.SYNC);
@@ -168,7 +185,7 @@ public class DefaultBloombergSession implements BloombergSession {
     @Override
     public <T extends RequestResult> Future<T> submit(final RequestBuilder<T> request) {
         Objects.requireNonNull(request, "request cannot be null");
-        if (!isSessionStarting) {
+        if (state.get() == NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         logger.debug("Submitting request {}", request);
@@ -197,11 +214,14 @@ public class DefaultBloombergSession implements BloombergSession {
 
     @Override
     public void subscribe(SubscriptionBuilder subscription) {
-        if (!isSessionStarting) {
+        if (state.get() == SessionState.NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         try {
-            sessionStarted.await(); //once the latch counts down, we know that the session has been set.
+            sessionStartup.await(); //once the latch counts down, we know that the session has been set.
+            if (state.get() != SessionState.STARTED) {
+                throw new RuntimeException("The Bloomberg session could not be started");
+            }
             subscriptionManager.subscribe(subscription);
         } catch (IOException e) {
             throw new RuntimeException("Could not complete subscription request", e);
@@ -217,13 +237,16 @@ public class DefaultBloombergSession implements BloombergSession {
      * @throws IOException          if the service could not be opened (Bloomberg API exception)
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
-    private synchronized void openService(final BloombergServiceType serviceType) throws IOException, InterruptedException {
+    private synchronized void openService(final BloombergServiceType serviceType) throws IOException, InterruptedException, BloombergException {
         if (openingServices.contains(serviceType)) {
             return; //only start the session once
         }
 
         logger.debug("Waiting for session to start while opening service {}", serviceType);
-        sessionStarted.await();
+        sessionStartup.await();
+        if (state.get() != SessionState.STARTED) {
+            throw new BloombergException("The Bloomberg session could not be started");
+        }
         logger.debug("Opening service {}", serviceType);
         if (!session.openService(serviceType.getUri())) {
             throw new IllegalStateException("The service could not be opened (openService returned false)");
@@ -269,14 +292,32 @@ public class DefaultBloombergSession implements BloombergSession {
 
     @Override
     public String toString() {
-        String status;
-        if (sessionStarted.getCount() == 0) {
-            status = "STARTED";
-        } else if (isSessionStarting) {
-            status = "STARTING";
-        } else {
-            status = "NOT STARTED";
-        }
-        return "Session #" + sessionId + " [" + status + "]";
+        return "Session #" + sessionId + " [" + state.get() + "]";
+    }
+
+    /**
+     * Describes the states of a session over its lifecycle
+     */
+    static enum SessionState {
+        /**
+         * The session has been created but it has not been started yet
+         */
+        NEW,
+        /**
+         * The session is in the process of being started
+         */
+        STARTING,
+        /**
+         * The session has been started and can be used
+         */
+        STARTED,
+        /**
+         * The session could not be started - it can't be used any more
+         */
+        STARTUP_FAILED,
+        /**
+         * The session has been stopped - it can't be used any more
+         */
+        STOPPED;
     }
 }
