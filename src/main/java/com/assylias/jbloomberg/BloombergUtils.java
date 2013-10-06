@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.ElementIterator;
 import com.bloomberglp.blpapi.Schema;
@@ -11,7 +12,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +27,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +69,8 @@ final class BloombergUtils {
         } else if (field.datatype() == Schema.Datatype.DATE
                 || field.datatype() == Schema.Datatype.DATETIME
                 || field.datatype() == Schema.Datatype.TIME) {
-            return new DateTime(field.getValueAsDate().calendar());
+            Calendar dt = field.getValueAsDate().calendar(); //returns a calendar with TZ = UTC
+            return LocalDateTime.ofInstant(dt.toInstant(), ZoneId.of("Z"));
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {

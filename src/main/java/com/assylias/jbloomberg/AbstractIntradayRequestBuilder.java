@@ -6,7 +6,7 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 
 /**
  * This is the base class to build intraday historical requests.
@@ -16,8 +16,8 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     //Required parameters
     private final String ticker;
     private final String eventType;
-    private final DateTime startDateTime;
-    private final DateTime endDateTime;
+    private final LocalDateTime startDateTime;
+    private final LocalDateTime endDateTime;
 
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
@@ -33,7 +33,7 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    protected AbstractIntradayRequestBuilder(String ticker, String eventType, DateTime startDateTime, DateTime endDateTime) {
+    protected AbstractIntradayRequestBuilder(String ticker, String eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this.startDateTime = Preconditions.checkNotNull(startDateTime, "The start date must not be null");
         this.endDateTime = Preconditions.checkNotNull(endDateTime, "The end date must not be null");
         this.ticker = Preconditions.checkNotNull(ticker, "The ticker must not be null");
@@ -50,8 +50,8 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     @Override
     protected void buildRequest(Request request) {
         request.set("security", ticker);
-        request.set("startDateTime", startDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
-        request.set("endDateTime", endDateTime.toString(BB_REQUEST_DATE_TIME_FORMATTER));
+        request.set("startDateTime", startDateTime.format(BB_REQUEST_DATE_TIME_FORMATTER));
+        request.set("endDateTime", endDateTime.format(BB_REQUEST_DATE_TIME_FORMATTER));
     }
 
     String getEventType() {

@@ -5,6 +5,8 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Session;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -12,11 +14,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import mockit.Mocked;
 import mockit.Verifications;
-import org.joda.time.DateTime;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class DefaultBloombergSessionTest {
+
+    private static final LocalDateTime TIME_NOW = LocalDateTime.now();
+    private static final LocalDate DATE_NOW = LocalDate.now();
 
     @BeforeClass
     public void beforeClass() {
@@ -163,7 +167,7 @@ public class DefaultBloombergSessionTest {
     @Test(groups = "requires-bloomberg")
     public void testOpenService_allGood() throws Exception {
         final DefaultBloombergSession session = new DefaultBloombergSession();
-        RequestBuilder<?> request = new HistoricalRequestBuilder("a", "a", new DateTime(), new DateTime());
+        RequestBuilder<?> request = new HistoricalRequestBuilder("a", "a", DATE_NOW, DATE_NOW);
         session.start();
         session.submit(request).get(2, TimeUnit.SECONDS);
         session.stop();
@@ -202,8 +206,7 @@ public class DefaultBloombergSessionTest {
                 }));
 
         latch.await(); //wait until the real time data starts coming in
-        Future<IntradayBarData> future = session2.submit(new IntradayBarRequestBuilder("ESA Index",
-                DateTime.now().minusDays(6), DateTime.now()));
+        Future<IntradayBarData> future = session2.submit(new IntradayBarRequestBuilder("ESA Index", TIME_NOW.minusDays(6), TIME_NOW));
         IntradayBarData result = future.get();
         session1.stop();
         session2.stop();

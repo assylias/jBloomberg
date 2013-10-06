@@ -4,9 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import org.joda.time.DateTime;
 
 /**
  * A basic implementation of the RequestResult interface, that only deals with errors.
@@ -45,18 +46,18 @@ abstract class AbstractRequestResult implements RequestResult {
         fieldErrors.add(field);
     }
 
-    void add(DateTime date, String security, String field, Object value) {
+    //for HistoricalData
+    void add(LocalDate date, String security, String field, Object value) {
         throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
 
-    void add(DateTime date, String field, Object value) {
+    //for IntradayBarData and IntradayTickData
+    void add(LocalDateTime date, String field, Object value) {
         throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
 
+    //for ReferenceData
     void add(String security, String field, Object value) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
-    }
-    void add(DateTime date, Object value) {
         throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
 }

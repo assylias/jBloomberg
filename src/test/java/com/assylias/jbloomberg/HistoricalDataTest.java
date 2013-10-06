@@ -4,13 +4,15 @@
  */
 package com.assylias.jbloomberg;
 
+import java.time.LocalDate;
 import java.util.Map;
-import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class HistoricalDataTest {
+
+    private static final LocalDate NOW = LocalDate.now();
 
     private HistoricalData data;
 
@@ -26,80 +28,75 @@ public class HistoricalDataTest {
 
     @Test(groups = "unit")
     public void testIsEmpty_NotEmpty() {
-        data.add(new DateTime(), "IBM", "PX LAST", 123.45);
+        data.add(NOW, "IBM", "PX LAST", 123.45);
         assertFalse(data.isEmpty());
     }
 
     @Test(groups = "unit")
     public void testGetData() {
-        DateTime date = new DateTime();
-        data.add(date, "IBM", "PX LAST", 123);
-        TypedObject value = data.forSecurity("IBM").forField("PX LAST").forDate(date);
+        data.add(NOW, "IBM", "PX LAST", 123);
+        TypedObject value = data.forSecurity("IBM").forField("PX LAST").forDate(NOW);
         assertEquals(123, value.asInt());
 
-        value = data.forSecurity("IBM").forDate(date).forField("PX LAST");
+        value = data.forSecurity("IBM").forDate(NOW).forField("PX LAST");
         assertEquals(123, value.asInt());
     }
 
     @Test(groups = "unit")
     public void testGetData_SecurityMap() {
-        DateTime date = new DateTime();
-        data.add(date, "IBM", "PX LAST", 123);
-        data.add(date, "IBM", "PX VOLUME", 456789);
-        Map<String, TypedObject> values = data.forSecurity("IBM").forDate(date).get();
+        data.add(NOW, "IBM", "PX LAST", 123);
+        data.add(NOW, "IBM", "PX VOLUME", 456789);
+        Map<String, TypedObject> values = data.forSecurity("IBM").forDate(NOW).get();
         assertEquals(2, values.size());
         assertEquals(123, values.get("PX LAST").asInt());
     }
 
     @Test(groups = "unit")
     public void testGetData_DateMap() {
-        DateTime date1 = new DateTime();
-        DateTime date2 = date1.minusDays(5);
-        data.add(date1, "IBM", "PX LAST", 123);
-        data.add(date2, "IBM", "PX LAST", 124);
-        data.add(date1, "MSFT", "PX LAST", 456);
-        data.add(date2, "MSFT", "PX LAST", 457);
-        Map<DateTime, TypedObject> values = data.forSecurity("IBM").forField("PX LAST").get();
+        LocalDate before = NOW.minusDays(5);
+        data.add(NOW, "IBM", "PX LAST", 123);
+        data.add(before, "IBM", "PX LAST", 124);
+        data.add(NOW, "MSFT", "PX LAST", 456);
+        data.add(before, "MSFT", "PX LAST", 457);
+        Map<LocalDate, TypedObject> values = data.forSecurity("IBM").forField("PX LAST").get();
         assertEquals(2, values.size());
-        assertEquals(124, values.get(date2).asInt());
+        assertEquals(124, values.get(before).asInt());
     }
 
     @Test(groups = "unit")
     public void testGetData_Empty() {
-        DateTime date = new DateTime();
-        data.add(date, "IBM", "PX LAST", 123);
+        data.add(NOW, "IBM", "PX LAST", 123);
 
         assertFalse(data.forSecurity("IBM").get().isEmpty());
 
         assertTrue(data.forSecurity("ABC").get().isEmpty());
-        assertTrue(data.forSecurity("ABC").forDate(date).get().isEmpty());
+        assertTrue(data.forSecurity("ABC").forDate(NOW).get().isEmpty());
         assertTrue(data.forSecurity("ABC").forField("PX LAST").get().isEmpty());
-        assertNull(data.forSecurity("ABC").forDate(date).forField("PX LAST"));
-        assertNull(data.forSecurity("ABC").forField("PX LAST").forDate(date));
+        assertNull(data.forSecurity("ABC").forDate(NOW).forField("PX LAST"));
+        assertNull(data.forSecurity("ABC").forField("PX LAST").forDate(NOW));
 
-        assertTrue(data.forSecurity("IBM").forDate(date.minusDays(5)).get().isEmpty());
-        assertNull(data.forSecurity("IBM").forDate(date.minusDays(5)).forField("PX LAST"));
-        assertNull(data.forSecurity("IBM").forDate(date.minusDays(5)).forField("ABC"));
+        assertTrue(data.forSecurity("IBM").forDate(NOW.minusDays(5)).get().isEmpty());
+        assertNull(data.forSecurity("IBM").forDate(NOW.minusDays(5)).forField("PX LAST"));
+        assertNull(data.forSecurity("IBM").forDate(NOW.minusDays(5)).forField("ABC"));
 
         assertTrue(data.forSecurity("IBM").forField("DEF").get().isEmpty());
-        assertNull(data.forSecurity("IBM").forField("DEF").forDate(date));
-        assertNull(data.forSecurity("IBM").forField("DEF").forDate(date.minusDays(5)));
+        assertNull(data.forSecurity("IBM").forField("DEF").forDate(NOW));
+        assertNull(data.forSecurity("IBM").forField("DEF").forDate(NOW.minusDays(5)));
     }
 
     @Test(groups = "unit")
     public void testToString() {
         //not really testing the output - just making sure no exception is thrown here
         assertFalse(data.toString().isEmpty());
-        DateTime date = new DateTime();
-        data.add(date, "IBM", "PX LAST", 123);
-        data.add(date.plusDays(1), "IBM", "PX LAST", 124);
-        data.add(date, "MSFT", "PX LAST", 456);
-        data.add(date.plusDays(1), "MSFT", "PX LAST", 457);
+        data.add(NOW, "IBM", "PX LAST", 123);
+        data.add(NOW.plusDays(1), "IBM", "PX LAST", 124);
+        data.add(NOW, "MSFT", "PX LAST", 456);
+        data.add(NOW.plusDays(1), "MSFT", "PX LAST", 457);
 
-        data.add(date, "IBM", "PX VOLUME", 123000);
-        data.add(date.plusDays(1), "IBM", "PX VOLUME", 124000);
-        data.add(date, "MSFT", "PX VOLUME", 456000);
-        data.add(date.plusDays(1), "MSFT", "PX VOLUME", 457000);
+        data.add(NOW, "IBM", "PX VOLUME", 123000);
+        data.add(NOW.plusDays(1), "IBM", "PX VOLUME", 124000);
+        data.add(NOW, "MSFT", "PX VOLUME", 456000);
+        data.add(NOW.plusDays(1), "MSFT", "PX VOLUME", 457000);
 
         assertFalse(data.toString().isEmpty());
 

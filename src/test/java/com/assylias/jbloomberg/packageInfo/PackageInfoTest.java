@@ -24,9 +24,10 @@ import com.assylias.jbloomberg.RequestBuilder;
 import com.assylias.jbloomberg.SubscriptionBuilder;
 import com.assylias.jbloomberg.TypedObject;
 import com.google.common.collect.Multimap;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.joda.time.DateTime;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -58,15 +59,14 @@ public class PackageInfoTest {
 
     @Test
     public void test_HistoricalExample() throws Exception {
-        RequestBuilder<HistoricalData> hrb = new HistoricalRequestBuilder("SPX Index",
-                "PX_LAST", DateTime.now().minusDays(7),
-                DateTime.now())
+        LocalDate now = LocalDate.now();
+        RequestBuilder<HistoricalData> hrb = new HistoricalRequestBuilder("SPX Index", "PX_LAST", now.minusDays(7), now)
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
                 .days(HistoricalRequestBuilder.Days.ALL_CALENDAR_DAYS);
         HistoricalData result = session.submit(hrb).get();
-        Map<DateTime, TypedObject> data = result.forSecurity("SPX Index").forField("PX_LAST").get();
-        for (Map.Entry<DateTime, TypedObject> e : data.entrySet()) {
-            DateTime dt = e.getKey();
+        Map<LocalDate, TypedObject> data = result.forSecurity("SPX Index").forField("PX_LAST").get();
+        for (Map.Entry<LocalDate, TypedObject> e : data.entrySet()) {
+            LocalDate dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
         }
@@ -74,16 +74,15 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayBarExample() throws Exception {
-        RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index",
-                DateTime.now().minusDays(7),
-                DateTime.now())
+        LocalDateTime now = LocalDateTime.now();
+        RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index", now.minusDays(7), now)
                 .adjustSplits()
                 .fillInitialBar()
                 .period(1, TimeUnit.HOURS);
         IntradayBarData result = session.submit(hrb).get();
-        Map<DateTime, TypedObject> data = result.forField(IntradayBarField.CLOSE).get();
-        for (Map.Entry<DateTime, TypedObject> e : data.entrySet()) {
-            DateTime dt = e.getKey();
+        Map<LocalDateTime, TypedObject> data = result.forField(IntradayBarField.CLOSE).get();
+        for (Map.Entry<LocalDateTime, TypedObject> e : data.entrySet()) {
+            LocalDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
         }
@@ -91,15 +90,14 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayTickExample() throws Exception {
-        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index",
-                DateTime.now().minusHours(2),
-                DateTime.now())
+        LocalDateTime now = LocalDateTime.now();
+        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusHours(2), now)
                 .includeBrokerCodes()
                 .includeConditionCodes();
         IntradayTickData result = session.submit(hrb).get();
-        Multimap<DateTime, TypedObject> data = result.forField(IntradayTickField.VALUE);
-        for (Map.Entry<DateTime, TypedObject> e : data.entries()) {
-            DateTime dt = e.getKey();
+        Multimap<LocalDateTime, TypedObject> data = result.forField(IntradayTickField.VALUE);
+        for (Map.Entry<LocalDateTime, TypedObject> e : data.entries()) {
+            LocalDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
         }
@@ -107,18 +105,12 @@ public class PackageInfoTest {
 
     @Test
     public void test_SubscriptionExample() throws InterruptedException, BloombergException {
-        DataChangeListener lst = new DataChangeListener() {
-            @Override
-            public void dataChanged(DataChangeEvent e) {
-                System.out.println(e);
-            }
-        };
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("ESA Index")
                 .addField(RealtimeField.LAST_PRICE)
                 .addField(RealtimeField.ASK)
                 .addField(RealtimeField.ASK_SIZE)
-                .addListener(lst);
+                .addListener(System.out::println);
         session.subscribe(builder);
         Thread.sleep(3000);
     }

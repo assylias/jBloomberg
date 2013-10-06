@@ -6,7 +6,7 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Name;
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
             if (!TickDataElements.TIME.asName().equals(field.name())) {
                 throw new AssertionError("Time field is supposed to be first but got: " + field.name());
             }
-            DateTime date = BB_RESULT_DATE_TIME_FORMATTER.parseDateTime(field.getValueAsString());
+            LocalDateTime date = BB_RESULT_DATE_TIME_FORMATTER.parse(field.getValueAsString(), LocalDateTime::from);
 
             for (int j = 1; j < fieldData.numElements(); j++) {
                 field = fieldData.getElement(j);

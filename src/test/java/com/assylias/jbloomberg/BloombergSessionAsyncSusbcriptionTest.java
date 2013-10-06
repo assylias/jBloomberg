@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
@@ -17,8 +19,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class BloombergSessionAsyncSusbcriptionTest {
+    private static final Logger LOG = LoggerFactory.getLogger(BloombergSessionAsyncSusbcriptionTest.class);
 
-    private static int TIMEOUT = 200;
+    private static final int TIMEOUT = 200;
     private static CountDownLatch latch;
     private DefaultBloombergSession session;
 
@@ -28,6 +31,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
 
     @BeforeMethod(groups = "requires-bloomberg")
     public void beforeMethod() throws Exception{
+        LOG.trace("beforeMethod");
         latch = new CountDownLatch(1);
         session = new DefaultBloombergSession();
         session.start();
@@ -35,16 +39,20 @@ public class BloombergSessionAsyncSusbcriptionTest {
 
     @AfterMethod(groups = "requires-bloomberg")
     public void afterMethod() {
+        LOG.trace("afterMethod - entry");
         session.stop();
+        LOG.trace("afterMethod - exit");
     }
 
     @Test(groups = "requires-bloomberg")
     public void testEmptyList() throws Exception {
+        LOG.trace("testEmptyList");
         assertFalse(latch.await(TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
     @Test(groups = "requires-bloomberg")
     public void testFeed() throws Exception {
+        LOG.trace("testFeed");
         DataChangeListener lst = getDataChangeListener(LAST_PRICE, ASK, BID_SIZE);
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("VGA Index")
@@ -62,6 +70,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
      */
     @Test(groups = "requires-bloomberg")
     public void testFeedNewAdditions() throws Exception {
+        LOG.trace("testFeedNewAdditions");
         DataChangeListener lst = getDataChangeListener("GBP Curncy");
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("VGA Index")
@@ -88,6 +97,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
      */
     @Test(groups = "requires-bloomberg")
     public void testWrongTicker() throws Exception {
+        LOG.trace("testWrongTicker");
         DataChangeListener lst = getDataChangeListener();
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("WHAT TICKER IS THAT")
@@ -99,32 +109,21 @@ public class BloombergSessionAsyncSusbcriptionTest {
     }
 
     private DataChangeListener getDataChangeListener() {
-        return new DataChangeListener() {
-            @Override
-            public void dataChanged(DataChangeEvent e) {
-                latch.countDown();
-            }
-        };
+        return (e) -> latch.countDown();
     }
     private DataChangeListener getDataChangeListener(String... tickers) {
         final Set<String> tickerSet = new HashSet<> (Arrays.asList(tickers));
-        return new DataChangeListener() {
-            @Override
-            public void dataChanged(DataChangeEvent e) {
-                if (tickerSet.contains(e.getSource())) {
-                    latch.countDown();
-                }
+        return (e) -> {
+            if (tickerSet.contains(e.getSource())) {
+                latch.countDown();
             }
         };
     }
     private DataChangeListener getDataChangeListener(final RealtimeField... fields) {
         final Set<RealtimeField> fieldSet = new HashSet<> (Arrays.asList(fields));
-        return new DataChangeListener() {
-            @Override
-            public void dataChanged(DataChangeEvent e) {
-                if (fieldSet.contains(RealtimeField.valueOf(e.getDataName()))) {
-                    latch.countDown();
-                }
+        return (e) -> {
+            if (fieldSet.contains(RealtimeField.valueOf(e.getDataName()))) {
+                latch.countDown();
             }
         };
     }

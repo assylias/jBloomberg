@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.*;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,10 +153,11 @@ public class DefaultBloombergSession implements BloombergSession {
         }
         try {
             logger.info("Stopping Bloomberg session #{}", sessionId);
-            state.set(STOPPED);
+            sessionStartup.await(); //with 3.6.1.0, if the session is not started yet, the call to stop can block
             executor.shutdown();
             subscriptionManager.stop(this);
             session.stop(AbstractSession.StopOption.SYNC);
+            state.set(STOPPED);
             logger.info("Stopped Bloomberg session #{}", sessionId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

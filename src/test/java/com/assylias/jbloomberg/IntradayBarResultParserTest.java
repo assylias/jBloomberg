@@ -4,8 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
-import org.joda.time.DateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 
 public class IntradayBarResultParserTest {
 
+    private static final LocalDateTime NOW = LocalDateTime.now();
     private final String INVALID_SECURITY = "XXX";
     private DefaultBloombergSession session = null;
 
@@ -31,7 +32,7 @@ public class IntradayBarResultParserTest {
 
     @Test(groups = "requires-bloomberg")
     public void testParse_InvalidSecurity() throws Exception {
-        IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder(INVALID_SECURITY, new DateTime().minusDays(5), new DateTime());
+        IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder(INVALID_SECURITY, NOW.minusDays(5), NOW);
         RequestResult data = session.submit(builder).get(5, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
         assertFalse(data.getSecurityErrors().isEmpty());
@@ -47,7 +48,7 @@ public class IntradayBarResultParserTest {
 
     @Test(groups = "requires-bloomberg")
     public void testParse_OK() throws Exception {
-        IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("IBM US Equity", new DateTime().minusDays(5), new DateTime());
+        IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("IBM US Equity", NOW.minusDays(5), NOW);
         builder.adjustAbnormalDistributions()
                 .adjustDefault()
                 .adjustNormalDistributions()

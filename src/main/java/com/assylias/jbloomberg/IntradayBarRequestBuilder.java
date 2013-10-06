@@ -6,8 +6,8 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
-import org.joda.time.DateTime;
 
 /**
  * This class enables to build an IntradayBarData historical request while ensuring argument safety. Typically, instead
@@ -46,7 +46,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayBarRequestBuilder(String ticker, DateTime startDateTime, DateTime endDateTime) {
+    public IntradayBarRequestBuilder(String ticker, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         this(ticker, IntradayBarEventType.TRADE, startDateTime, endDateTime);
     }
 
@@ -65,7 +65,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayBarRequestBuilder(String ticker, IntradayBarEventType eventType, DateTime startDateTime, DateTime endDateTime) {
+    public IntradayBarRequestBuilder(String ticker, IntradayBarEventType eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         super(ticker, eventType.toString(), startDateTime, endDateTime);
     }
 

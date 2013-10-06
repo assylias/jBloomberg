@@ -7,7 +7,7 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Event.EventType;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.impl.eZ;
+import com.bloomberglp.blpapi.impl.fc;
 import java.util.Iterator;
 import java.util.List;
 import mockit.Mock;
@@ -34,11 +34,11 @@ public class MockEvent extends Event {
 
     @Override
     public boolean isValid() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    protected eZ t() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected fc s() {
+        throw new UnsupportedOperationException();
     }
 }

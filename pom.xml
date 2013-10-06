@@ -1,77 +1,86 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.assylias</groupId>
-    <artifactId>jbloomberg</artifactId>
-    <version>2.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+  <groupId>com.assylias</groupId>
+  <artifactId>jbloomberg</artifactId>
+  <version>3.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
+  <url>https://github.com/assylias/jBloomberg</url>
+  <scm>
     <url>https://github.com/assylias/jBloomberg</url>
-    <scm>
-        <url>https://github.com/assylias/jBloomberg</url>
-        <connection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</developerConnection>
-    </scm>
-    <description>jBloomberg is a high level wrapper around the low level Bloomberg Java Desktop API</description>
-    <developers>
-        <developer>
-            <id>assylias</id>
-            <email>jbloomberg@letallec.org</email>
-            <roles>
-                <role>Main developer</role>
-            </roles>
-            <timezone>0</timezone>
-        </developer>
-    </developers>
+    <connection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</developerConnection>
+  </scm>
+  <description>jBloomberg is a high level wrapper around the low level Bloomberg Java Desktop API</description>
+  <developers>
+    <developer>
+      <id>assylias</id>
+      <email>jbloomberg@letallec.org</email>
+      <roles>
+        <role>Main developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-        </license>
-    </licenses>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
 
-    <parent>
-        <groupId>com.assylias</groupId>
-        <artifactId>parent-pom</artifactId>
-        <version>1.4-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>com.assylias</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>1.4-SNAPSHOT</version>
+  </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.openbloomberg</groupId>
-            <artifactId>blpapi</artifactId>
-        </dependency>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <compilerArgument>-Xlint</compilerArgument>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-        <!-- TESTS -->
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.openbloomberg</groupId>
+      <artifactId>blpapi</artifactId>
+    </dependency>
+    <!-- TESTS -->
 
-        <dependency>
-            <groupId>com.googlecode.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>com.googlecode.jmockit</groupId>
+      <artifactId>jmockit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

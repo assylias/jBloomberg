@@ -4,61 +4,63 @@
  */
 package com.assylias.jbloomberg;
 
-import org.joda.time.DateTime;
+import java.time.LocalDateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 public class AbstractIntradayRequestBuilderTest {
 
+    private static final LocalDateTime NOW = LocalDateTime.now();
+
     @Test(groups = "unit", expectedExceptions = NullPointerException.class)
     public void testConstructor_NullTicker() {
-        new Impl(null, new DateTime(), new DateTime());
+        new Impl(null, NOW, NOW);
     }
 
     @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class,
     expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyTicker() {
-        new Impl("", new DateTime(), new DateTime());
+        new Impl("", NOW, NOW);
     }
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*null.*")
     public void testConstructor_NullType() {
-        new Impl("ABC", null, new DateTime(), new DateTime());
+        new Impl("ABC", null, NOW, NOW);
     }
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class,
     expectedExceptionsMessageRegExp = ".*start.*")
     public void testConstructor_NullStartDate() {
-        new Impl("ABC", null, new DateTime());
+        new Impl("ABC", null, NOW);
     }
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*end.*")
     public void testConstructor_NullEndDate() {
-        new Impl("ABC", new DateTime(), null);
+        new Impl("ABC", NOW, null);
     }
 
     @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class,
     expectedExceptionsMessageRegExp = ".*date.*")
     public void testConstructor_EndBeforeStart() {
-        new Impl("ABC", new DateTime(), new DateTime().minusDays(1));
+        new Impl("ABC", NOW, NOW.minusDays(1));
     }
 
     @Test(groups = "unit")
     public void testConstructor_AllOk() {
-        new Impl("ABC", "TRADE", new DateTime(), new DateTime());
+        new Impl("ABC", "TRADE", NOW, NOW);
     }
 
     @Test(groups = "unit")
     public void testServiceType() {
-        assertEquals(new IntradayBarRequestBuilder("ABC", new DateTime(), new DateTime()).getServiceType(),
+        assertEquals(new IntradayBarRequestBuilder("ABC", NOW, NOW).getServiceType(),
                 BloombergServiceType.REFERENCE_DATA);
     }
 
     private static class Impl extends AbstractIntradayRequestBuilder {
-        public Impl(String ticker, DateTime startDateTime, DateTime endDateTime) {
+        public Impl(String ticker, LocalDateTime startDateTime, LocalDateTime endDateTime) {
             this(ticker, "TRADE", startDateTime, endDateTime);
         }
-        public Impl(String ticker, String eventType, DateTime startDateTime, DateTime endDateTime) {
+        public Impl(String ticker, String eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
             super(ticker, eventType, startDateTime, endDateTime);
         }
         @Override

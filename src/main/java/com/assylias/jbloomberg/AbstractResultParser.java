@@ -11,15 +11,15 @@ import com.bloomberglp.blpapi.InvalidRequestException;
 import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.NotFoundException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 abstract class AbstractResultParser<T extends AbstractRequestResult> implements ResultParser<T> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractResultParser.class);
-    protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
-    protected final static DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; //'2011-12-03'
+    protected final static DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     /**
      * lock used to access messages and parsedData
      */
@@ -184,13 +184,13 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
      * Trying to use the most specific primitive type.
      * Primitives will get auto-boxed.
      */
-    protected void addField(DateTime date, String security, Element field) {
+    protected void addField(LocalDate date, String security, Element field) {
         String fieldName = field.name().toString();
         Object value = BloombergUtils.getSpecificObjectOf(field);
         result.add(date, security, fieldName, value);
     }
 
-    protected void addField(DateTime date, Element field) {
+    protected void addField(LocalDateTime date, Element field) {
         String fieldName = field.name().toString();
         Object value = BloombergUtils.getSpecificObjectOf(field);
         result.add(date, fieldName, value);

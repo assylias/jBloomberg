@@ -8,16 +8,15 @@ import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Service;
 import com.bloomberglp.blpapi.Session;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  */
 abstract class AbstractRequestBuilder<T extends RequestResult> implements RequestBuilder<T> {
 
-    final static DateTimeFormatter BB_REQUEST_DATE_FORMATTER = DateTimeFormat.forPattern("yyyyMMdd");
-    final static DateTimeFormatter BB_REQUEST_DATE_TIME_FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+    final static DateTimeFormatter BB_REQUEST_DATE_FORMATTER = DateTimeFormatter.BASIC_ISO_DATE; //'20111203'
+    final static DateTimeFormatter BB_REQUEST_DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME; //'2011-12-03T10:15:30'
 
     @Override
     public Request buildRequest(Session session) {

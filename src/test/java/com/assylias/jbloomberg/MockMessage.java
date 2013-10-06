@@ -64,7 +64,7 @@ public class MockMessage extends Message {
         return cId;
     }
 
-    @Override
+    @Override @Deprecated
     public CorrelationID correlationIDAt(int index) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

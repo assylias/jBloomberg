@@ -5,7 +5,8 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
-import org.joda.time.DateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ final class HistoricalResultParser extends AbstractResultParser<HistoricalData> 
             if (!DATE.equals(field.name())) {
                 throw new AssertionError("Date field is supposed to be first but got: " + field.name());
             }
-            DateTime date = BB_RESULT_DATE_FORMATTER.parseDateTime(field.getValueAsString());
+            LocalDate date = BB_RESULT_DATE_FORMATTER.parse(field.getValueAsString(), LocalDate::from);
 
             for (int j = 1; j < fieldData.numElements(); j++) {
                 field = fieldData.getElement(j);

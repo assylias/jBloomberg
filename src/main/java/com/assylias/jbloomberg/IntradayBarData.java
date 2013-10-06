@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
+import java.time.LocalDateTime;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class IntradayBarData extends AbstractRequestResult {
     /**
      * a Table of date / field / value, which contains one row per date, one column per field.
      */
-    private final Table<DateTime, IntradayBarField, TypedObject> data = TreeBasedTable.create();
+    private final Table<LocalDateTime, IntradayBarField, TypedObject> data = TreeBasedTable.create();
 
     /**
      * IntradayBar only return one security's data - this is the security
@@ -75,7 +75,7 @@ public class IntradayBarData extends AbstractRequestResult {
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
     @Override
-    synchronized void add(DateTime date, String field, Object value) {
+    synchronized void add(LocalDateTime date, String field, Object value) {
         try {
             data.put(date, IntradayBarField.of(field), TypedObject.of(value));
         } catch (IllegalArgumentException e) {
@@ -101,7 +101,7 @@ public class IntradayBarData extends AbstractRequestResult {
     /**
      * Adds a filter on a specific date (row)
      */
-    public ResultForDate forDate(DateTime date) {
+    public ResultForDate forDate(LocalDateTime date) {
         return new ResultForDate(date);
     }
 
@@ -111,15 +111,15 @@ public class IntradayBarData extends AbstractRequestResult {
      *
      * @return an immutable copy of the whole table - the table can be empty
      */
-    public Table<DateTime, IntradayBarField, TypedObject> get() {
+    public Table<LocalDateTime, IntradayBarField, TypedObject> get() {
         return ImmutableTable.copyOf(data);
     }
 
     public class ResultForDate {
 
-        private final DateTime date;
+        private final LocalDateTime date;
 
-        private ResultForDate(DateTime date) { //not for public use
+        private ResultForDate(LocalDateTime date) { //not for public use
             this.date = date;
         }
 
@@ -153,7 +153,7 @@ public class IntradayBarData extends AbstractRequestResult {
          * @return the value for the selected field / date combination or null if there is no value in
          *         that cell
          */
-        public TypedObject forDate(DateTime date) {
+        public TypedObject forDate(LocalDateTime date) {
             return data.get(date, field);
         }
 
@@ -162,7 +162,7 @@ public class IntradayBarData extends AbstractRequestResult {
          *
          * @return an immutable copy of the map corresponding to the fields - the map can be empty
          */
-        public Map<DateTime, TypedObject> get() {
+        public Map<LocalDateTime, TypedObject> get() {
             return ImmutableMap.copyOf(data.column(field));
         }
     }

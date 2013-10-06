@@ -8,11 +8,11 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class IntradayTickData extends AbstractRequestResult {
      * a Table of date / field / value, which contains one row per date, one column per field.
      * The values are either a single value or a list of values if there was more than one tick for that datetime.
      */
-    private final Table<DateTime, IntradayTickField, TypedObject> data = TreeBasedTable.create();
+    private final Table<LocalDateTime, IntradayTickField, TypedObject> data = TreeBasedTable.create();
     /**
      * IntradayBar only return one security's data - this is the security
      */
@@ -77,7 +77,7 @@ public class IntradayTickData extends AbstractRequestResult {
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
     @Override
-    synchronized void add(DateTime date, String field, Object value) {
+    synchronized void add(LocalDateTime date, String field, Object value) {
         try {
             IntradayTickField f = IntradayTickField.of(field);
             TypedObject previousValue = data.get(date, f);
@@ -110,10 +110,10 @@ public class IntradayTickData extends AbstractRequestResult {
      * @param field the field for which the data is needed
      * @return a multimap that can contain one or more values per date.
      */
-    public Multimap<DateTime, TypedObject> forField(IntradayTickField field) {
-        Map<DateTime, TypedObject> fieldData = data.column(field);
-        LinkedListMultimap<DateTime, TypedObject> multimap = LinkedListMultimap.create(fieldData.size());
-        for (Map.Entry<DateTime, TypedObject> e : fieldData.entrySet()) {
+    public Multimap<LocalDateTime, TypedObject> forField(IntradayTickField field) {
+        Map<LocalDateTime, TypedObject> fieldData = data.column(field);
+        LinkedListMultimap<LocalDateTime, TypedObject> multimap = LinkedListMultimap.create(fieldData.size());
+        for (Map.Entry<LocalDateTime, TypedObject> e : fieldData.entrySet()) {
             TypedObject v = e.getValue();
             if (v.isList()) {
                 for (TypedObject value : v.asList()) {
