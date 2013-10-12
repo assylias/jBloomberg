@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import java.time.LocalDate;
 import java.util.Map;
 import static org.testng.Assert.*;

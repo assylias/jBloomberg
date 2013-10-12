@@ -65,6 +65,10 @@
       <groupId>com.openbloomberg</groupId>
       <artifactId>blpapi</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.assylias</groupId>
+      <artifactId>fund-api</artifactId>
+    </dependency>
     <!-- TESTS -->
 
     <dependency>

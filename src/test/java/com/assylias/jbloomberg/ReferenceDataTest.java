@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import java.util.Map;
 import java.util.TreeMap;
 import static org.testng.Assert.*;

@@ -4,10 +4,9 @@
  */
 package com.assylias.jbloomberg.packageInfo;
 
+import com.assylias.fund.TypedObject;
 import com.assylias.jbloomberg.BloombergException;
 import com.assylias.jbloomberg.BloombergSession;
-import com.assylias.jbloomberg.DataChangeEvent;
-import com.assylias.jbloomberg.DataChangeListener;
 import com.assylias.jbloomberg.DefaultBloombergSession;
 import com.assylias.jbloomberg.HistoricalData;
 import com.assylias.jbloomberg.HistoricalRequestBuilder;
@@ -22,7 +21,6 @@ import com.assylias.jbloomberg.ReferenceData;
 import com.assylias.jbloomberg.ReferenceRequestBuilder;
 import com.assylias.jbloomberg.RequestBuilder;
 import com.assylias.jbloomberg.SubscriptionBuilder;
-import com.assylias.jbloomberg.TypedObject;
 import com.google.common.collect.Multimap;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

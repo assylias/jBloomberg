@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import com.google.common.collect.Multimap;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

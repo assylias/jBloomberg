@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;

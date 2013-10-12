@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
+
 /**
  * A DataChangeEvent gets delivered whenever a real time subscription sends a new value for a tracked data. <br>
  * This class is immutable and thread safe.

@@ -4,13 +4,13 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeBasedTable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;

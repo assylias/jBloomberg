@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.fund.TypedObject;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.util.HashSet;
 import java.util.Set;
