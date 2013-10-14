@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -22,15 +21,11 @@ public class BloombergSessionAsyncSusbcriptionTest {
     private static final Logger LOG = LoggerFactory.getLogger(BloombergSessionAsyncSusbcriptionTest.class);
 
     private static final int TIMEOUT = 200;
-    private static CountDownLatch latch;
+    private CountDownLatch latch;
     private DefaultBloombergSession session;
 
-    @BeforeClass
-    public void beforeClass() {
-    }
-
     @BeforeMethod(groups = "requires-bloomberg")
-    public void beforeMethod() throws Exception{
+    public void beforeMethod() throws Exception {
         LOG.trace("beforeMethod");
         latch = new CountDownLatch(1);
         session = new DefaultBloombergSession();
@@ -81,7 +76,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
                 .addListener(lst);
 
         session.subscribe(builder);
-        assertFalse(latch.await(50, TimeUnit.MILLISECONDS)); //only works if the GBP has been caught
+        assertFalse(latch.await(50, TimeUnit.MILLISECONDS)); //GBP hasn't been registered yet so no event should arrive
 
         builder = new SubscriptionBuilder()
                 .addSecurity("GBP Curncy")
@@ -111,16 +106,19 @@ public class BloombergSessionAsyncSusbcriptionTest {
     private DataChangeListener getDataChangeListener() {
         return (e) -> latch.countDown();
     }
+
     private DataChangeListener getDataChangeListener(String... tickers) {
-        final Set<String> tickerSet = new HashSet<> (Arrays.asList(tickers));
-        return (e) -> {
+        final Set<String> tickerSet = new HashSet<>(Arrays.asList(tickers));
+        return (DataChangeEvent e) -> {
             if (tickerSet.contains(e.getSource())) {
+                LOG.error("{}", e);
                 latch.countDown();
             }
         };
     }
+
     private DataChangeListener getDataChangeListener(final RealtimeField... fields) {
-        final Set<RealtimeField> fieldSet = new HashSet<> (Arrays.asList(fields));
+        final Set<RealtimeField> fieldSet = new HashSet<>(Arrays.asList(fields));
         return (e) -> {
             if (fieldSet.contains(RealtimeField.valueOf(e.getDataName()))) {
                 latch.countDown();
