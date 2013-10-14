@@ -21,13 +21,12 @@ public class BloombergSessionAsyncSusbcriptionTest {
     private static final Logger LOG = LoggerFactory.getLogger(BloombergSessionAsyncSusbcriptionTest.class);
 
     private static final int TIMEOUT = 200;
-    private CountDownLatch latch;
     private DefaultBloombergSession session;
 
+    //NOTE: the latch could be moved as a member of the class but that creates some side effects (possibly due to testNG)
     @BeforeMethod(groups = "requires-bloomberg")
     public void beforeMethod() throws Exception {
         LOG.trace("beforeMethod");
-        latch = new CountDownLatch(1);
         session = new DefaultBloombergSession();
         session.start();
     }
@@ -40,15 +39,10 @@ public class BloombergSessionAsyncSusbcriptionTest {
     }
 
     @Test(groups = "requires-bloomberg")
-    public void testEmptyList() throws Exception {
-        LOG.trace("testEmptyList");
-        assertFalse(latch.await(TIMEOUT, TimeUnit.MILLISECONDS));
-    }
-
-    @Test(groups = "requires-bloomberg")
     public void testFeed() throws Exception {
         LOG.trace("testFeed");
-        DataChangeListener lst = getDataChangeListener(LAST_PRICE, ASK, BID_SIZE);
+        CountDownLatch latch = new CountDownLatch(1);
+        DataChangeListener lst = getDataChangeListener(latch, LAST_PRICE, ASK, BID_SIZE);
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("VGA Index")
                 .addSecurity("EUR Curncy")
@@ -66,7 +60,8 @@ public class BloombergSessionAsyncSusbcriptionTest {
     @Test(groups = "requires-bloomberg")
     public void testFeedNewAdditions() throws Exception {
         LOG.trace("testFeedNewAdditions");
-        DataChangeListener lst = getDataChangeListener("GBP Curncy");
+        CountDownLatch latch = new CountDownLatch(1);
+        DataChangeListener lst = getDataChangeListener(latch, "GBP Curncy");
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("VGA Index")
                 .addSecurity("EUR Curncy")
@@ -93,7 +88,8 @@ public class BloombergSessionAsyncSusbcriptionTest {
     @Test(groups = "requires-bloomberg")
     public void testWrongTicker() throws Exception {
         LOG.trace("testWrongTicker");
-        DataChangeListener lst = getDataChangeListener();
+        CountDownLatch latch = new CountDownLatch(1);
+        DataChangeListener lst = getDataChangeListener(latch);
         SubscriptionBuilder builder = new SubscriptionBuilder()
                 .addSecurity("WHAT TICKER IS THAT")
                 .addSecurity("EUR Curncy")
@@ -103,21 +99,20 @@ public class BloombergSessionAsyncSusbcriptionTest {
         assertTrue(latch.await(TIMEOUT, TimeUnit.SECONDS));
     }
 
-    private DataChangeListener getDataChangeListener() {
+    private DataChangeListener getDataChangeListener(CountDownLatch latch) {
         return (e) -> latch.countDown();
     }
 
-    private DataChangeListener getDataChangeListener(String... tickers) {
+    private DataChangeListener getDataChangeListener(CountDownLatch latch, String... tickers) {
         final Set<String> tickerSet = new HashSet<>(Arrays.asList(tickers));
         return (DataChangeEvent e) -> {
             if (tickerSet.contains(e.getSource())) {
-                LOG.error("{}", e);
                 latch.countDown();
             }
         };
     }
 
-    private DataChangeListener getDataChangeListener(final RealtimeField... fields) {
+    private DataChangeListener getDataChangeListener(CountDownLatch latch, final RealtimeField... fields) {
         final Set<RealtimeField> fieldSet = new HashSet<>(Arrays.asList(fields));
         return (e) -> {
             if (fieldSet.contains(RealtimeField.valueOf(e.getDataName()))) {
