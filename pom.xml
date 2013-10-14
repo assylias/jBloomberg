@@ -37,6 +37,9 @@
     <artifactId>parent-pom</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
+  <properties>
+    <maven.javadoc.skip>true</maven.javadoc.skip>
+  </properties>
 
   <build>
     <plugins>
