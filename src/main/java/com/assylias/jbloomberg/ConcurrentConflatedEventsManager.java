@@ -6,10 +6,10 @@ package com.assylias.jbloomberg;
 
 import com.assylias.fund.TypedObject;
 import com.bloomberglp.blpapi.CorrelationID;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +34,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         if (listenersInMap == null) {
             listenersInMap = newListeners;
         }
-        synchronized (key) { //make sure the addition to the set is visible
-            listenersInMap.addListener(lst);
-        }
+        listenersInMap.addListener(lst);
     }
 
     @Override
@@ -48,8 +46,8 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         }
         String ticker = lst.ticker;
         DataChangeEvent evt = null;
-        synchronized (key) { //we can do that because there is only one instance of each possible key
-            TypedObject newValue = TypedObject.of(value);
+        TypedObject newValue = TypedObject.of(value);
+        synchronized (lst) {
             if (!newValue.equals(lst.previousValue)) {
                 evt = new DataChangeEvent(ticker, field.toString(), lst.previousValue, newValue);
                 lst.previousValue = newValue;
@@ -61,7 +59,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
     private static class Listeners {
 
         private final String ticker;
-        private final Set<DataChangeListener> listeners = new HashSet<>();
+        private final List<DataChangeListener> listeners = new CopyOnWriteArrayList<>();
         private TypedObject previousValue;
 
         Listeners(String ticker) {

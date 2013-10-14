@@ -26,8 +26,8 @@ final class EventsKey {
      */
     public static EventsKey of(CorrelationID id, RealtimeField field) {
         EventsKey key = new EventsKey(id, field);
-        EventsKey unique = keys.putIfAbsent(key, key);
-        return unique != null ? unique : key;
+        EventsKey previous = keys.putIfAbsent(key, key);
+        return previous != null ? previous : key;
     }
 
     private EventsKey(CorrelationID id, RealtimeField field) {
@@ -47,9 +47,6 @@ final class EventsKey {
     @Override
     public boolean equals(Object obj) {
         final EventsKey other = (EventsKey) obj;
-        if (this.hash != other.hash) {
-            return false;
-        }
         if (!this.id.equals(other.id)) {
             return false;
         }
