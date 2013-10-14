@@ -103,8 +103,8 @@ final class SubscriptionManager {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
                         Data data = subscriptionDataQueue.take();
-                        CorrelationID id = data.getCorrelationId();
                         if (RealtimeField.containsIgnoreCase(data.getField())) {
+                            CorrelationID id = data.getCorrelationId();
                             RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
                             eventsManager.fireEvent(id, field, data.getValue());
                         }
@@ -112,6 +112,7 @@ final class SubscriptionManager {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+                logger.info("Exiting Subscription Manager dispatching loop");
             }
         };
         for (int i = 0; i < NUM_THREADS; i++) {
