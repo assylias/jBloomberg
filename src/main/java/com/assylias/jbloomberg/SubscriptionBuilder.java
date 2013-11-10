@@ -95,15 +95,15 @@ public final class SubscriptionBuilder {
     /**
      * Throttles the real time data feed. This is useful to reduce bandwidth usage or CPU activity. <br>
      * If the feed is throttled, each event that is received will be a snapshot at the time of the refresh. If the
-     * throttle is not set, all updates will be received.
+     * throttle is not set, all updates will be received. If the argument is 0, no throttle is applied.
      *
-     * @param throttleFrequency the maximum frequency at which data is updated, seconds
+     * @param throttleFrequency the maximum frequency at which data is updated, in seconds.
      *
-     * @throws IllegalArgumentException if throttle is not between 0.1 and 86,400.
+     * @throws IllegalArgumentException if throttle is not 0 or between 0.1 and 86,400.
      */
     public SubscriptionBuilder throttle(double throttleFrequency) {
-        Preconditions.checkArgument(throttleFrequency >= 0.1, "frequency must be between 0.1 and 86,400 (was " + throttleFrequency + ")");
-        Preconditions.checkArgument(throttleFrequency <= 86400, "frequency must be between 0.1 and 86,400 (was " + throttleFrequency + ")");
+        Preconditions.checkArgument(throttleFrequency >= 0.1 || throttleFrequency == 0, "frequency must be 0 or >= 0.1 (was " + throttleFrequency + ")");
+        Preconditions.checkArgument(throttleFrequency <= 86400, "frequency must be <= 86,400 (was " + throttleFrequency + ")");
         throttle = throttleFrequency;
         return this;
     }
