@@ -7,13 +7,10 @@ package com.assylias.jbloomberg;
 import com.assylias.fund.TypedObject;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,7 +35,9 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         private final AtomicInteger number = new AtomicInteger();
 
         @Override public Thread newThread(Runnable r) {
-            return new Thread(r, "Bloomberg Listeners Thread #" + number.incrementAndGet());
+            Thread t = new Thread(r, "Bloomberg Listeners Thread #" + number.incrementAndGet());
+            t.setDaemon(true); //daemon to allow JVM exit
+            return t;
         }
     });
     private final ConcurrentMap<EventsKey, Listeners> listenersMap = new ConcurrentHashMap<>();

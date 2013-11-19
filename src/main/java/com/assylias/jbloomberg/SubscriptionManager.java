@@ -93,7 +93,7 @@ final class SubscriptionManager {
             throw new IllegalStateException("The starting and stopping sessions are not the same: [start] " + session
                     + " [stop]" + stoppingSession);
         }
-        edt.shutdown();
+        edt.shutdownNow();
     }
 
     private void startDispatching() {

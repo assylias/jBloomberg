@@ -25,6 +25,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.*;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +87,9 @@ public class DefaultBloombergSession implements BloombergSession {
             return new Thread(r, "Bloomberg Session # " + sessionId + " - " + threadId.incrementAndGet());
         }
     });
+    private final EventsManager eventsManager = new ConcurrentConflatedEventsManager();
     private final SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionDataQueue,
-            new ConcurrentConflatedEventsManager());
+            eventsManager);
 
     public DefaultBloombergSession() {
         session = new Session(sessionOptions, eventHandler);
@@ -142,6 +144,8 @@ public class DefaultBloombergSession implements BloombergSession {
     /**
      * Closes the session. If the session has not been started yet, does nothing. This call will block until the session
      * is actually stopped.<br>
+     * If the session startup encountered a problem (typically: can't connect to a Bloomberg session), this may block
+     * for a few seconds....
      * A stopped session can't be restarted.
      */
     @Override
@@ -152,10 +156,11 @@ public class DefaultBloombergSession implements BloombergSession {
         }
         try {
             logger.info("Stopping Bloomberg session #{}", sessionId);
-            sessionStartup.await(); //with 3.6.1.0, if the session is not started yet, the call to stop can block
-            executor.shutdown();
+            boolean started = sessionStartup.await(1, TimeUnit.SECONDS); //with 3.6.1.0, if the session is not started yet, the call to stop can block
+            if (!started) logger.info("I waited for 1 second but Bloomberg session #{} is still not started...");
+            executor.shutdownNow();
             subscriptionManager.stop(this);
-            session.stop(AbstractSession.StopOption.SYNC);
+            session.stop();//started ? SYNC : ASYNC); //if not started, something's wrong, don't spend to much time here...
             state.set(STOPPED);
             logger.info("Stopped Bloomberg session #{}", sessionId);
         } catch (InterruptedException e) {
