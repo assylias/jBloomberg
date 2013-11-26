@@ -80,7 +80,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * Collection that keeps track of services that have been asynchronously started. They might not be started yet.
      */
     private final Set<BloombergServiceType> openingServices = EnumSet.noneOf(BloombergServiceType.class);
-    private final ExecutorService executor = Executors.newCachedThreadPool(new ThreadFactory() {
+    private final ExecutorService executor = Executors.newFixedThreadPool(10, new ThreadFactory() {
         private final AtomicInteger threadId = new AtomicInteger();
 
         @Override
