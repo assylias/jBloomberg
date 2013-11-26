@@ -96,14 +96,6 @@ public class DefaultBloombergSession implements BloombergSession {
         session = new Session(sessionOptions, eventHandler);
     }
 
-    /**
-     * Starts a bloomberg session asynchronously. If the bbcomm process is not running, this method will try to start
-     * it.<br> If the session has already been started, does nothing.
-     * <p/>
-     * @throws BloombergException    if the bbcomm process is not running or could not be started, or if the session
-     *                               could not be started asynchronously
-     * @throws IllegalStateException if the session is already started
-     */
     @Override
     public synchronized void start() throws BloombergException {
         start(null);
