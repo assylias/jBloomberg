@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ final class BloombergEventHandler implements EventHandler {
     private final BlockingQueue<Data> subscriptionDataQueue;
     private final Map<CorrelationID, ResultParser> parsers = new ConcurrentHashMap<>();
     private volatile Runnable runOnSessionStarted;
-    private volatile Runnable runOnSessionStartupFailure;
+    private volatile Consumer<BloombergException> runOnSessionStartupFailure;
 
     public BloombergEventHandler(BlockingQueue<Data> subscriptionDataQueue) {
         this.subscriptionDataQueue = subscriptionDataQueue;
@@ -50,7 +51,7 @@ final class BloombergEventHandler implements EventHandler {
                             runOnSessionStarted.run();
                         }
                         if (msg.messageType().equals(SESSION_STARTUP_FAILURE)) {
-                            runOnSessionStartupFailure.run();
+                            runOnSessionStartupFailure.accept(new BloombergException(msg.toString()));
                         }
                     }
                     break;
@@ -123,7 +124,7 @@ final class BloombergEventHandler implements EventHandler {
      *
      * @param runnable a runnable to run if the session startup process fails
      */
-    void onSessionStartupFailure(Runnable runOnSessionStartupFailure) {
+    void onSessionStartupFailure(Consumer<BloombergException> runOnSessionStartupFailure) {
         this.runOnSessionStartupFailure = runOnSessionStartupFailure;
     }
 

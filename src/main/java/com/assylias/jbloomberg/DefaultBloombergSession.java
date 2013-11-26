@@ -105,6 +105,11 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     @Override
     public synchronized void start() throws BloombergException {
+        start(null);
+    }
+
+    @Override
+    public synchronized void start(Consumer<BloombergException> onStartupFailure) throws BloombergException {
         if (state.get() != NEW) {
             throw new IllegalStateException("Session has already been started: " + this);
         }
@@ -121,11 +126,10 @@ public class DefaultBloombergSession implements BloombergSession {
                     sessionStartup.countDown();
                 }
             });
-            eventHandler.onSessionStartupFailure(new Runnable() {
-                @Override public void run() {
-                    state.set(STARTUP_FAILED);
-                    sessionStartup.countDown();
-                }
+            eventHandler.onSessionStartupFailure((BloombergException e) -> {
+                state.set(STARTUP_FAILED);
+                sessionStartup.countDown();
+                if (onStartupFailure != null) onStartupFailure.accept(e);
             });
             if (!state.compareAndSet(NEW, STARTING)) {
                 throw new AssertionError("State was expected to be NEW but found " + state.get());

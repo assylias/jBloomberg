@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * A high level API to submit requests to the Bloomberg API or subscribe to real time data updates. <br>
@@ -35,6 +36,19 @@ public interface BloombergSession {
      * @throws IllegalStateException if the session is already started
      */
     void start() throws BloombergException;
+
+    /**
+     * Starts a Bloomberg session asynchronously. If the bbcomm process is not running, this method will try to start
+     * it. If an error is encountered while running this method, an exception is thrown - if an error is encountered in
+     * the starting task created by this method, the provided Consumer will be executed.
+     *
+     * @param onStartupFailure an operation to be run if the session fails to be started
+     *
+     * @throws BloombergException    if the bbcomm process is not running or could not be started, or if the session
+     *                               could not be started asynchronously
+     * @throws IllegalStateException if the session is already started
+     */
+    void start(Consumer<BloombergException> onStartupFailure) throws BloombergException;
 
     /**
      * Closes the session. If the session has not been started yet, does nothing. This call will block until the session
