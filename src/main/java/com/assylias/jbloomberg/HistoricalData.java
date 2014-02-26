@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A class that represents the result returned by a Bloomberg HistoricalData request.
@@ -95,6 +96,15 @@ public final class HistoricalData extends AbstractRequestResult {
     }
 
     /**
+     * Returns the set of tickers held in this query result.
+     *
+     * @return the set of tickers held in this query result.
+     */
+    public synchronized Set<String> securities() {
+        return data.keySet();
+    }
+
+    /**
      * Used to filter the result of a request by security, field and date.
      */
     public class ResultForSecurity {
@@ -126,7 +136,8 @@ public final class HistoricalData extends AbstractRequestResult {
          * @return an immutable copy of the table for the specified security - the table can be empty
          */
         public Table<LocalDate, String, TypedObject> get() {
-            return securityTable == null ? ImmutableTable.<LocalDate, String, TypedObject>of() : ImmutableTable.copyOf(securityTable);
+            return securityTable == null ? ImmutableTable.<LocalDate, String, TypedObject>of() : ImmutableTable.copyOf(
+                    securityTable);
         }
 
         public class ResultForSecurityAndField {
@@ -149,8 +160,8 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return an immutable copy of the map corresponding to the security / field column - the map can be empty
              */
             public Map<LocalDate, TypedObject> get() {
-                return securityTable == null ? Collections.<LocalDate, TypedObject> emptyMap()
-                                             : ImmutableMap.copyOf(securityTable.column(field));
+                return securityTable == null ? Collections.<LocalDate, TypedObject>emptyMap()
+                        : ImmutableMap.copyOf(securityTable.column(field));
             }
         }
 
@@ -174,8 +185,8 @@ public final class HistoricalData extends AbstractRequestResult {
              * @return a map corresponding to the security / date row - the map can be empty
              */
             public Map<String, TypedObject> get() {
-                return securityTable == null ? Collections.<String, TypedObject> emptyMap()
-                                             : ImmutableMap.copyOf(securityTable.row(date));
+                return securityTable == null ? Collections.<String, TypedObject>emptyMap()
+                        : ImmutableMap.copyOf(securityTable.row(date));
             }
         }
     }
