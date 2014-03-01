@@ -10,7 +10,9 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -42,6 +44,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     private boolean adjAbnormal = false;
     private boolean adjSplit = false;
     private boolean adjDefault = false;
+    private final Map<String, String> overrides = new HashMap<>();
 
     /**
      * Equivalent to calling
@@ -186,6 +189,19 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
         return this;
     }
 
+    /**
+     * Adjust historical pricing and/or volume are adjusted to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
+     * Dividend/Bonus, Rights Offerings/ Entitlement.
+     */
+    public HistoricalRequestBuilder addOverride(String field, String value) {
+        Preconditions.checkNotNull(field, "Field cannot be null when adding overrides");
+        Preconditions.checkNotNull(value, "Value cannot be null when adding overrides");
+        Preconditions.checkArgument(!field.isEmpty(), "Field cannot be empty when adding overrides");
+        Preconditions.checkArgument(!value.isEmpty(), "Value cannot be empty when adding overrides");
+        overrides.put(field, value);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "HistoricalQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", startDate=" + startDate + ", endDate=" + endDate + ", periodicityAdjustment=" + periodicityAdjustment + ", period=" + period + ", currency=" + currency + ", days=" + days + ", fill=" + fill + ", points=" + points + ", adjNormal=" + adjNormal + ", adjAbnormal=" + adjAbnormal + ", adjSplit=" + adjSplit + ", adjDefault=" + adjDefault + '}';
@@ -205,6 +221,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     protected void buildRequest(Request request) {
         addCollectionToElement(request, tickers, "securities");
         addCollectionToElement(request, fields, "fields");
+        addOverrides(request, overrides);
 
         request.set("periodicityAdjustment", periodicityAdjustment.toString());
         request.set("periodicitySelection", period.toString());

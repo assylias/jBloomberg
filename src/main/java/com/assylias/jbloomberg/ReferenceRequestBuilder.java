@@ -105,13 +105,7 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
     protected void buildRequest(Request request) {
         addCollectionToElement(request, tickers, "securities");
         addCollectionToElement(request, fields, "fields");
-
-        Element overridesElt = request.getElement("overrides");
-        for (Map.Entry<String, String> e : overrides.entrySet()) {
-            Element override = overridesElt.appendElement();
-            override.setElement("fieldId", e.getKey());
-            override.setElement("value", e.getValue());
-        }
+        addOverrides(request, overrides);
     }
 
     @Override
