@@ -7,7 +7,7 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Event.EventType;
 import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.impl.fc;
+import com.bloomberglp.blpapi.impl.eH;
 import java.util.Iterator;
 import java.util.List;
 import mockit.Mock;
@@ -37,8 +37,8 @@ public class MockEvent extends Event {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected fc s() {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  protected eH t() {
+    throw new UnsupportedOperationException();
+  }
 }
