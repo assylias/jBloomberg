@@ -12,8 +12,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -66,11 +68,19 @@ final class BloombergUtils {
             return field.getValueAsInt64();
         } else if (field.datatype() == Schema.Datatype.STRING) {
             return field.getValueAsString();
-        } else if (field.datatype() == Schema.Datatype.DATE
-                || field.datatype() == Schema.Datatype.DATETIME
-                || field.datatype() == Schema.Datatype.TIME) {
-            Calendar dt = field.getValueAsDate().calendar(); //returns a calendar with TZ = UTC
-            return LocalDateTime.ofInstant(dt.toInstant(), ZoneId.of("Z"));
+        } else if (field.datatype() == Schema.Datatype.DATE) {
+            Datetime dt = field.getValueAsDate();
+            return LocalDate.of(dt.year(), dt.month(), dt.dayOfMonth());
+        } else if (field.datatype() == Schema.Datatype.TIME) {
+            Datetime dt = field.getValueAsDatetime();
+            Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
+            return LocalTime.of(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), dt.nanosecond());
+        } else if (field.datatype() == Schema.Datatype.DATETIME) {
+            Datetime dt = field.getValueAsDatetime();
+            Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.of("Z"));
+            if (!dt.hasParts(Datetime.DATE)) return zdt.toLocalTime();
+            else return zdt;
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {
