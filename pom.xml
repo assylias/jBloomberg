@@ -4,7 +4,7 @@
 
   <groupId>com.assylias</groupId>
   <artifactId>jbloomberg</artifactId>
-  <version>3.1-SNAPSHOT</version>
+  <version>3.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <url>https://github.com/assylias/jBloomberg</url>
@@ -71,7 +71,7 @@
     <dependency>
       <groupId>com.assylias</groupId>
       <artifactId>fund-api</artifactId>
-      <version>1.2</version>
+      <version>2.0</version>
     </dependency>
 
     <!-- TESTS -->
