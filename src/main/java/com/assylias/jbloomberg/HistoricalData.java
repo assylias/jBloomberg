@@ -96,6 +96,23 @@ public final class HistoricalData extends AbstractRequestResult {
     }
 
     /**
+     * Method to build queries in order to retrieve a specific table, column, row or cell.
+     *
+     * @param field the field for which data is required
+     *
+     * @return a query builder to build the query.
+     */
+    public synchronized ResultForField forField(String field) {
+        Table<LocalDate, String, TypedObject> forField = TreeBasedTable.create();
+        for (Map.Entry<String, Table<LocalDate, String, TypedObject>> e : data.entrySet()) {
+          String ticker = e.getKey();
+          Map<LocalDate, TypedObject> fieldData = e.getValue().column(field);
+          forField.column(ticker).putAll(fieldData);
+        }
+        return new ResultForField(forField);
+    }
+
+    /**
      * Returns the set of tickers held in this query result.
      *
      * @return the set of tickers held in this query result.
@@ -107,7 +124,7 @@ public final class HistoricalData extends AbstractRequestResult {
     /**
      * Used to filter the result of a request by security, field and date.
      */
-    public class ResultForSecurity {
+    public static class ResultForSecurity {
 
         /**
          * The table corresponding to the selected security
@@ -122,14 +139,14 @@ public final class HistoricalData extends AbstractRequestResult {
          * Adds a filter on a specific field (column)
          */
         public ResultForSecurityAndField forField(String field) {
-            return new ResultForSecurityAndField(field);
+            return new ResultForSecurityAndField(field, securityTable);
         }
 
         /**
          * Adds a filter on a specific date (row)
          */
         public ResultForSecurityAndDate forDate(LocalDate date) {
-            return new ResultForSecurityAndDate(date);
+            return new ResultForSecurityAndDate(date, securityTable);
         }
 
         /**
@@ -139,55 +156,89 @@ public final class HistoricalData extends AbstractRequestResult {
             return securityTable == null ? ImmutableTable.<LocalDate, String, TypedObject>of() : ImmutableTable.copyOf(
                     securityTable);
         }
+    }
 
-        public class ResultForSecurityAndField {
+    /**
+     * Used to filter the result of a request by security, field and date.
+     */
+    public static class ResultForField {
 
-            private final String field;
+        /**
+         * The table corresponding to the selected security
+         */
+        private final Table<LocalDate, String, TypedObject> fieldTable;
 
-            private ResultForSecurityAndField(String field) { //not for public use
-                this.field = field;
-            }
-
-            /**
-             * @return the value for the selected field / security / date combination or null if there is no value in
-             *         that cell
-             */
-            public TypedObject forDate(LocalDate date) {
-                return securityTable == null ? null : securityTable.get(date, field);
-            }
-
-            /**
-             * @return an immutable copy of the map corresponding to the security / field column - the map can be empty
-             */
-            public Map<LocalDate, TypedObject> get() {
-                return securityTable == null ? Collections.<LocalDate, TypedObject>emptyMap()
-                        : ImmutableMap.copyOf(securityTable.column(field));
-            }
+        private ResultForField(Table<LocalDate, String, TypedObject> fieldTable) { //not for public use
+            this.fieldTable = fieldTable;
         }
 
-        public class ResultForSecurityAndDate {
+        /**
+         * Adds a filter on a specific field (column)
+         */
+        public ResultForSecurityAndField forSecurity(String security) {
+            return new ResultForSecurityAndField(security, fieldTable);
+        }
 
-            private final LocalDate date;
+        /**
+         * @return an immutable copy of the table for the specified field - the table can be empty
+         */
+        public Table<LocalDate, String, TypedObject> get() {
+            return fieldTable == null ? ImmutableTable.<LocalDate, String, TypedObject>of() : ImmutableTable.copyOf(
+                    fieldTable);
+        }
+    }
 
-            private ResultForSecurityAndDate(LocalDate date) { //not for public use
-                this.date = date;
-            }
+    public static class ResultForSecurityAndField {
 
-            /**
-             * @return the value for the selected security / field / date combination or null if there is no value was
-             *         found in that cell
-             */
-            public TypedObject forField(String field) {
-                return securityTable == null ? null : securityTable.get(date, field);
-            }
+        private final String securityOrField;
+        private final Table<LocalDate, String, TypedObject> table;
 
-            /**
-             * @return a map corresponding to the security / date row - the map can be empty
-             */
-            public Map<String, TypedObject> get() {
-                return securityTable == null ? Collections.<String, TypedObject>emptyMap()
-                        : ImmutableMap.copyOf(securityTable.row(date));
-            }
+        private ResultForSecurityAndField(String securityOrField, Table<LocalDate, String, TypedObject> table) { //not for public use
+            this.securityOrField = securityOrField;
+            this.table = table;
+        }
+
+        /**
+         * @return the value for the selected field / security / date combination or null if there is no value in
+         *         that cell
+         */
+        public TypedObject forDate(LocalDate date) {
+            return table == null ? null : table.get(date, securityOrField);
+        }
+
+        /**
+         * @return an immutable copy of the map corresponding to the security / field column - the map can be empty
+         */
+        public Map<LocalDate, TypedObject> get() {
+            return table == null ? Collections.<LocalDate, TypedObject>emptyMap()
+                    : ImmutableMap.copyOf(table.column(securityOrField));
+        }
+    }
+
+    public static class ResultForSecurityAndDate {
+
+        private final LocalDate date;
+        private final Table<LocalDate, String, TypedObject> securityTable;
+
+        private ResultForSecurityAndDate(LocalDate date, Table<LocalDate, String, TypedObject> securityTable) { //not for public use
+            this.date = date;
+            this.securityTable = securityTable;
+        }
+
+        /**
+         * @return the value for the selected security / field / date combination or null if there is no value was
+         *         found in that cell
+         */
+        public TypedObject forField(String field) {
+            return securityTable == null ? null : securityTable.get(date, field);
+        }
+
+        /**
+         * @return a map corresponding to the security / date row - the map can be empty
+         */
+        public Map<String, TypedObject> get() {
+            return securityTable == null ? Collections.<String, TypedObject>emptyMap()
+                    : ImmutableMap.copyOf(securityTable.row(date));
         }
     }
 }

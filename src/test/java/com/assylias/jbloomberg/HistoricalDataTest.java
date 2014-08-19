@@ -5,9 +5,13 @@
 package com.assylias.jbloomberg;
 
 import com.assylias.fund.TypedObject;
+import com.google.common.collect.Table;
 import java.time.LocalDate;
 import java.util.Map;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -50,6 +54,25 @@ public class HistoricalDataTest {
         Map<String, TypedObject> values = data.forSecurity("IBM").forDate(NOW).get();
         assertEquals(2, values.size());
         assertEquals(123, values.get("PX LAST").asInt());
+    }
+
+    @Test(groups = "unit")
+    public void testGetData_FieldMap() {
+        data.add(NOW, "IBM", "PX LAST", 123);
+        data.add(NOW, "IBM", "PX VOLUME", 123000);
+        data.add(NOW, "MSFT", "PX LAST", 456);
+        data.add(NOW, "MSFT", "PX VOLUME", 456000);
+        Table<LocalDate, String, TypedObject> values = data.forField("PX LAST").get();
+        assertEquals(2, values.size());
+        assertEquals(123, values.get(NOW, "IBM").asInt());
+        assertEquals(456, values.get(NOW, "MSFT").asInt());
+
+        values = data.forField("PX VOLUME").get();
+        assertEquals(2, values.size());
+        assertEquals(123000, values.get(NOW, "IBM").asInt());
+        assertEquals(456000, values.get(NOW, "MSFT").asInt());
+
+        assertEquals(data.forField("PX LAST").forSecurity("IBM").forDate(NOW).asInt(), 123);
     }
 
     @Test(groups = "unit")
