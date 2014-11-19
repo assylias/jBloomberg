@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 
 /**
  * A DataChangeEvent gets delivered whenever a real time subscription sends a new value for a tracked data. <br>

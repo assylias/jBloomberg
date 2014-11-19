@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;

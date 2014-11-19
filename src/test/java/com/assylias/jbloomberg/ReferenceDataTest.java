@@ -4,10 +4,11 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 import java.util.Map;
 import java.util.TreeMap;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

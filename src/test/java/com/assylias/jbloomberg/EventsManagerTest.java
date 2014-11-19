@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +13,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

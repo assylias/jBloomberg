@@ -4,11 +4,12 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 import com.google.common.collect.Multimap;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 

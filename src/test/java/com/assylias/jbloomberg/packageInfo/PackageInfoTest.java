@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg.packageInfo;
 
-import com.assylias.fund.TypedObject;
+import com.assylias.bigblue.utils.TypedObject;
 import com.assylias.jbloomberg.BloombergException;
 import com.assylias.jbloomberg.BloombergSession;
 import com.assylias.jbloomberg.DefaultBloombergSession;

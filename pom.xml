@@ -34,6 +34,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 
   <build>
@@ -43,8 +45,6 @@
         <version>3.1</version>
         <configuration>
           <compilerArgument>-Xlint</compilerArgument>
-          <source>1.8</source>
-          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>
@@ -69,9 +69,22 @@
       <version>3.7.1.1</version>
     </dependency>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.assylias</groupId>
-      <artifactId>fund-api</artifactId>
-      <version>2.0</version>
+      <artifactId>bigblue-utils</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- Logging -->
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.7</version>
     </dependency>
 
     <!-- TESTS -->
