@@ -4,7 +4,7 @@
 
   <groupId>com.assylias</groupId>
   <artifactId>jbloomberg</artifactId>
-  <version>3.2-SNAPSHOT</version>
+  <version>3.2</version>
   <packaging>jar</packaging>
 
   <url>https://github.com/assylias/jBloomberg</url>
