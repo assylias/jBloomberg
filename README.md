@@ -49,5 +49,5 @@ Apache License v2.0
 
 ##Issues
 
-If you find a bug or want a new feature you can ask in the Issues section on github. For general questions or if you are unable to get something to work
+If you find a bug or want a new feature you can ask in the [Issues section](https://github.com/assylias/jBloomberg/issues) on github. For general questions or if you are unable to get something to work
 you can ask on stackoverflow using the [jbloomberg tag](http://stackoverflow.com/tags/jbloomberg/info) in your question.
