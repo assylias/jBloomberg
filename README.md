@@ -5,6 +5,10 @@ Although most features of the underlying Bloomberg API are available, some optio
 
 You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index.html) for more information, including example usages.
 
+###Requirements
+
+**As of v3, Java 8 is required.**
+
 ###Description
 
 The main advantages of this library vs. the Bloomberg API are:
@@ -18,7 +22,7 @@ and can be used in a multi threaded application (unless indicated otherwise, for
 - Uses the standard java.util.concurrent package objects, so the syntax / way of doing things should look familiar
 to Java developers. For example, a historical data request returns a `Future<HistoricalData>`
 
-It should however be noted that using jBloomberg does increase memory consumption and GC although for most
+It should however be noted that using jBloomberg does increase memory consumption and GC vs. using BLPAPI directly although for most
 applications that should not be noticeable.
 
 ###Stability
@@ -35,7 +39,8 @@ Apache License v2.0
 
 - guava (Apache License v2.0)
 - slf4j (MIT License)
-- Bloomberg BLPAPI (tested with 3.5.1.1) (MIT License)
+- Bloomberg BLPAPI (tested with 3.7.1.1) (MIT License)
+- Big Blue Utils (Apache License v2.0), which can be found on [bitbucket](https://bitbucket.org/assylias/bigblue-utils)
 
 ####Test dependencies
 
