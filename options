@@ -1,0 +1,24 @@
+-classpath
+'C:/Users/Yann Le Tallec/.m2/repository/com/assylias/bigblue-utils/1.0/bigblue-utils-1.0.jar;C:/Users/Yann Le Tallec/.m2/repository/com/bloombergblp/blpapi/3.7.1.1/blpapi-3.7.1.1.jar;C:/Users/Yann Le Tallec/.m2/repository/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar;C:/Users/Yann Le Tallec/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'C:/Users/Yann Le Tallec/Documents/programming/jBloomberg/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2014. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/Yann Le Tallec/Documents/programming/jBloomberg/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'jbloomberg 3.2-SNAPSHOT API'
+-linkoffline
+'http://docs.oracle.com/javase/8/docs/api' 'C:/Users/Yann Le Tallec/Documents/programming/jBloomberg/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'jbloomberg 3.2-SNAPSHOT API'
