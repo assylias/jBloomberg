@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A class that represents the result returned by a Bloomberg IntradayTickData request.
+ * Note: the LocalDateTime objects are based on the UTC timezone. For other timezones the calling code needs to apply the relevant timezone conversions.<br>
  * This implementation uses guava's Tables which are a good fit for the type of structure returned by historical/static
  * data requests (guava's Tables can be thought of as Excel spreadsheets with rows and columns).
  * <br>
