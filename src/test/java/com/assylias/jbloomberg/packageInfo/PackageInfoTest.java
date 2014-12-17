@@ -90,7 +90,7 @@ public class PackageInfoTest {
     @Test
     public void test_IntradayTickExample() throws Exception {
         ZonedDateTime now = ZonedDateTime.now();
-        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusHours(2), now)
+        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusDays(3), now)
                 .includeBrokerCodes()
                 .includeConditionCodes();
         IntradayTickData result = session.submit(hrb).get();
@@ -99,6 +99,7 @@ public class PackageInfoTest {
             LocalDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
+            break; //to keep test short
         }
     }
 
