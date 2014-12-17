@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -74,12 +75,13 @@ final class BloombergUtils {
         } else if (field.datatype() == Schema.Datatype.TIME) {
             Datetime dt = field.getValueAsDatetime();
             Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
-            return LocalTime.of(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), dt.nanosecond());
+            return LocalTime.of(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), dt.nanosecond())
+                    .atOffset(ZoneOffset.UTC);
         } else if (field.datatype() == Schema.Datatype.DATETIME) {
             Datetime dt = field.getValueAsDatetime();
             Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
             ZonedDateTime zdt = ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.of("Z"));
-            if (!dt.hasParts(Datetime.DATE)) return zdt.toLocalTime();
+            if (!dt.hasParts(Datetime.DATE)) return zdt.toOffsetDateTime().toOffsetTime();
             else return zdt;
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
