@@ -125,33 +125,28 @@ final class BloombergUtils {
     }
 
     private static boolean startBloombergProcess() {
-        Callable<Boolean> startBloombergProcess = getStartingCallable();
+        Callable<Boolean> startBloombergProcess = BloombergUtils::getStartingCallable;
         isBbcommStarted = getResultWithTimeout(startBloombergProcess, 1, TimeUnit.SECONDS);
         return isBbcommStarted;
     }
 
-    private static Callable<Boolean> getStartingCallable() {
-        return new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                logger.info("Starting {} manually", BBCOMM_PROCESS);
-                ProcessBuilder pb = new ProcessBuilder(BBCOMM_PROCESS);
-                pb.directory(new File(BBCOMM_FOLDER));
-                pb.redirectErrorStream(true);
-                Process p = pb.start();
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        logger.info("{} > {}", BBCOMM_PROCESS, line);
-                        if (line.toLowerCase().contains("started")) {
-                            logger.info("{} is started", BBCOMM_PROCESS);
-                            return true;
-                        }
-                    }
-                    return false;
+    private static Boolean getStartingCallable() throws Exception {
+        logger.info("Starting {} manually", BBCOMM_PROCESS);
+        ProcessBuilder pb = new ProcessBuilder(BBCOMM_PROCESS);
+        pb.directory(new File(BBCOMM_FOLDER));
+        pb.redirectErrorStream(true);
+        Process p = pb.start();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logger.info("{} > {}", BBCOMM_PROCESS, line);
+                if (line.toLowerCase().contains("started")) {
+                    logger.info("{} is started", BBCOMM_PROCESS);
+                    return true;
                 }
             }
-        };
+            return false;
+        }
     }
 
     private static boolean getResultWithTimeout(Callable<Boolean> startBloombergProcess, int timeout, TimeUnit timeUnit) {
