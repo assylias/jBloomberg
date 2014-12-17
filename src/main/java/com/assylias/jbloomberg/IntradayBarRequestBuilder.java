@@ -6,7 +6,7 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,7 +46,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayBarRequestBuilder(String ticker, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IntradayBarRequestBuilder(String ticker, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         this(ticker, IntradayBarEventType.TRADE, startDateTime, endDateTime);
     }
 
@@ -65,7 +65,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayBarRequestBuilder(String ticker, IntradayBarEventType eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IntradayBarRequestBuilder(String ticker, IntradayBarEventType eventType, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         super(ticker, eventType.toString(), startDateTime, endDateTime);
     }
 

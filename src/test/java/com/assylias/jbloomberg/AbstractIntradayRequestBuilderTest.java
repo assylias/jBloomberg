@@ -4,13 +4,13 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 public class AbstractIntradayRequestBuilderTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final ZonedDateTime NOW = ZonedDateTime.now();
 
     @Test(groups = "unit", expectedExceptions = NullPointerException.class)
     public void testConstructor_NullTicker() {
@@ -57,10 +57,10 @@ public class AbstractIntradayRequestBuilderTest {
     }
 
     private static class Impl extends AbstractIntradayRequestBuilder {
-        public Impl(String ticker, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        public Impl(String ticker, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
             this(ticker, "TRADE", startDateTime, endDateTime);
         }
-        public Impl(String ticker, String eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        public Impl(String ticker, String eventType, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
             super(ticker, eventType, startDateTime, endDateTime);
         }
         @Override

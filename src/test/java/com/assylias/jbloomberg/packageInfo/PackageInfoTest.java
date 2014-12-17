@@ -24,6 +24,7 @@ import com.assylias.jbloomberg.SubscriptionBuilder;
 import com.google.common.collect.Multimap;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.AfterClass;
@@ -72,7 +73,7 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayBarExample() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index", now.minusDays(7), now)
                 .adjustSplits()
                 .fillInitialBar()
@@ -88,8 +89,8 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayTickExample() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusHours(2), now)
+        ZonedDateTime now = ZonedDateTime.now();
+        RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusDays(3), now)
                 .includeBrokerCodes()
                 .includeConditionCodes();
         IntradayTickData result = session.submit(hrb).get();
@@ -98,6 +99,7 @@ public class PackageInfoTest {
             LocalDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
+            break; //to keep test short
         }
     }
 

@@ -6,7 +6,7 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Session;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 
 public class DefaultBloombergSessionTest {
 
-    private static final LocalDateTime TIME_NOW = LocalDateTime.now();
+    private static final ZonedDateTime TIME_NOW = ZonedDateTime.now();
     private static final LocalDate DATE_NOW = LocalDate.now();
 
     @BeforeClass

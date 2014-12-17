@@ -5,7 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * This class enables to build an IntradayTickData historical request while ensuring argument safety. Typically, instead
@@ -43,7 +43,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayTickRequestBuilder(String ticker, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IntradayTickRequestBuilder(String ticker, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         this(ticker, IntradayTickEventType.TRADE, startDateTime, endDateTime);
     }
 
@@ -61,7 +61,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    public IntradayTickRequestBuilder(String ticker, IntradayTickEventType eventType, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IntradayTickRequestBuilder(String ticker, IntradayTickEventType eventType, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
         super(ticker, eventType.toString(), startDateTime, endDateTime);
     }
 

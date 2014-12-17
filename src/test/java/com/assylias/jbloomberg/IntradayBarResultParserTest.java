@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 import static org.testng.Assert.*;
 import org.testng.annotations.AfterClass;
@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 
 public class IntradayBarResultParserTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final ZonedDateTime NOW = ZonedDateTime.now();
     private final String INVALID_SECURITY = "XXX";
     private DefaultBloombergSession session = null;
 
