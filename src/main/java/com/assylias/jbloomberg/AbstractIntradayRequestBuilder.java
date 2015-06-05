@@ -4,9 +4,9 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 /**
@@ -51,8 +51,8 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     @Override
     protected void buildRequest(Request request) {
         request.set("security", ticker);
-        request.set("startDateTime", startDateTime.format(BB_REQUEST_DATE_TIME_FORMATTER.withZone(ZoneOffset.UTC)));
-        request.set("endDateTime", endDateTime.format(BB_REQUEST_DATE_TIME_FORMATTER.withZone(ZoneOffset.UTC)));
+        request.set("startDateTime", getDateTime(startDateTime));
+        request.set("endDateTime", getDateTime(endDateTime));
     }
 
     String getEventType() {
@@ -66,5 +66,12 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     @Override
     public String toString() {
         return "ticker=" + ticker + ", eventType=" + eventType + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime;
+    }
+
+    public static Datetime getDateTime(ZonedDateTime d) {
+      Datetime dt = new Datetime();
+      dt.setDatetimeTz(d.getYear(), d.getMonthValue(), d.getDayOfMonth(), d.getHour(), d.getMinute(), d.getSecond(), d.getNano() / 1_000_000,
+              d.getOffset().getTotalSeconds() / 60);
+      return dt;
     }
 }
