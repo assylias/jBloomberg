@@ -47,7 +47,7 @@
  *
  * <b> Example: retrieve 60 minutes bar for the S&P 500 over the past week </b>
  * <pre> {@code
- * LocalDateTime now = LocalDateTime.now();
+ * ZonedDateTime now = ZonedDateTime.now();
  * RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index", now.minusDays(7), now)
  *         .adjustSplits()
  *         .fillInitialBar()
@@ -64,7 +64,7 @@
  *
  * <b> Example: retrieve tick data for the S&P 500 over the past 2 hours </b>
  * <pre> {@code
- * LocalDateTime now = LocalDateTime.now();
+ * ZonedDateTime now = ZonedDateTime.now();
  * RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusHours(2), now)
  *         .includeBrokerCodes()
  *         .includeConditionCodes();
