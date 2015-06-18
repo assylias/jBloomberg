@@ -4,7 +4,7 @@
 
   <groupId>com.assylias</groupId>
   <artifactId>jbloomberg</artifactId>
-  <version>3.2</version>
+  <version>3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <url>https://github.com/assylias/jBloomberg</url>
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>com.bloombergblp</groupId>
       <artifactId>blpapi</artifactId>
-      <version>3.7.1.1</version>
+      <version>3.8.7.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -52,7 +52,7 @@
     <dependency>
       <groupId>com.assylias</groupId>
       <artifactId>bigblue-utils</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
 
     <!-- Logging -->
@@ -60,26 +60,26 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.7</version>
+      <version>1.7.12</version>
     </dependency>
 
     <!-- TESTS -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.8.7</version>
+      <version>6.9.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.googlecode.jmockit</groupId>
       <artifactId>jmockit</artifactId>
-      <version>1.3</version>
+      <version>1.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.5</version>
+      <version>1.7.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

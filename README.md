@@ -39,8 +39,8 @@ Apache License v2.0
 
 - guava (Apache License v2.0)
 - slf4j (MIT License)
-- Bloomberg BLPAPI (tested with 3.7.1.1) (MIT License)
-- Big Blue Utils (Apache License v2.0), which can be found on [bitbucket](https://bitbucket.org/assylias/bigblue-utils)
+- Bloomberg BLPAPI (tested with 3.8.7.2) (MIT-like License)
+- Big Blue Utils (Apache License v2.0)
 
 ####Test dependencies
 
