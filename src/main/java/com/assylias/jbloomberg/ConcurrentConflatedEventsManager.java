@@ -89,19 +89,23 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
                 //(i)  if a listener gets stuck, the others can still make progress
                 //(ii) if a listener throws an exception, a new thread will be created
                 Future<?> f = fireListeners.submit(() -> lst.dataChanged(evt));
-                fireListeners.submit(new Callable<Void>() {
-                    @Override public Void call() throws Exception {
-                        try {
-                            f.get(1, TimeUnit.SECONDS);
-                        } catch (TimeoutException e) {
-                            logger.warn("Slow listener {} has not processed event {} in one second", lst, evt);
-                        } catch (ExecutionException e) {
-                            logger.error("Listener " + lst + " has thrown exception on event " + evt, e.getCause());
-                        }
-                        return null;
-                    }
-                });
+                monitorListenerExecution(f, lst, evt);
             }
+        }
+
+        void monitorListenerExecution(Future<?> f, DataChangeListener lst, DataChangeEvent evt) {
+            fireListeners.submit(new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    try {
+                        f.get(1, TimeUnit.SECONDS);
+                    } catch (TimeoutException e) {
+                        logger.warn("Slow listener {} has not processed event {} in one second", lst, evt);
+                    } catch (ExecutionException e) {
+                        logger.error("Listener " + lst + " has thrown exception on event " + evt, e.getCause());
+                    }
+                    return null;
+                  }
+            });
         }
     }
 }
