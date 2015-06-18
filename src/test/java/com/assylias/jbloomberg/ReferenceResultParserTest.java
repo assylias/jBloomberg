@@ -4,11 +4,9 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.bigblue.utils.TypedObject;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import static org.testng.Assert.assertFalse;
@@ -23,7 +21,6 @@ public class ReferenceResultParserTest {
 
     @BeforeClass(groups = "requires-bloomberg")
     public void beforeClass() throws BloombergException {
-//        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel","trace");
         session = new DefaultBloombergSession();
         session.start();
     }
@@ -107,7 +104,5 @@ public class ReferenceResultParserTest {
         ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
         ReferenceData data = session.submit(hrb).get(15, TimeUnit.MINUTES);
         assertFalse(data.isEmpty());
-        List<TypedObject> list = data.forSecurity("SIE GY Equity").forField("TOP_20_HOLDERS_PUBLIC_FILINGS").asList();
-        System.out.println(list);
     }
 }
