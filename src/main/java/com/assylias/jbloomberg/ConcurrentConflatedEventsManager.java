@@ -46,11 +46,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
     public void addEventListener(String ticker, CorrelationID id, RealtimeField field, DataChangeListener lst) {
         logger.debug("addEventListener({}, {}, {}, {})", new Object[]{ticker, id, field, lst});
         EventsKey key = EventsKey.of(id, field);
-        Listeners newListeners = new Listeners(ticker);
-        Listeners listenersInMap = listenersMap.putIfAbsent(key, newListeners);
-        if (listenersInMap == null) {
-            listenersInMap = newListeners;
-        }
+        Listeners listenersInMap = listenersMap.computeIfAbsent(key, k -> new Listeners(ticker));
         listenersInMap.addListener(lst);
     }
 
