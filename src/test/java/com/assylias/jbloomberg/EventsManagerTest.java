@@ -233,9 +233,7 @@ public class EventsManagerTest {
         return new DataChangeListener() {
             @Override
             public void dataChanged(DataChangeEvent e) {
-                if (countEvent.decrementAndGet() < 0) {
-                    throw new IllegalStateException("latch already at 0");
-                }
+                if (countEvent.decrementAndGet() < 0) fail("latch already at 0");
                 evt = e;
                 latch.countDown();
             }
