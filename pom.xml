@@ -7,23 +7,21 @@
   <version>3.3-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <parent>
+    <groupId>com.assylias</groupId>
+    <artifactId>bigblue-parent</artifactId>
+    <version>1.1</version>
+  </parent>
+
   <url>https://github.com/assylias/jBloomberg</url>
+
   <scm>
-    <url>https://github.com/assylias/jBloomberg</url>
-    <connection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/assylias/jBloomberg.git</developerConnection>
+    <connection>scm:git:git@github.com:assylias/jBloomberg.git</connection>
+    <developerConnection>scm:git:git@github.com:assylias/jBloomberg.git</developerConnection>
+    <url>git@github.com:assylias/jBloomberg.git</url>
   </scm>
+
   <description>jBloomberg is a high level wrapper around the low level Bloomberg Java Desktop API</description>
-  <developers>
-    <developer>
-      <id>assylias</id>
-      <email>jbloomberg@assylias.com</email>
-      <roles>
-        <role>Main developer</role>
-      </roles>
-      <timezone>0</timezone>
-    </developer>
-  </developers>
 
   <licenses>
     <license>
