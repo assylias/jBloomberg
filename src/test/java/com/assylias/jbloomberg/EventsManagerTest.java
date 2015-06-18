@@ -223,10 +223,8 @@ public class EventsManagerTest {
         }
         long start = System.nanoTime();
         executor.shutdown();
-        System.out.println("Terminating");
         executor.awaitTermination(60, TimeUnit.SECONDS);
         long time = (System.nanoTime() - start) / 1_000_000;
-        System.out.println("Terminated in " + time + " ms with " + countEvent);
     }
 
     private DataChangeListener getDataChangeListener(final int i) {
