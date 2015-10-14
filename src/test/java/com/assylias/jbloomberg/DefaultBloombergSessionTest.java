@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Session;
+import com.bloomberglp.blpapi.SessionOptions;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.concurrent.CancellationException;
@@ -14,6 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import mockit.Mocked;
 import mockit.Verifications;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -68,6 +70,20 @@ public class DefaultBloombergSessionTest {
         final DefaultBloombergSession session = new DefaultBloombergSession();
         session.start();
         session.stop();
+    }
+
+    @Test(groups = "requires-bloomberg")
+    public void testStart_allGood_withSessionOptions() throws Exception {
+        SessionOptions so = new SessionOptions();
+        so.setServerPort(0); //checking that our options are taken into account: this port should throw an exception
+        final DefaultBloombergSession session = new DefaultBloombergSession(so);
+        CountDownLatch exceptionRaised = new CountDownLatch(1);
+        try {
+          session.start(e -> exceptionRaised.countDown());
+          assertTrue(exceptionRaised.await(10, TimeUnit.SECONDS));
+        } finally {
+          session.stop();
+        }
     }
 
     @Test(groups = "unit")

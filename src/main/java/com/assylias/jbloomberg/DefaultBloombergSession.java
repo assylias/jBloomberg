@@ -4,7 +4,18 @@
  */
 package com.assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.*;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.NEW;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTED;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTING;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTUP_FAILED;
+import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STOPPED;
+import com.bloomberglp.blpapi.CorrelationID;
+import com.bloomberglp.blpapi.DuplicateCorrelationIDException;
+import com.bloomberglp.blpapi.InvalidRequestException;
+import com.bloomberglp.blpapi.Request;
+import com.bloomberglp.blpapi.RequestQueueOverflowException;
+import com.bloomberglp.blpapi.Session;
+import com.bloomberglp.blpapi.SessionOptions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,10 +33,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +53,13 @@ public class DefaultBloombergSession implements BloombergSession {
 
     private final static Logger logger = LoggerFactory.getLogger(DefaultBloombergSession.class);
     /**
-     * Default options are used for the session
-     */
-    private final static SessionOptions sessionOptions = new SessionOptions();
-    /**
      * A unique session id generator to easily identify the sessions
      */
     private final static AtomicInteger sessionIdGenerator = new AtomicInteger();
+    /**
+     * Session options used to create the Bloomberg session
+     */
+    private final SessionOptions sessionOptions;
     /**
      * The underlying Bloomberg session object
      */
@@ -92,7 +102,18 @@ public class DefaultBloombergSession implements BloombergSession {
     private final SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionDataQueue,
             eventsManager);
 
+    /**
+     * Creates a new BloombergSession using default SessionOptions (new SessionOptions()).
+     */
     public DefaultBloombergSession() {
+        this(new SessionOptions());
+    }
+
+    /**
+     * Creates a new BloombergSession using the provided SessionOptions.
+     */
+    public DefaultBloombergSession(SessionOptions sessionOptions) {
+        this.sessionOptions = sessionOptions;
         session = new Session(sessionOptions, eventHandler);
     }
 
