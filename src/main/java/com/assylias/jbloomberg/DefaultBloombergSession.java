@@ -19,6 +19,7 @@ import com.bloomberglp.blpapi.SessionOptions;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +129,7 @@ public class DefaultBloombergSession implements BloombergSession {
         if (state.get() != NEW) {
             throw new IllegalStateException("Session has already been started: " + this);
         }
-        if (!BloombergUtils.startBloombergProcessIfNecessary()) { //could not be started for some reason
+        if (onlyConnectToLocalAddresses() && !BloombergUtils.startBloombergProcessIfNecessary()) { //could not be started for some reason
             state.set(STARTUP_FAILED);
             throw new BloombergException("Failed to start session: bbcomm process could not be started");
         }
@@ -276,6 +278,12 @@ public class DefaultBloombergSession implements BloombergSession {
             throw new IllegalStateException("The service could not be opened (openService returned false)");
         }
         openingServices.add(serviceType);
+    }
+
+    private boolean onlyConnectToLocalAddresses() {
+        return Arrays.stream(sessionOptions.getServerAddresses())
+                .map(SessionOptions.ServerAddress::host)
+                .allMatch(NetworkUtils::isLocalhost);
     }
 
     /**
