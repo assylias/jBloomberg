@@ -134,12 +134,10 @@ public class DefaultBloombergSession implements BloombergSession {
         }
         logger.info("Starting Bloomberg session #{} with options: {}", sessionId, getOptions());
         try {
-            eventHandler.onSessionStarted(new Runnable() {
-                @Override public void run() {
-                    subscriptionManager.start(DefaultBloombergSession.this); //needs to be before the countdown (see subscribe method)
-                    state.set(STARTED);
-                    sessionStartup.countDown();
-                }
+            eventHandler.onSessionStarted(() -> {
+                subscriptionManager.start(DefaultBloombergSession.this); //needs to be before the countdown (see subscribe method)
+                state.set(STARTED);
+                sessionStartup.countDown();
             });
             eventHandler.onSessionStartupFailure((BloombergException e) -> {
                 state.set(STARTUP_FAILED);
