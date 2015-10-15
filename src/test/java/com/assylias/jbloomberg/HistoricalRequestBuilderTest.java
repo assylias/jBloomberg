@@ -92,7 +92,7 @@ public class HistoricalRequestBuilderTest {
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
     public void testPeriodicityAdjustment_Null() {
         HistoricalRequestBuilder builder = new HistoricalRequestBuilder("IBM US Equity", "PX_LAST", NOW, NOW);
-        builder.periodicityAdjusment(null);
+        builder.periodicityAdjustment(null);
     }
 
     @Test(groups="unit")
@@ -112,7 +112,7 @@ public class HistoricalRequestBuilderTest {
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
                 .maxPoints(20)
                 .period(HistoricalRequestBuilder.Period.DAILY)
-                .periodicityAdjusment(HistoricalRequestBuilder.PeriodicityAdjustment.ACTUAL);
+                .periodicityAdjustment(HistoricalRequestBuilder.PeriodicityAdjustment.ACTUAL);
     }
 
     @Test(groups="unit")
