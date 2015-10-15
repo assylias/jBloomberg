@@ -103,8 +103,8 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     /**
      * Sets the period and calendar type of the output. To be used in conjunction with Period Selection.
      */
-    public HistoricalRequestBuilder periodicityAdjusment(PeriodicityAdjustment periodicityAdjusment) {
-        this.periodicityAdjustment = Preconditions.checkNotNull(periodicityAdjusment);
+    public HistoricalRequestBuilder periodicityAdjustment(PeriodicityAdjustment periodicityAdjustment) {
+        this.periodicityAdjustment = Preconditions.checkNotNull(periodicityAdjustment);
         return this;
     }
 
