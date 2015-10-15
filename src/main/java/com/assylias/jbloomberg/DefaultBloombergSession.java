@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -313,7 +312,9 @@ public class DefaultBloombergSession implements BloombergSession {
             if (m.getName().contains("get") && !m.getName().contains("getClass")) {
                 String name = m.getName().substring(3);
                 try {
-                    options.put(name, m.invoke(sessionOptions));
+                    Object option = m.invoke(sessionOptions);
+                    boolean isArray = option != null && option.getClass().isArray();
+                    options.put(name, isArray ? Arrays.deepToString((Object[]) option) : Objects.toString(option));
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignore) {
                     options.put(name, "n.a.");
                 }
