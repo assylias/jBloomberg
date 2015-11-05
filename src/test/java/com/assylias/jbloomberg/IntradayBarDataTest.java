@@ -15,10 +15,10 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
  */
 public class IntradayBarDataTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final OffsetDateTime NOW = OffsetDateTime.now();
     private IntradayBarData data;
     private final int[] values = {1, 2, 3, 4, 5, 6, 7, 8};
 

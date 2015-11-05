@@ -4,9 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
+import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
+import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Name;
-import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,11 +97,10 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
             if (!TickDataElements.TIME.asName().equals(field.name())) {
                 throw new AssertionError("Time field is supposed to be first but got: " + field.name());
             }
-            LocalDateTime date = BB_RESULT_DATE_TIME_FORMATTER.parse(field.getValueAsString(), LocalDateTime::from);
-
+            Datetime dt = field.getValueAsDatetime();
             for (int j = 1; j < fieldData.numElements(); j++) {
                 field = fieldData.getElement(j);
-                addField(date, field);
+                addField(toOffsetDateTime(dt), field);
             }
         }
     }

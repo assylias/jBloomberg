@@ -4,7 +4,11 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.*;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_DATA;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_EXCEPTIONS;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY_ERROR;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SEQUENCE_NUMBER;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.InvalidConversionException;
 import com.bloomberglp.blpapi.InvalidRequestException;
@@ -12,7 +16,7 @@ import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.NotFoundException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,7 +194,7 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         result.add(date, security, fieldName, value);
     }
 
-    protected void addField(LocalDateTime date, Element field) {
+    protected void addField(OffsetDateTime date, Element field) {
         String fieldName = field.name().toString();
         Object value = BloombergUtils.getSpecificObjectOf(field);
         result.add(date, fieldName, value);

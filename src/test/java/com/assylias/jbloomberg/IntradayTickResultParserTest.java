@@ -4,16 +4,17 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class IntradayTickResultParserTest {
 
-    private static final ZonedDateTime NOW = ZonedDateTime.now();
+    private static final OffsetDateTime NOW = OffsetDateTime.now();
     private final String INVALID_SECURITY = "XXX";
     private DefaultBloombergSession session = null;
 

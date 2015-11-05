@@ -5,7 +5,7 @@
 package com.assylias.jbloomberg;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +52,7 @@ abstract class AbstractRequestResult implements RequestResult {
     }
 
     //for IntradayBarData and IntradayTickData
-    void add(LocalDateTime date, String field, Object value) {
+    void add(OffsetDateTime date, String field, Object value) {
         throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
 

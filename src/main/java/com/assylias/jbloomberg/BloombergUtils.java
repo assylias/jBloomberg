@@ -4,6 +4,9 @@
  */
 package com.assylias.jbloomberg;
 
+import static com.assylias.jbloomberg.DateUtils.toLocalDate;
+import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
+import static com.assylias.jbloomberg.DateUtils.toOffsetTime;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.ElementIterator;
@@ -12,13 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,18 +68,13 @@ final class BloombergUtils {
             return field.getValueAsString();
         } else if (field.datatype() == Schema.Datatype.DATE) {
             Datetime dt = field.getValueAsDate();
-            return LocalDate.of(dt.year(), dt.month(), dt.dayOfMonth());
+            return toLocalDate(dt);
         } else if (field.datatype() == Schema.Datatype.TIME) {
             Datetime dt = field.getValueAsDatetime();
-            Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
-            return LocalTime.of(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), dt.nanosecond())
-                    .atOffset(ZoneOffset.UTC);
+            return toOffsetTime(dt);
         } else if (field.datatype() == Schema.Datatype.DATETIME) {
             Datetime dt = field.getValueAsDatetime();
-            Calendar cal = dt.calendar(); //returns a calendar with TZ = UTC
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.of("Z"));
-            if (!dt.hasParts(Datetime.DATE)) return zdt.toOffsetDateTime().toOffsetTime();
-            else return zdt;
+            return dt.hasParts(Datetime.DATE) ? toOffsetDateTime(dt) : toOffsetTime(dt);
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {

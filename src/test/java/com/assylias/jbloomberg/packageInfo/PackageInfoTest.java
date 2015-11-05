@@ -23,8 +23,7 @@ import com.assylias.jbloomberg.RequestBuilder;
 import com.assylias.jbloomberg.SubscriptionBuilder;
 import com.google.common.collect.Multimap;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.testng.annotations.AfterClass;
@@ -73,15 +72,15 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayBarExample() throws Exception {
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index", now.minusDays(7), now)
                 .adjustSplits()
                 .fillInitialBar()
                 .period(1, TimeUnit.HOURS);
         IntradayBarData result = session.submit(hrb).get();
-        Map<LocalDateTime, TypedObject> data = result.forField(IntradayBarField.CLOSE).get();
-        for (Map.Entry<LocalDateTime, TypedObject> e : data.entrySet()) {
-            LocalDateTime dt = e.getKey();
+        Map<OffsetDateTime, TypedObject> data = result.forField(IntradayBarField.CLOSE).get();
+        for (Map.Entry<OffsetDateTime, TypedObject> e : data.entrySet()) {
+            OffsetDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
         }
@@ -89,14 +88,14 @@ public class PackageInfoTest {
 
     @Test
     public void test_IntradayTickExample() throws Exception {
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusDays(3), now)
                 .includeBrokerCodes()
                 .includeConditionCodes();
         IntradayTickData result = session.submit(hrb).get();
-        Multimap<LocalDateTime, TypedObject> data = result.forField(IntradayTickField.VALUE);
-        for (Map.Entry<LocalDateTime, TypedObject> e : data.entries()) {
-            LocalDateTime dt = e.getKey();
+        Multimap<OffsetDateTime, TypedObject> data = result.forField(IntradayTickField.VALUE);
+        for (Map.Entry<OffsetDateTime, TypedObject> e : data.entries()) {
+            OffsetDateTime dt = e.getKey();
             double price = e.getValue().asDouble();
             System.out.println("[" + dt + "] " + price);
             break; //to keep test short

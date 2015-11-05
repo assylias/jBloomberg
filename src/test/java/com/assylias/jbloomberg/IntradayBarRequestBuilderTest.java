@@ -4,13 +4,13 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 public class IntradayBarRequestBuilderTest {
-    private static final ZonedDateTime NOW = ZonedDateTime.now();
+    private static final OffsetDateTime NOW = OffsetDateTime.now();
 
     @Test(groups = "unit")
     public void testRequestType() {

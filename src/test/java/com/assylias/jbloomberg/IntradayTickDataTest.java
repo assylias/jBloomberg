@@ -6,7 +6,7 @@ package com.assylias.jbloomberg;
 
 import com.assylias.bigblue.utils.TypedObject;
 import com.google.common.collect.Multimap;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -15,7 +15,7 @@ import org.testng.annotations.Test;
 
 public class IntradayTickDataTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final OffsetDateTime NOW = OffsetDateTime.now();
     private IntradayTickData data;
     private final int[] values = {1, 2, 3, 4, 3, 5, 6, 7};
 
@@ -45,13 +45,13 @@ public class IntradayTickDataTest {
 
     @Test
     public void testForField_Size() {
-        Multimap<LocalDateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
+        Multimap<OffsetDateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
         assertEquals(result.size(), 8);
     }
 
     @Test
     public void testForField_Order() {
-        Multimap<LocalDateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
+        Multimap<OffsetDateTime, TypedObject> result = data.forField(IntradayTickField.VALUE);
         int i = 0;
         for (TypedObject o : result.values()) {
             assertEquals(o.asInt(), values[i++]);

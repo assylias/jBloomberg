@@ -4,10 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.Datetime;
+import static com.assylias.jbloomberg.DateUtils.toDatetime;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * This is the base class to build intraday historical requests.
@@ -17,8 +17,8 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     //Required parameters
     private final String ticker;
     private final String eventType;
-    private final ZonedDateTime startDateTime;
-    private final ZonedDateTime endDateTime;
+    private final OffsetDateTime startDateTime;
+    private final OffsetDateTime endDateTime;
 
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
@@ -34,7 +34,7 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
      */
-    protected AbstractIntradayRequestBuilder(String ticker, String eventType, ZonedDateTime startDateTime, ZonedDateTime endDateTime) {
+    protected AbstractIntradayRequestBuilder(String ticker, String eventType, OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
         this.startDateTime = Preconditions.checkNotNull(startDateTime, "The start date must not be null");
         this.endDateTime = Preconditions.checkNotNull(endDateTime, "The end date must not be null");
         this.ticker = Preconditions.checkNotNull(ticker, "The ticker must not be null");
@@ -51,8 +51,8 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     @Override
     protected void buildRequest(Request request) {
         request.set("security", ticker);
-        request.set("startDateTime", getDateTime(startDateTime));
-        request.set("endDateTime", getDateTime(endDateTime));
+        request.set("startDateTime", toDatetime(startDateTime));
+        request.set("endDateTime", toDatetime(endDateTime));
     }
 
     String getEventType() {
@@ -66,12 +66,5 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     @Override
     public String toString() {
         return "ticker=" + ticker + ", eventType=" + eventType + ", startDateTime=" + startDateTime + ", endDateTime=" + endDateTime;
-    }
-
-    public static Datetime getDateTime(ZonedDateTime d) {
-      Datetime dt = new Datetime();
-      dt.setDatetimeTz(d.getYear(), d.getMonthValue(), d.getDayOfMonth(), d.getHour(), d.getMinute(), d.getSecond(), d.getNano() / 1_000_000,
-              d.getOffset().getTotalSeconds() / 60);
-      return dt;
     }
 }
