@@ -298,7 +298,7 @@ public class DefaultBloombergSession implements BloombergSession {
     /**
      * Opens the the service if it has not been opened before, otherwise does nothing. This call blocks until the
      * service is opened or an exception is thrown.
-     * <p/>
+     * <p>
      * @throws IOException          if the service could not be opened (Bloomberg API exception)
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
@@ -328,7 +328,7 @@ public class DefaultBloombergSession implements BloombergSession {
     /**
      *
      * @return the result of the request
-     * <p/>
+     * <p>
      * @throws IllegalStateException           If the session is not established
      * @throws InvalidRequestException         If the request is not compliant with the schema for the request
      * @throws RequestQueueOverflowException   If this session has too many enqueued requests

@@ -13,11 +13,11 @@ import java.time.OffsetDateTime;
  * passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
- * <p/>
+ * <p>
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
- * <p/>
+ * <p>
  * Once the request has been built, the RequestBuilder can be submitted to a BloombergSession.
- * <p/>
+ * <p>
  * <b>This class is not thread safe.</b>
  */
 public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<IntradayTickData> {
@@ -50,13 +50,13 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
-     * <p/>
+     * <p>
      * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
      *                      IBM US Equity)
      * @param eventType     the eventType to retrieve for the selected ticker
      * @param startDateTime the start of the date range (inclusive) for which to retrieve data
      * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
-     * <p/>
+     * <p>
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date

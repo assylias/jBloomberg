@@ -63,9 +63,9 @@ final class ShellUtils {
     /**
      *
      * @param processName the name of the process, for example "bbcomm.exe"
-     * <p/>
+     * <p>
      * @return true if the process is currently running
-     * <p/>
+     * <p>
      * @throws RuntimeException if the request sent to the OS to get the list of running processes fails
      */
     public static boolean isProcessRunning(String processName) {

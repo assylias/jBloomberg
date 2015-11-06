@@ -99,7 +99,7 @@ final class BloombergUtils {
      * Starts the bbcomm process if necessary, which is required to connect to the Bloomberg data feed.<br>
      * This method will block up to one second if it needs to manually start the process. If the process is not
      * started by the end of the timeout, this method will return false but the process might start later on.
-     * <p/>
+     * <p>
      * @return true if bbcomm was started successfully within one second, false otherwise.
      */
     public static boolean startBloombergProcessIfNecessary() {

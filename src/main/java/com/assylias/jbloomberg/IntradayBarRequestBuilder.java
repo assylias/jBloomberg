@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
  * passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
- * <p/>
+ * <p>
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
- * <p/>
+ * <p>
  * Once the request has been built, the RequestBuilder can be submitted to a BloombergSession.
- * <p/>
+ * <p>
  * <b>This class is not thread safe.</b>
  */
 public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuilder<IntradayBarData> {
@@ -37,8 +37,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * methods.
      *
      * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
-     *                      IBM
-     *                      US Equity)
+     *                      IBM US Equity)
      * @param startDateTime the start of the date range (inclusive) for which to retrieve data
      * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      *
@@ -53,14 +52,13 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
-     * <p/>
+     * <p>
      * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
-     *                      IBM
-     *                      US Equity)
+     *                      IBM US Equity)
      * @param eventType     the eventType to retrieve for the selected ticker
      * @param startDateTime the start of the date range (inclusive) for which to retrieve data
      * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
-     * <p/>
+     * <p>
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
@@ -94,7 +92,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     }
 
     /**
-     * Adjust historical pricing based on the DPDF<GO> BLOOMBERG PROFESSIONAL service function.
+     * Adjust historical pricing based on the DPDF&lt;GO&gt; BLOOMBERG PROFESSIONAL service function.
      */
     public IntradayBarRequestBuilder adjustDefault() {
         this.adjustDefault = true;

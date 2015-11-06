@@ -18,11 +18,11 @@ import java.util.Set;
  * This class enables to build a ReferenceData request while ensuring argument safety. Typically, instead of passing
  * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
- * <p/>
+ * <p>
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
- * <p/>
+ * <p>
  * Once the request has been built, the ReferenceRequestBuilder can be submitted to a BloombergSession.
- * <p/>
+ * <p>
  * <b>This class is not thread safe.</b>
  */
 public final class ReferenceRequestBuilder extends AbstractRequestBuilder<ReferenceData> {
@@ -62,11 +62,11 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
 
     /**
      * Creates a ReferenceRequestBuilder. The fields parameters can be overriden with the provided methods.
-     * <p/>
+     * <p>
      * @param tickers a collection of tickers for which data needs to be retrieved - tickers must be valid Bloomberg
      *                symbols (for example: IBM US Equity)
      * @param fields  a collection of Bloomberg fields to retrieve for each ticker
-     * <p/>
+     * <p>
      * @throws NullPointerException     if any of the parameters is null or if the collections contain null items
      * @throws IllegalArgumentException if any of the collections is empty or contains empty strings
      */

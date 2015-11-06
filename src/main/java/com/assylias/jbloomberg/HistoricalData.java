@@ -122,7 +122,7 @@ public final class HistoricalData extends AbstractRequestResult {
     }
 
     /**
-     * Used to filter the result of a request by security, field and date.
+     * Used to filter the result of a request by security.
      */
     public static class ResultForSecurity {
 
@@ -159,7 +159,7 @@ public final class HistoricalData extends AbstractRequestResult {
     }
 
     /**
-     * Used to filter the result of a request by security, field and date.
+     * Used to filter the result of a request by field.
      */
     public static class ResultForField {
 
@@ -188,6 +188,9 @@ public final class HistoricalData extends AbstractRequestResult {
         }
     }
 
+    /**
+     * Used to filter the result of a request by security and field.
+     */
     public static class ResultForSecurityAndField {
 
         private final String securityOrField;
@@ -215,6 +218,10 @@ public final class HistoricalData extends AbstractRequestResult {
         }
     }
 
+
+    /**
+     * Used to filter the result of a request by security and date.
+     */
     public static class ResultForSecurityAndDate {
 
         private final LocalDate date;

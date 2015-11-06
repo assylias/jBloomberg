@@ -9,44 +9,44 @@ import com.assylias.bigblue.utils.TypedObject;
 /**
  * A DataChangeEvent gets delivered whenever a real time subscription sends a new value for a tracked data. <br>
  * This class is immutable and thread safe.
- * <p/>
+ * <p>
  * Normally DataChangeEvents are accompanied by the name and the old and new value of the changed data. If the new value
  * is a primitive type (such as int or boolean) it must be boxed as an Object (such as Integer or Boolean).
- * <p/>
+ * <p>
  * Null values may be provided for the old and the new values if their true values are not known.
- * <p/>
+ * <p>
  * The event source is a String containing the ID of the security, typically a ticker.
  */
 public final class DataChangeEvent {
 
     /**
      * Previous value for that data field. May be null if not known.
-     * <p/>
+     * <p>
      * @serial
      */
     private final String sourceString;
     /**
      * Name of the data that changed. Cannot be null.
-     * <p/>
+     * <p>
      * @serial
      */
     private final String dataName;
     /**
      * New value for that data field. May be null if not known.
-     * <p/>
+     * <p>
      * @serial
      */
     private final TypedObject newValue;
     /**
      * Previous value for that data field. May be null if not known.
-     * <p/>
+     * <p>
      * @serial
      */
     private final TypedObject oldValue;
 
     /**
      * Constructs a new DataChangeEvent.
-     * <p/>
+     * <p>
      * @param source   The ID of the security that fired the event.
      * @param dataName The programmatic name of the data that was changed.
      * @param oldValue The old value of the property.
@@ -76,7 +76,7 @@ public final class DataChangeEvent {
 
     /**
      * Gets the new value for the data, expressed as an Object.
-     * <p/>
+     * <p>
      * @return The new value for the data, expressed as an Object. May be null if unknown.
      */
     public TypedObject getNewValue() {
@@ -85,7 +85,7 @@ public final class DataChangeEvent {
 
     /**
      * Gets the old value for the data, expressed as an Object.
-     * <p/>
+     * <p>
      * @return The old value for the data, expressed as an Object. May be null if unknown.
      */
     public TypedObject getOldValue() {

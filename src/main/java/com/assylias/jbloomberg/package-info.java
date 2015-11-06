@@ -20,7 +20,7 @@
  * session.stop();
  * }</pre>
  *
- * <b> Example: retrieve the last price of the S&P 500 in Yen</b>
+ * <b> Example: retrieve the last price of the S&amp;P 500 in Yen</b>
  * <pre> {@code
  * RequestBuilder<ReferenceData> hrb = new ReferenceRequestBuilder(
  *         "SPX Index", "CRNCY_ADJ_PX_LAST")
@@ -45,7 +45,7 @@
  * }
  * }</pre>
  *
- * <b> Example: retrieve 60 minutes bar for the S&P 500 over the past week </b>
+ * <b> Example: retrieve 60-minute bars for the S&amp;P 500 over the past week </b>
  * <pre> {@code
  * OffsetDateTime now = OffsetDateTime.now();
  * RequestBuilder<IntradayBarData> hrb = new IntradayBarRequestBuilder("SPX Index", now.minusDays(7), now)
@@ -62,7 +62,7 @@
  * }</pre>
  *
  *
- * <b> Example: retrieve tick data for the S&P 500 over the past 2 hours </b>
+ * <b> Example: retrieve tick data for the S&amp;P 500 over the past 2 hours </b>
  * <pre> {@code
  * OffsetDateTime now = OffsetDateTime.now();
  * RequestBuilder<IntradayTickData> hrb = new IntradayTickRequestBuilder("SPX Index", now.minusHours(2), now)

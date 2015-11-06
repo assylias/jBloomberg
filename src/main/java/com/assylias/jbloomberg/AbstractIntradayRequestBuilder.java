@@ -23,13 +23,13 @@ abstract class AbstractIntradayRequestBuilder<T extends RequestResult> extends A
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
-     * <p/>
+     * <p>
      * @param ticker    a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM
      *                  US Equity)
      * @param eventType the eventType to retrieve for the selected ticker
      * @param startDate the start of the date range (inclusive) for which to retrieve data
      * @param endDate   the end of the date range (inclusive) for which to retrieve data
-     * <p/>
+     * <p>
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
