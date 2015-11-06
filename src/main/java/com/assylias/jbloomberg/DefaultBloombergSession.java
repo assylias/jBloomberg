@@ -4,11 +4,11 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.NEW;
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTED;
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTING;
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STARTUP_FAILED;
-import static com.assylias.jbloomberg.DefaultBloombergSession.SessionState.STOPPED;
+import static com.assylias.jbloomberg.SessionState.NEW;
+import static com.assylias.jbloomberg.SessionState.STARTED;
+import static com.assylias.jbloomberg.SessionState.STARTING;
+import static com.assylias.jbloomberg.SessionState.STARTUP_FAILURE;
+import static com.assylias.jbloomberg.SessionState.TERMINATED;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.DuplicateCorrelationIDException;
 import com.bloomberglp.blpapi.InvalidRequestException;
@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
@@ -62,6 +63,10 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     private final SessionOptions sessionOptions;
     /**
+     * Called whenever the SessionState of this session changes
+     */
+    private Consumer<SessionState> sessionStateListener;
+    /**
      * The underlying Bloomberg session object
      */
     private final Session session;
@@ -86,7 +91,7 @@ public class DefaultBloombergSession implements BloombergSession {
     /**
      * The event handler used by this session to process results asynchronously
      */
-    private final BloombergEventHandler eventHandler = new BloombergEventHandler(subscriptionDataQueue);
+    private final BloombergEventHandler eventHandler;
     /**
      * Collection that keeps track of services that have been asynchronously started. They might not be started yet.
      */
@@ -103,8 +108,9 @@ public class DefaultBloombergSession implements BloombergSession {
     private final SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionDataQueue,
             eventsManager);
 
+
     /**
-     * Creates a new BloombergSession using default SessionOptions (new SessionOptions()).
+     * Creates a new BloombergSession using default SessionOptions {@link SessionOptions#SessionOptions()}.
      */
     public DefaultBloombergSession() {
         this(new SessionOptions());
@@ -112,24 +118,55 @@ public class DefaultBloombergSession implements BloombergSession {
 
     /**
      * Creates a new BloombergSession using the provided SessionOptions.
+     *
+     * @param sessionOptions a non null {@link SessionOptions}.
+     *
+     * @throws NullPointerException if the argument is null.
      */
     public DefaultBloombergSession(SessionOptions sessionOptions) {
-        this.sessionOptions = sessionOptions;
+        this(sessionOptions, x -> {/*no-op*/});
+    }
+
+    /**
+     * Creates a new BloombergSession using the provided SessionOptions and SessionState listener. Note that the listener will be called promptly after a
+     * state change of the underlying Bloomberg connection but there may be a slight delay (in particular if calling
+     * {@link DefaultBloombergSession#start(java.util.function.Consumer)}, that consumer may be called first.<br><br>
+     * See also {@link SessionState} for a description of a typical session lifecycle.
+     *
+     * @param sessionOptions       a non null {@link SessionOptions}.
+     * @param sessionStateListener a listener that will be called every time the {@link SessionState} of this BloombergSession changes.
+     *
+     * @throws NullPointerException if any of the arguments are null.
+     */
+    public DefaultBloombergSession(SessionOptions sessionOptions, Consumer<SessionState> sessionStateListener) {
+        this.sessionOptions = requireNonNull(sessionOptions);
+        this.sessionStateListener = requireNonNull(sessionStateListener);
+        this.eventHandler = new BloombergEventHandler(subscriptionDataQueue, sessionStateListener);
         session = new Session(sessionOptions, eventHandler);
+        updateStateListener();
+    }
+
+    /**
+     * WARNING: only call this for custom states (i.e. NEW, STARTING) - the other states are set by the EventHandler.
+     */
+    private void updateStateListener() {
+        sessionStateListener.accept(state.get());
     }
 
     @Override
     public synchronized void start() throws BloombergException {
-        start(null);
+        start(x -> {/*no-op*/});
     }
 
     @Override
     public synchronized void start(Consumer<BloombergException> onStartupFailure) throws BloombergException {
+        requireNonNull(onStartupFailure);
         if (state.get() != NEW) {
             throw new IllegalStateException("Session has already been started: " + this);
         }
         if (onlyConnectToLocalAddresses() && !BloombergUtils.startBloombergProcessIfNecessary()) { //could not be started for some reason
-            state.set(STARTUP_FAILED);
+            state.set(STARTUP_FAILURE);
+            updateStateListener();
             throw new BloombergException("Failed to start session: bbcomm process could not be started");
         }
         logger.info("Starting Bloomberg session #{} with options: {}", sessionId, getOptions());
@@ -140,13 +177,14 @@ public class DefaultBloombergSession implements BloombergSession {
                 sessionStartup.countDown();
             });
             eventHandler.onSessionStartupFailure((BloombergException e) -> {
-                state.set(STARTUP_FAILED);
+                state.set(STARTUP_FAILURE);
                 sessionStartup.countDown();
-                if (onStartupFailure != null) onStartupFailure.accept(e);
+                onStartupFailure.accept(e);
             });
             if (!state.compareAndSet(NEW, STARTING)) {
                 throw new AssertionError("State was expected to be NEW but found " + state.get());
             }
+            updateStateListener();
             session.startAsync();
             logger.info("Session #{} started asynchronously", sessionId);
         } catch (IOException | IllegalStateException e) {
@@ -177,8 +215,8 @@ public class DefaultBloombergSession implements BloombergSession {
             if (!started) logger.info("I waited for 1 second but Bloomberg session #{} is still not started...");
             executor.shutdownNow();
             subscriptionManager.stop(this);
-            session.stop();//started ? SYNC : ASYNC); //if not started, something's wrong, don't spend to much time here...
-            state.set(STOPPED);
+            session.stop();//started ? SYNC : ASYNC); //if not started, something's wrong, don't spend too much time here...
+            state.set(TERMINATED);
             logger.info("Stopped Bloomberg session #{}", sessionId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -253,6 +291,10 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
+    @Override public SessionState getSessionState() {
+        return state.get();
+    }
+
     /**
      * Opens the the service if it has not been opened before, otherwise does nothing. This call blocks until the
      * service is opened or an exception is thrown.
@@ -324,31 +366,5 @@ public class DefaultBloombergSession implements BloombergSession {
     @Override
     public String toString() {
         return "Session #" + sessionId + " [" + state.get() + "]";
-    }
-
-    /**
-     * Describes the states of a session over its lifecycle
-     */
-    static enum SessionState {
-        /**
-         * The session has been created but it has not been started yet
-         */
-        NEW,
-        /**
-         * The session is in the process of being started
-         */
-        STARTING,
-        /**
-         * The session has been started and can be used
-         */
-        STARTED,
-        /**
-         * The session could not be started - it can't be used any more
-         */
-        STARTUP_FAILED,
-        /**
-         * The session has been stopped - it can't be used any more
-         */
-        STOPPED;
     }
 }

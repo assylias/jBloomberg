@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTED;
+import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTUP_FAILURE;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Event;
@@ -14,6 +16,7 @@ import com.bloomberglp.blpapi.Session;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,19 +27,36 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of EventHandler. This is where all the messages are received from the Bloomberg session and
  * forwarded to the relevant parsers for requests or to a queue for subscriptions.
+ * The typical lifecycle is as follows:
+ * <ul>
+ * <li> SessionConnectionUp </li>
+ * <li> SessionStarted </li>
+ * <li> SessionConnectionDown </li>
+ * <li> SessionTerminated </li>
+ * </ul>
+ * A SessionConnectionDown will be sent if the terminal gets logged out by another device - if setAutoRestartOnDisconnection has been set to true, it will be
+ * followed by a SessionConnectionUp although no data will be coming until the user logs in again. If setAutoRestartOnDisconnection has been set to false (default)
+ * it will be followed by a SessionTerminated signal.
  */
 final class BloombergEventHandler implements EventHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(BloombergEventHandler.class);
-    private final static Name SESSION_STARTED = new Name("SessionStarted");
-    private final static Name SESSION_STARTUP_FAILURE = new Name("SessionStartupFailure");
     private final BlockingQueue<Data> subscriptionDataQueue;
+    private final Consumer<SessionState> stateListener;
     private final Map<CorrelationID, ResultParser> parsers = new ConcurrentHashMap<>();
     private volatile Runnable runOnSessionStarted;
     private volatile Consumer<BloombergException> runOnSessionStartupFailure;
 
-    public BloombergEventHandler(BlockingQueue<Data> subscriptionDataQueue) {
-        this.subscriptionDataQueue = subscriptionDataQueue;
+    /**
+     *
+     * @param subscriptionDataQueue the queue to which subscription data will be posted.
+     * @param stateListener a listener that will be called on each new SESSION_STATUS event.
+     *
+     * @throws NullPointerException if any of the arguments are null.
+     */
+    public BloombergEventHandler(BlockingQueue<Data> subscriptionDataQueue, Consumer<SessionState> stateListener) {
+        this.subscriptionDataQueue = requireNonNull(subscriptionDataQueue);
+        this.stateListener = requireNonNull(stateListener);
     }
 
     @Override
@@ -47,12 +67,10 @@ final class BloombergEventHandler implements EventHandler {
                 case SESSION_STATUS:
                     for (Message msg : event) {
                         logger.debug("[{}] {}", type, msg);
-                        if (msg.messageType().equals(SESSION_STARTED)) {
-                            runOnSessionStarted.run();
-                        }
-                        if (msg.messageType().equals(SESSION_STARTUP_FAILURE)) {
-                            runOnSessionStartupFailure.accept(new BloombergException(msg.toString()));
-                        }
+                        BloombergConnectionState state = BloombergConnectionState.get(msg.messageType());
+                        if (state == SESSION_STARTED) runOnSessionStarted.run();
+                        if (state == SESSION_STARTUP_FAILURE) runOnSessionStartupFailure.accept(new BloombergException(msg.toString()));
+                        if (state != null) stateListener.accept(SessionState.from(state));
                     }
                     break;
                 case PARTIAL_RESPONSE:
@@ -168,4 +186,33 @@ final class BloombergEventHandler implements EventHandler {
             return map.get(evt.eventType());
         }
     }
+
+    /**
+     * BloombergConnectionState is an enum representing the possible states of the underlying Bloomberg connection. The difference with the SessionState enum
+     * is that it only contains states sent by the Bloomberg connection.
+     */
+    static enum BloombergConnectionState {
+        SESSION_STARTED("SessionStarted"),
+        SESSION_STARTUP_FAILURE("SessionStartupFailure"),
+        SESSION_CONNECTION_DOWN("SessionConnectionDown"),
+        SESSION_CONNECTION_UP("SessionConnectionUp"),
+        SESSION_TERMINATED("SessionTerminated");
+
+        private final static Map<Name, BloombergConnectionState> map = new HashMap<>(BloombergConnectionState.values().length, 1);
+
+        static {
+            for (BloombergConnectionState e : values()) map.put(e.name, e);
+        }
+        private final Name name;
+
+        private BloombergConnectionState(String s) {
+            this.name = new Name(s);
+        }
+        static BloombergConnectionState get(Name name) {
+            BloombergConnectionState s = map.get(name);
+            if (s == null) logger.info("Not a valid connection state: " + name);
+            return s;
+        }
+    }
+
 }

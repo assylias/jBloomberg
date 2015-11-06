@@ -47,6 +47,7 @@ public interface BloombergSession {
      * @throws BloombergException    if the bbcomm process is not running or could not be started, or if the session
      *                               could not be started asynchronously
      * @throws IllegalStateException if the session is already started
+     * @throws NullPointerException if the argument is null
      */
     void start(Consumer<BloombergException> onStartupFailure) throws BloombergException;
 
@@ -85,4 +86,16 @@ public interface BloombergSession {
      * @param subscription contains the parameters of the real time data that needs to be monitored.
      */
     void subscribe(SubscriptionBuilder subscription);
+
+    /**
+     * Returns the current {@link SessionState} of this Session. Note that there may be a slight delay between a change in
+     * the state of the underlying Bloomberg connection and this method reflecting the change.
+     * 
+     * @return The current {@link SessionState} of this Session.
+     *
+     * @throws UnsupportedOperationException if the operation is not supported.
+     */
+    default SessionState getSessionState() {
+        throw new UnsupportedOperationException("Could not retrieve the SessionState");
+    }
 }

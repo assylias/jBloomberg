@@ -9,11 +9,12 @@ import com.bloomberglp.blpapi.Event;
 import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Session;
 import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import mockit.Mocked;
 import mockit.Verifications;
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 public class BloombergEventHandlerTest {
@@ -23,7 +24,7 @@ public class BloombergEventHandlerTest {
     @Test(groups = "unit")
     public void testProcessEvent_SessionStarted() throws Exception {
         latch = new CountDownLatch(1);
-        final BloombergEventHandler handler = new BloombergEventHandler(null);
+        final BloombergEventHandler handler = new BloombergEventHandler(new ArrayBlockingQueue<>(1), x -> {});
         handler.onSessionStarted(new Runnable() {
             @Override
             public void run() {
@@ -40,7 +41,7 @@ public class BloombergEventHandlerTest {
 
     @Test(groups = "unit")
     public void testProcessEvent_Response(@Mocked final ResultParser parser) throws Exception {
-        final BloombergEventHandler handler = new BloombergEventHandler(null);
+        final BloombergEventHandler handler = new BloombergEventHandler(new ArrayBlockingQueue<>(1), x -> {});
         CorrelationID cId = new CorrelationID(1);
         handler.setParser(cId, parser);
 

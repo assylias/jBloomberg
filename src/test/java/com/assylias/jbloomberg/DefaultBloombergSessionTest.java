@@ -8,13 +8,17 @@ import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import mockit.Mocked;
 import mockit.Verifications;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -84,6 +88,32 @@ public class DefaultBloombergSessionTest {
         } finally {
           session.stop();
         }
+    }
+
+    @Test(groups = "requires-bloomberg", timeOut = 1000)
+    public void testStart_allGood_withListener() throws Exception {
+        AtomicReference<SessionState> lastState = new AtomicReference<> ();
+        List<SessionState> states = new CopyOnWriteArrayList<>();
+        DefaultBloombergSession session = new DefaultBloombergSession(new SessionOptions(), s -> {
+          lastState.set(s);
+          states.add(s);
+        });
+        try {
+          assertEquals(lastState.get(), SessionState.NEW);
+          assertEquals(session.getSessionState(), SessionState.NEW);
+          session.start();
+          assertEquals(lastState.get(), SessionState.STARTING);
+          assertEquals(session.getSessionState(), SessionState.STARTING);
+          while(lastState.get() != SessionState.STARTED) Thread.sleep(10);
+          assertEquals(session.getSessionState(), SessionState.STARTED);
+        } finally {
+          session.stop();
+          assertEquals(lastState.get(), SessionState.TERMINATED);
+          assertEquals(session.getSessionState(), SessionState.TERMINATED);
+        }
+        assertTrue(states.contains(SessionState.CONNECTION_UP));
+        assertTrue(states.contains(SessionState.CONNECTION_DOWN));
+        assertEquals(states.size(), 6);
     }
 
     @Test(groups = "unit")
