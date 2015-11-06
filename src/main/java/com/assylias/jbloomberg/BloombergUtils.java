@@ -74,7 +74,11 @@ final class BloombergUtils {
             return toOffsetTime(dt);
         } else if (field.datatype() == Schema.Datatype.DATETIME) {
             Datetime dt = field.getValueAsDatetime();
-            return dt.hasParts(Datetime.DATE) ? toOffsetDateTime(dt) : toOffsetTime(dt);
+            if (dt.hasParts(Datetime.DATE)) {
+                return dt.hasParts(Datetime.TIME) ? toOffsetDateTime(dt)
+                                                   : toLocalDate(dt);
+            }
+            return toOffsetTime(dt);
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {
