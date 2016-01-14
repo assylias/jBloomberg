@@ -13,7 +13,7 @@ You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index
 
 ####Maven dependency
 
-You can create a Maven dependency to download jBloomberg atrifact:
+You can create a Maven dependency to download jBloomberg artifact:
 
     <dependency>
       <groupId>com.assylias</groupId>
@@ -25,7 +25,7 @@ You can create a Maven dependency to download jBloomberg atrifact:
 
 You need to manually install the jar of the Bloomberg API in your maven repository for this to work.
 
-Download the file (version 3.8.7.2) from bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
+Download the file (version 3.8.7.2) from Bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
 
     mvn install:install-file -Dfile=c:/temp/blpapi-3.8.7-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.7.2 -Dpackaging=jar
 
