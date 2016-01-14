@@ -18,7 +18,7 @@ You can create a Maven dependency to download jBloomberg atrifact:
     <dependency>
       <groupId>com.assylias</groupId>
       <artifactId>jbloomberg</artifactId>
-      <version>3.3</version>
+      <version>3.4</version>
     </dependency>
 
 ####Installing Bloomberg jar
