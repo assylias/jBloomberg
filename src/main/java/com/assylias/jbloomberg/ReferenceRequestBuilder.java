@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
 import java.util.Arrays;

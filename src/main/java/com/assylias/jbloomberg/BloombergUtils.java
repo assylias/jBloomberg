@@ -13,6 +13,7 @@ import com.bloomberglp.blpapi.ElementIterator;
 import com.bloomberglp.blpapi.Schema;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
@@ -128,7 +128,7 @@ final class BloombergUtils {
         return isBbcommStarted;
     }
 
-    private static Boolean getStartingCallable() throws Exception {
+    private static Boolean getStartingCallable() throws IOException {
         logger.info("Starting {} manually", BBCOMM_PROCESS);
         ProcessBuilder pb = new ProcessBuilder(BBCOMM_PROCESS);
         pb.directory(new File(BBCOMM_FOLDER));
@@ -148,19 +148,16 @@ final class BloombergUtils {
     }
 
     private static boolean getResultWithTimeout(Callable<Boolean> startBloombergProcess, int timeout, TimeUnit timeUnit) {
-        ExecutorService executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "Bloomberg - bbcomm starter thread");
-                t.setDaemon(true);
-                return t;
-            }
+        ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+          Thread t = new Thread(r, "Bloomberg - bbcomm starter thread");
+          t.setDaemon(true);
+          return t;
         });
         Future<Boolean> future = executor.submit(startBloombergProcess);
 
         try {
             return future.get(timeout, timeUnit);
-        } catch (InterruptedException ignore) {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return false;
         } catch (ExecutionException | TimeoutException e) {

@@ -6,9 +6,7 @@ package com.assylias.jbloomberg;
 
 import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_DATA;
 import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_EXCEPTIONS;
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY;
 import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY_ERROR;
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SEQUENCE_NUMBER;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.InvalidConversionException;
 import com.bloomberglp.blpapi.InvalidRequestException;

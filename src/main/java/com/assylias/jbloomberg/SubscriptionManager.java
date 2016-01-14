@@ -80,7 +80,7 @@ final class SubscriptionManager {
      */
     synchronized void start(DefaultBloombergSession session) {
         logger.info("Starting the SubscriptionManager for {}", session);
-        this.session = Preconditions.checkNotNull(session, "session can't be null");;
+        this.session = Preconditions.checkNotNull(session, "session can't be null");
         startDispatching();
     }
 

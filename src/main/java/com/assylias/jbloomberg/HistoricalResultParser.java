@@ -6,7 +6,6 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -245,7 +245,7 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     @Override
     public <T extends RequestResult> Future<T> submit(final RequestBuilder<T> request) {
-        Objects.requireNonNull(request, "request cannot be null");
+        requireNonNull(request, "request cannot be null");
         if (state.get() == NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
