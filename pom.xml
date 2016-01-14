@@ -3,7 +3,7 @@
 
   <groupId>com.assylias</groupId>
   <artifactId>jbloomberg</artifactId>
-  <version>3.4</version>
+  <version>3.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <parent>
@@ -18,7 +18,7 @@
     <connection>scm:git:git@github.com:assylias/jBloomberg.git</connection>
     <developerConnection>scm:git:git@github.com:assylias/jBloomberg.git</developerConnection>
     <url>git@github.com:assylias/jBloomberg.git</url>
-    <tag>jbloomberg-3.4</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <description>jBloomberg is a high level wrapper around the low level Bloomberg Java Desktop API</description>
