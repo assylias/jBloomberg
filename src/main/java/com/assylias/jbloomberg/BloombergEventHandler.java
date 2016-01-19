@@ -95,8 +95,8 @@ final class BloombergEventHandler implements EventHandler {
                         }
                     }
                     for (CorrelationID cId : endOfTransmission) {
-                        parsers.get(cId).noMoreMessages();
-                        parsers.remove(cId); //remove from the map - not needed any longer.
+                        ResultParser parser = parsers.remove(cId); //remove from the map - not needed any longer.
+                        parser.noMoreMessages();
                     }
                     break;
                 case SUBSCRIPTION_DATA:
