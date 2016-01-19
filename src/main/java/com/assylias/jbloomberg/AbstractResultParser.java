@@ -16,12 +16,13 @@ import com.bloomberglp.blpapi.NotFoundException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +36,17 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
     protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; //'2011-12-03'
     protected final static DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
     /**
-     * lock used to access messages and parsedData
+     * lock used to create the result object only once
      */
     private final Object lock = new Object();
     /**
-     * List of received messages - guarded by lock
+     * List of received messages - must be thread safe
      */
-    private final List<Message> messages = new ArrayList<>();
+    private final Collection<Message> messages = new ConcurrentLinkedQueue<>();
+    /**
+     * boolean used to make sure noMoreMessages is only called once - initially false.
+     */
+    private final AtomicBoolean noMoreMessagesHasRun = new AtomicBoolean();
     /**
      * Whether additional messages should be expected or not.
      */
@@ -53,17 +58,15 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
 
     @Override
     public void addMessage(Message msg) {
-        if (noMoreMessages.getCount() == 0) {
+        if (noMoreMessagesHasRun.get()) {
             throw new IllegalStateException("Can't add messages once noMoreMessages has been called");
         }
-        synchronized (lock) {
-            messages.add(msg);
-        }
+        messages.add(msg);
     }
 
     @Override
     public void noMoreMessages() {
-        if (noMoreMessages.getCount() == 0) {
+        if (!noMoreMessagesHasRun.compareAndSet(false, true)) {
             throw new IllegalStateException("This method should not be called more than once");
         }
         noMoreMessages.countDown();
@@ -72,7 +75,8 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
     @Override
     public T getResult() throws InterruptedException {
         noMoreMessages.await();
-        return getResultNoWait();
+        setResultIfNull();
+        return result;
     }
 
     @Override
@@ -80,18 +84,19 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         if (!noMoreMessages.await(timeout, unit)) {
             throw new TimeoutException("Could not compute the result within " + timeout + " " + unit.toString().toLowerCase(Locale.ENGLISH));
         }
-        return getResultNoWait();
+        setResultIfNull();
+        return result;
     }
 
-    private T getResultNoWait() {
-        synchronized (lock) {
+    private void setResultIfNull() {
+        synchronized(lock) {
             if (result == null) {
                 result = getRequestResult();
                 parse(messages);
             }
         }
-        return result;
     }
+
     /**
      * Some shared element names
      */
@@ -139,7 +144,7 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
 
     protected abstract T getRequestResult();
 
-    private void parse(List<Message> messages) {
+    private void parse(Collection<Message> messages) {
         for (Message msg : messages) {
             Element response = msg.asElement();
             parseResponse(response);
