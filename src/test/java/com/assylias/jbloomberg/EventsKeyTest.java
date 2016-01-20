@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
-@Test(groups="unit")
+@Test(groups="unit", singleThreaded = true) //single threaded to make sure no other test adds keys at the same time
 public class EventsKeyTest {
 
 
@@ -45,27 +45,29 @@ public class EventsKeyTest {
         for (int i = 0; i < 1000; i++) {
             executor.submit(getRunnable(start));
         }
+        int countKeysStart = countKeys();
         start.countDown();
         executor.shutdown();
         executor.awaitTermination(1, TimeUnit.SECONDS);
-        Field f = EventsKey.class.getDeclaredField("keys");
-        f.setAccessible(true);
-        assertEquals(((Map) f.get(EventsKey.of(new CorrelationID(0), RealtimeField.ASK))).size(), 2000);
+        int countKeysEnd = countKeys();
+        assertEquals(countKeysEnd - countKeysStart, 2000);
     }
 
-    private static Runnable getRunnable(final CountDownLatch start) {
-        return new Runnable() {
+    private static int countKeys() throws Exception {
+        Field f = EventsKey.class.getDeclaredField("keys");
+        f.setAccessible(true);
+        return ((Map) f.get(null)).size();
+    }
 
-            @Override
-            public void run() {
-                try {
-                    start.await();
-                } catch (InterruptedException ex) {}
-                for (int i = 0; i < 1000; i++) {
-                    EventsKey key1 = EventsKey.of(new CorrelationID(i), RealtimeField.ASK);
-                    EventsKey key2 = EventsKey.of(new CorrelationID(i), RealtimeField.BID);
-                    assertNotEquals(key1, key2); //pretend we are doing something
-                }
+    private static Runnable getRunnable(CountDownLatch start) {
+        return () -> {
+            try {
+                start.await();
+            } catch (InterruptedException ex) {}
+            for (int i = 0; i < 1000; i++) {
+                EventsKey key1 = EventsKey.of(new CorrelationID(i), RealtimeField.ASK);
+                EventsKey key2 = EventsKey.of(new CorrelationID(i), RealtimeField.BID);
+                assertNotEquals(key1, key2); //pretend we are doing something
             }
         };
     }
