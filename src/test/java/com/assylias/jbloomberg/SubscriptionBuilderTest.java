@@ -153,8 +153,8 @@ public class SubscriptionBuilderTest {
 
     @Test(groups = "unit")
     public void testAddListener() {
-        DataChangeListener lst1 = new DataChangeListener() {public void dataChanged(DataChangeEvent e) {}};
-        DataChangeListener lst2 = new DataChangeListener() {public void dataChanged(DataChangeEvent e) {}};
+        DataChangeListener lst1 = e -> {};
+        DataChangeListener lst2 = e -> {};
         SubscriptionBuilder sb = new SubscriptionBuilder().addListener(lst1).addListener(lst1).addListener(lst2);
         assertEquals(sb.getListeners().size(), 2);
     }

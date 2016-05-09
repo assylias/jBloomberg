@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Set;
 import static java.util.Objects.requireNonNull;
+import java.util.Set;
 
 /**
  * A SubscriptionBuilder is used to build real time streaming subscription requests.

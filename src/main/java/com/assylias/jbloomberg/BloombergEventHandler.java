@@ -120,7 +120,8 @@ final class BloombergEventHandler implements EventHandler {
                     break;
                 default:
                     for (Message msg : event) {
-                        logger.debug("[{}] {}", type, msg);
+                        CorrelationID id = msg.correlationID();
+                        logger.debug("[{}] id=[{}] {}", type, id, msg);
                     }
             }
             //catch all - this code will run in one of the Bloomberg API's threads so we have no way to catch exceptions otherwise

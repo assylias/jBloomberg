@@ -181,7 +181,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     }
 
     /**
-     * Adjust historical pricing and/or volume are adjusted to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
+     * Adjust historical pricing and/or volume to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
      * Dividend/Bonus, Rights Offerings/ Entitlement.
      */
     public HistoricalRequestBuilder adjustSplits() {
@@ -190,8 +190,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     }
 
     /**
-     * Adjust historical pricing and/or volume are adjusted to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
-     * Dividend/Bonus, Rights Offerings/ Entitlement.
+     * Add a custom override.
      */
     public HistoricalRequestBuilder addOverride(String field, String value) {
         Preconditions.checkNotNull(field, "Field cannot be null when adding overrides");

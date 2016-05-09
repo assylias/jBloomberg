@@ -103,8 +103,8 @@ final class SubscriptionManager {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
                         Data data = subscriptionDataQueue.take();
+                        CorrelationID id = data.getCorrelationId();
                         if (RealtimeField.containsIgnoreCase(data.getField())) {
-                            CorrelationID id = data.getCorrelationId();
                             RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
                             eventsManager.fireEvent(id, field, data.getValue());
                         }
