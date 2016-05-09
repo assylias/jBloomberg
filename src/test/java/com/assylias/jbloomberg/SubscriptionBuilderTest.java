@@ -158,4 +158,14 @@ public class SubscriptionBuilderTest {
         SubscriptionBuilder sb = new SubscriptionBuilder().addListener(lst1).addListener(lst1).addListener(lst2);
         assertEquals(sb.getListeners().size(), 2);
     }
+
+    @Test(groups = "unit")
+    public void testAddErrorListener() {
+        SubscriptionErrorListener lst1 = e -> {};
+        SubscriptionErrorListener lst2 = e -> {};
+        DataChangeListener lst3 = e -> {};
+        SubscriptionBuilder sb = new SubscriptionBuilder().onError(lst1).onError(lst1).onError(lst2).addListener(lst3);
+        assertEquals(sb.getListeners().size(), 1);
+        assertSame(sb.getErrorListener(), lst2);
+    }
 }

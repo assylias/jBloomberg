@@ -24,6 +24,7 @@ public final class SubscriptionBuilder {
     private final Set<DataChangeListener> dataListeners = new HashSet<>();
     private final Set<String> securities = new HashSet<> ();
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
+    private SubscriptionErrorListener errorListener = e-> { /* no-op */ };
     private double throttle = 0;
 
     BloombergServiceType getServiceType() {
@@ -39,6 +40,18 @@ public final class SubscriptionBuilder {
     public SubscriptionBuilder addListener(DataChangeListener lst) {
         requireNonNull(lst, "lst can't be null");
         dataListeners.add(lst);
+        return this;
+    }
+
+    /**
+     * Adds a listener that will be informed of any errors received after the subscription has started.
+     *
+     * @param lst a listener
+     * @throws NullPointerException if lst is null
+     */
+    public SubscriptionBuilder onError(SubscriptionErrorListener lst) {
+        requireNonNull(lst, "lst can't be null");
+        errorListener = lst;
         return this;
     }
 
@@ -111,6 +124,10 @@ public final class SubscriptionBuilder {
 
     Set<DataChangeListener> getListeners() {
         return ImmutableSet.copyOf(dataListeners);
+    }
+
+    SubscriptionErrorListener getErrorListener() {
+        return errorListener;
     }
 
     Set<String> getSecurities() {

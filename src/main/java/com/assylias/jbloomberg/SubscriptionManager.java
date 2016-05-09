@@ -107,6 +107,16 @@ final class SubscriptionManager {
                         if (RealtimeField.containsIgnoreCase(data.getField())) {
                             RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
                             eventsManager.fireEvent(id, field, data.getValue());
+                        } else if (data.getValue() instanceof SubscriptionError) {
+                            SubscriptionError error = (SubscriptionError) data.getValue();
+                            logger.info("Subscription error [{}]: {}", error.getTopic(), error.getDescription());
+                            if ("SubscriptionFailure".equals(error.getType())) {
+                                //we need to remove the subscription from our maps otherwise a resubscribe could throw an exception.
+                                String ticker = error.getTopic();
+                                subscriptionsByTicker.remove(ticker);
+                                subscriptionsById.remove(id);
+                            }
+                            eventsManager.fireError(id, error);
                         }
                     }
                 } catch (InterruptedException e) {
@@ -197,6 +207,7 @@ final class SubscriptionManager {
                 eventsManager.addEventListener(ticker, id, field, lst);
             }
         }
+        eventsManager.onError(id, builder.getErrorListener());
     }
 
     private static class SubscriptionHolder {

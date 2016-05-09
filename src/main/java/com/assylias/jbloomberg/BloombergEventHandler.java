@@ -118,6 +118,34 @@ final class BloombergEventHandler implements EventHandler {
                         }
                     }
                     break;
+                case SUBSCRIPTION_STATUS:
+                    for (Message msg : event) {
+                        CorrelationID id = msg.correlationID();
+                        Data data = null;
+                        String msgType = msg.messageType().toString();
+                        if (!"SubscriptionStarted ".equals(msgType)) {
+                            logger.debug("[{}] id=[{}] {}", type, id, msg);
+                            Element msgElement = msg.asElement();
+                            if (msgElement.hasElement("reason")){
+                                Element reason = msg.asElement().getElement("reason");
+                                if (reason.hasElement("errorCode") && reason.hasElement("category") && reason.hasElement("description")) {
+                                    SubscriptionError e = new SubscriptionError(msgType, msg.topicName(), reason.getElementAsInt32("errorCode"),
+                                            reason.getElementAsString("category"), reason.getElementAsString("description"));
+                                    data = new Data(id, "", e);
+                                }
+                            }
+                            if (data == null) data = new Data(id, "", new SubscriptionError(msgType, msg.topicName(), 0, "", msg.toString()));
+                            try {
+                                subscriptionDataQueue.put(data);
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                return; //ignore the rest
+                            }
+                        } else {
+                            logger.debug("[{}] id=[{}] {}", type, id, msg);
+                        }
+                    }
+                    break;
                 default:
                     for (Message msg : event) {
                         CorrelationID id = msg.correlationID();

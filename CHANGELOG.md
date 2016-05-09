@@ -14,3 +14,13 @@
 ###Changed
 
 - OffsetDateTime is now used instead of ZonedDateTime
+
+##[v3.5]
+
+###Added
+
+- Added a few methods to monitor errors encountered when subscribing to real time data
+
+###Fixed
+
+- When subscribing to an expired security twice an exception was thrown

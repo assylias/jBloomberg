@@ -41,6 +41,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         }
     });
     private final ConcurrentMap<EventsKey, Listeners> listenersMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<CorrelationID, SubscriptionErrorListener> errorListeners = new ConcurrentHashMap<>();
 
     @Override
     public void addEventListener(String ticker, CorrelationID id, RealtimeField field, DataChangeListener lst) {
@@ -67,6 +68,35 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
             }
         }
         if (evt != null) lst.fireEvent(evt);
+    }
+
+    @Override
+    public void fireError(CorrelationID id, SubscriptionError error) {
+        SubscriptionErrorListener lst = errorListeners.get(id);
+        if (lst != null) {
+            Future<?> f = fireListeners.submit(() -> lst.onError(error));
+            monitorListenerExecution(f, lst, error);
+        }
+    }
+
+    void monitorListenerExecution(Future<?> f, SubscriptionErrorListener lst, SubscriptionError error) {
+        fireListeners.submit(new Callable<Void>() {
+            @Override public Void call() throws Exception {
+                try {
+                    f.get(1, TimeUnit.SECONDS);
+                } catch (TimeoutException e) {
+                    logger.warn("Slow error listener {} has not processed error {} in one second", lst, error);
+                } catch (ExecutionException e) {
+                    logger.error("Listener " + lst + " has thrown exception on error " + error, e.getCause());
+                }
+                return null;
+              }
+        });
+    }
+
+    @Override
+    public void onError(CorrelationID id, SubscriptionErrorListener lst) {
+        errorListeners.put(id, lst);
     }
 
     private static class Listeners {

@@ -4,11 +4,13 @@
  */
 package com.assylias.jbloomberg;
 
+import com.assylias.bigblue.utils.TypedObject;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
+import java.util.Map;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -111,6 +113,7 @@ public class HistoricalRequestBuilderTest {
                 .days(HistoricalRequestBuilder.Days.ACTIVE_DAYS_ONLY)
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE)
                 .maxPoints(20)
+                .addOverride("TIME_ZONE_OVERRIDE", "22")
                 .period(HistoricalRequestBuilder.Period.DAILY)
                 .periodicityAdjustment(HistoricalRequestBuilder.PeriodicityAdjustment.ACTUAL);
     }
@@ -125,5 +128,21 @@ public class HistoricalRequestBuilderTest {
     public void testRequestType() {
         assertEquals(new HistoricalRequestBuilder("ABC", "DEF", NOW, NOW).getRequestType(),
                 BloombergRequestType.HISTORICAL_DATA);
+    }
+
+    @Test(groups="requires-bloomberg")
+    public void catchAll() throws Exception {
+        HistoricalRequestBuilder builder = new HistoricalRequestBuilder("IBM US Equity", "CRNCY_ADJ_CURR_EV", NOW.minusWeeks(1), NOW)
+                .currency(Currency.getInstance("USD"))
+                .maxPoints(1)
+                .addOverride("EQY_FUND_CRNCY", "EUR");
+        BloombergSession session = new DefaultBloombergSession();
+        try {
+          session.start();
+          Map<LocalDate, TypedObject> data = session.submit(builder).get().forSecurity("IBM US Equity").forField("CRNCY_ADJ_CURR_EV").get();
+          assertEquals(data.size(), 1);
+        } finally {
+          session.stop();
+        }
     }
 }

@@ -23,4 +23,14 @@ interface EventsManager {
      * Informs the EventsManager that a new value has been received for the given correlation id and field
      */
     void fireEvent(CorrelationID id, RealtimeField rtField, Object value);
+
+    /**
+     * Sets the listener that will be informed of subscription errors for the specific correlation id.
+     */
+    default void onError(CorrelationID id, SubscriptionErrorListener lst)  { /* no-op */ }
+
+    /**
+     * Informs the EventsManager that an error has been received for the given correlation id and field
+     */
+    default void fireError(CorrelationID id, SubscriptionError error) { /* no-op */ }
 }
