@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A SubscriptionBuilder is used to build real time streaming subscription requests.
@@ -20,7 +21,7 @@ import java.util.Set;
  */
 public final class SubscriptionBuilder {
 
-    private final Set<DataChangeListener> listeners = new HashSet<>();
+    private final Set<DataChangeListener> dataListeners = new HashSet<>();
     private final Set<String> securities = new HashSet<> ();
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
     private double throttle = 0;
@@ -36,8 +37,8 @@ public final class SubscriptionBuilder {
      * @throws NullPointerException if lst is null
      */
     public SubscriptionBuilder addListener(DataChangeListener lst) {
-        Preconditions.checkNotNull(lst, "lst can't be null");
-        listeners.add(lst);
+        requireNonNull(lst, "lst can't be null");
+        dataListeners.add(lst);
         return this;
     }
 
@@ -58,7 +59,7 @@ public final class SubscriptionBuilder {
      * @throws NullPointerException if securities is null or contains null
      */
     public SubscriptionBuilder addSecurities(Collection<String> securities) {
-        Preconditions.checkNotNull(securities, "securities can't be null");
+        requireNonNull(securities, "securities can't be null");
         if (securities.contains(null)) {
             throw new NullPointerException("securities can't contain null");
         }
@@ -84,7 +85,7 @@ public final class SubscriptionBuilder {
      * @throws NullPointerException if fields is null or contains null
      */
     public SubscriptionBuilder addFields(Collection<RealtimeField> fields) {
-        Preconditions.checkNotNull(fields, "fields can't be null");
+        requireNonNull(fields, "fields can't be null");
         if (fields.contains(null)) {
             throw new NullPointerException("fields can't contain null");
         }
@@ -109,7 +110,7 @@ public final class SubscriptionBuilder {
     }
 
     Set<DataChangeListener> getListeners() {
-        return ImmutableSet.copyOf(listeners);
+        return ImmutableSet.copyOf(dataListeners);
     }
 
     Set<String> getSecurities() {
