@@ -324,6 +324,13 @@ public enum RealtimeField {
     YIELD_TIME,
     YLD_COND_CODE;
 
+    /**
+     *
+     * @param fieldName the field to check
+     * @return true if fieldName is a valid enum name
+     *
+     * @throws NullPointerException if fieldName is null
+     */
     public static boolean contains(String fieldName) {
         try {
             valueOf(fieldName);
@@ -333,6 +340,13 @@ public enum RealtimeField {
         }
     }
 
+    /**
+     *
+     * @param fieldName the field to check
+     * @return true if fieldName is a valid enum name, ignoring case
+     *
+     * @throws NullPointerException if fieldName is null
+     */
     public static boolean containsIgnoreCase(String fieldName) {
         try {
             valueOfIgnoreCase(fieldName);
@@ -349,6 +363,7 @@ public enum RealtimeField {
      * @return the enum constant with the specified name
      *
      * @throws IllegalArgumentException if this enum type has no constant with the specified name
+     * @throws NullPointerException if fieldName is null
      */
     public static RealtimeField valueOfIgnoreCase(String fieldName) {
         return valueOf(fieldName.toUpperCase());

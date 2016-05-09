@@ -24,4 +24,14 @@ public class RealtimeFieldTest {
         assertFalse(RealtimeField.contains(aFieldThatExists));
         assertTrue(RealtimeField.containsIgnoreCase(aFieldThatExists));
     }
+
+    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
+    public void testContains_null() {
+        assertFalse(RealtimeField.contains(null));
+    }
+
+    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
+    public void testContainsIgnoreCase_null() {
+        assertFalse(RealtimeField.containsIgnoreCase(null));
+    }
 }
