@@ -250,25 +250,22 @@ public class DefaultBloombergSession implements BloombergSession {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         logger.debug("Submitting request {}", request);
-        Callable<T> task = new Callable<T>() {
-            @Override
-            public T call() throws Exception {
-                BloombergServiceType serviceType = request.getServiceType();
-                CorrelationID cId = getNextCorrelationId();
-                try {
-                    openService(serviceType);
-                    ResultParser<T> parser = request.getResultParser();
-                    eventHandler.setParser(cId, parser);
-                    sendRequest(request, cId);
-                    return parser.getResult();
-                } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
-                        IllegalStateException e) {
-                    throw new BloombergException("Could not process the request", e);
-                } catch (InterruptedException e) {
-                    session.cancel(cId);
-                    throw new CancellationException("The request was cancelled");
-                }
-            }
+        Callable<T> task = () -> {
+          BloombergServiceType serviceType = request.getServiceType();
+          CorrelationID cId = getNextCorrelationId();
+          try {
+            openService(serviceType);
+            ResultParser<T> parser = request.getResultParser();
+            eventHandler.setParser(cId, parser);
+            sendRequest(request, cId);
+            return parser.getResult();
+          } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
+                  IllegalStateException e) {
+            throw new BloombergException("Could not process the request", e);
+          } catch (InterruptedException e) {
+            session.cancel(cId);
+            throw new CancellationException("The request was cancelled");
+          }
         };
         return executor.submit(task);
     }
@@ -345,6 +342,9 @@ public class DefaultBloombergSession implements BloombergSession {
         return new CorrelationID(); //returns a new unique correlation ID in a thread safe way
     }
 
+    /**
+     * Used for logging
+     */
     private Map<String, Object> getOptions() {
         Class<?> c = SessionOptions.class;
         Map<String, Object> options = new TreeMap<>();

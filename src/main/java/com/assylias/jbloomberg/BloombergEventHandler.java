@@ -121,11 +121,13 @@ final class BloombergEventHandler implements EventHandler {
                 case SUBSCRIPTION_STATUS:
                     for (Message msg : event) {
                         CorrelationID id = msg.correlationID();
-                        Data data = null;
+                        logger.debug("[{}] id=[{}] {}", type, id, msg);
+
                         String msgType = msg.messageType().toString();
                         if (!"SubscriptionStarted ".equals(msgType)) {
                             logger.debug("[{}] id=[{}] {}", type, id, msg);
                             Element msgElement = msg.asElement();
+                            Data data = null;
                             if (msgElement.hasElement("reason")){
                                 Element reason = msg.asElement().getElement("reason");
                                 if (reason.hasElement("errorCode") && reason.hasElement("category") && reason.hasElement("description")) {
@@ -141,8 +143,6 @@ final class BloombergEventHandler implements EventHandler {
                                 Thread.currentThread().interrupt();
                                 return; //ignore the rest
                             }
-                        } else {
-                            logger.debug("[{}] id=[{}] {}", type, id, msg);
                         }
                     }
                     break;
