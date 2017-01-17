@@ -24,3 +24,4 @@
 ###Fixed
 
 - When subscribing to an expired security twice an exception was thrown
+- Deal with incorrect date/time type returned by the real time feed
