@@ -66,19 +66,18 @@ final class BloombergUtils {
             return field.getValueAsInt64();
         } else if (field.datatype() == Schema.Datatype.STRING) {
             return field.getValueAsString();
-        } else if (field.datatype() == Schema.Datatype.DATE) {
-            Datetime dt = field.getValueAsDate();
-            return toLocalDate(dt);
-        } else if (field.datatype() == Schema.Datatype.TIME) {
-            Datetime dt = field.getValueAsDatetime();
-            return toOffsetTime(dt);
-        } else if (field.datatype() == Schema.Datatype.DATETIME) {
-            Datetime dt = field.getValueAsDatetime();
-            if (dt.hasParts(Datetime.DATE)) {
-                return dt.hasParts(Datetime.TIME) ? toOffsetDateTime(dt)
-                                                   : toLocalDate(dt);
-            }
-            return toOffsetTime(dt);
+        } else if (field.datatype() == Schema.Datatype.DATE
+                || field.datatype() == Schema.Datatype.TIME
+                || field.datatype() == Schema.Datatype.DATETIME) {
+          Datetime dt = field.getValueAsDatetime();
+          if (dt.hasParts(Datetime.DATE)) {
+            return dt.hasParts(Datetime.TIME) ? toOffsetDateTime(dt)
+                                              : toLocalDate(dt);
+          } else {
+            if (dt.hasParts(Datetime.TIME)) return toOffsetTime(dt);
+            logger.warn("Not a valid date time: Element={}, Datetime={}", field, dt);
+            return null;
+          }
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {

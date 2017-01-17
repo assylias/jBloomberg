@@ -169,6 +169,7 @@ final class SubscriptionManager {
     private Subscription getSubscription(String ticker, SubscriptionBuilder builder) {
         CorrelationID id = session.getNextCorrelationId();
         SubscriptionHolder sh = new SubscriptionHolder(id);
+        logger.debug("Correlation id for {}: {}", ticker, sh.id);
         sh.update(builder);
         addListenersToEventsManager(builder, ticker, sh.id);
         subscriptionsByTicker.put(ticker, sh);
