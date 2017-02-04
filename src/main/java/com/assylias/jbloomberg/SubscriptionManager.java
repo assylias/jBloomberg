@@ -5,9 +5,11 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
 import com.google.common.base.Preconditions;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,33 +100,30 @@ final class SubscriptionManager {
     }
 
     private void startDispatching() {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        Data data = subscriptionDataQueue.take();
-                        CorrelationID id = data.getCorrelationId();
-                        if (RealtimeField.containsIgnoreCase(data.getField())) {
-                            RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
-                            eventsManager.fireEvent(id, field, data.getValue());
-                        } else if (data.getValue() instanceof SubscriptionError) {
-                            SubscriptionError error = (SubscriptionError) data.getValue();
-                            logger.info("Subscription error [{}]: {}", error.getTopic(), error.getDescription());
-                            if ("SubscriptionFailure".equals(error.getType())) {
-                                //we need to remove the subscription from our maps otherwise a resubscribe could throw an exception.
-                                String ticker = error.getTopic();
-                                subscriptionsByTicker.remove(ticker);
-                                subscriptionsById.remove(id);
-                            }
-                            eventsManager.fireError(id, error);
+        Runnable r = () -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    Data data = subscriptionDataQueue.take();
+                    CorrelationID id = data.getCorrelationId();
+                    if (RealtimeField.containsIgnoreCase(data.getField())) {
+                        RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
+                        eventsManager.fireEvent(id, field, data.getValue());
+                    } else if (data.getValue() instanceof SubscriptionError) {
+                        SubscriptionError error = (SubscriptionError) data.getValue();
+                        logger.info("Subscription error [{}]: {}", error.getTopic(), error.getDescription());
+                        if ("SubscriptionFailure".equals(error.getType())) {
+                            //we need to remove the subscription from our maps otherwise a resubscribe could throw an exception.
+                            String ticker = error.getTopic();
+                            subscriptionsByTicker.remove(ticker);
+                            subscriptionsById.remove(id);
                         }
+                        eventsManager.fireError(id, error);
                     }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
                 }
-                logger.info("Exiting Subscription Manager dispatching loop");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
+            logger.info("Exiting Subscription Manager dispatching loop");
         };
         for (int i = 0; i < NUM_THREADS; i++) {
             edt.submit(r);
@@ -134,7 +134,6 @@ final class SubscriptionManager {
      * Updates the Bloomberg session to subscribe to the securities and fields specified in the builder.
      *
      * @param subscriptionBuilder the builder containing the details of the securities and fields to subscribe
-     *
      * @throws IllegalStateException if a started session has not been set before this method is called
      * @throws IOException           if there is a communication error on subscribe
      */
@@ -153,6 +152,24 @@ final class SubscriptionManager {
         list = getNewSubscriptionsList(subscriptionBuilder);
         if (!list.isEmpty()) {
             session.getBloombergSession().subscribe(list);
+        }
+    }
+
+    synchronized void subscribe(SubscriptionBuilder subscriptionBuilder, Identity identity) throws IOException {
+        if (session == null) {
+            throw new IllegalStateException("Can't subscribe to a session before it is started");
+        }
+
+        SubscriptionList list;
+
+        list = getReSubscriptionsList(subscriptionBuilder);
+        if (!list.isEmpty()) {
+            session.getBloombergSession().resubscribe(list);
+        }
+
+        list = getNewSubscriptionsList(subscriptionBuilder);
+        if (!list.isEmpty()) {
+            session.getBloombergSession().subscribe(list, identity);
         }
     }
 

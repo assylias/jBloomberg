@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
+
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
@@ -20,7 +22,7 @@ import java.util.function.Consumer;
  * <li> stop the session: this releases all the internal resources used, including thread pools. Not stopping a session
  * could prevent the JVM from exiting.
  * </ul>
- *
+ * <p>
  * Note that long running requests might delay real time subscriptions. It is recommended to use at least one session
  * for
  * real time subscriptions and one for static or historical requests.
@@ -43,11 +45,10 @@ public interface BloombergSession {
      * the starting task created by this method, the provided Consumer will be executed.
      *
      * @param onStartupFailure an operation to be run if the session fails to be started
-     *
      * @throws BloombergException    if the bbcomm process is not running or could not be started, or if the session
      *                               could not be started asynchronously
      * @throws IllegalStateException if the session is already started
-     * @throws NullPointerException if the argument is null
+     * @throws NullPointerException  if the argument is null
      */
     void start(Consumer<BloombergException> onStartupFailure) throws BloombergException;
 
@@ -56,11 +57,11 @@ public interface BloombergSession {
      * is actually stopped.
      */
     void stop();
-
+    void subscribe(SubscriptionBuilder subscription,Identity identity);
     /**
      * Submits a request to the Bloomberg Session and returns immediately. The generic paramater enables to distinguish
      * between single and multiple securities requests. The RequestResult object will be based on that type.
-     *
+     * <p>
      * Calling get() on the returned future may block forever - it is advised to use the get(timeout) version.<br>
      * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
      * future.get()). It is the responsibility of the caller to check and handle those exceptions:
@@ -71,11 +72,9 @@ public interface BloombergSession {
      * </ul>
      *
      * @return a Future that contains the result of the request. The future can be cancelled to cancel a long running
-     *         request.
-     *
+     * request.
      * @throws IllegalStateException if the start method was not called before this method
      * @throws NullPointerException  if request is null
-     *
      */
     <T extends RequestResult> Future<T> submit(RequestBuilder<T> request);
 
@@ -90,12 +89,13 @@ public interface BloombergSession {
     /**
      * Returns the current {@link SessionState} of this Session. Note that there may be a slight delay between a change in
      * the state of the underlying Bloomberg connection and this method reflecting the change.
-     * 
-     * @return The current {@link SessionState} of this Session.
      *
+     * @return The current {@link SessionState} of this Session.
      * @throws UnsupportedOperationException if the operation is not supported.
      */
     default SessionState getSessionState() {
         throw new UnsupportedOperationException("Could not retrieve the SessionState");
     }
+
+    Identity authorize();
 }
