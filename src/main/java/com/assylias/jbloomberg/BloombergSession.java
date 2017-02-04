@@ -57,7 +57,13 @@ public interface BloombergSession {
      * is actually stopped.
      */
     void stop();
-    void subscribe(SubscriptionBuilder subscription,Identity identity);
+
+    /**
+     * @param subscription
+     * @param identity
+     */
+    void subscribe(SubscriptionBuilder subscription, Identity identity);
+
     /**
      * Submits a request to the Bloomberg Session and returns immediately. The generic paramater enables to distinguish
      * between single and multiple securities requests. The RequestResult object will be based on that type.
@@ -97,5 +103,9 @@ public interface BloombergSession {
         throw new UnsupportedOperationException("Could not retrieve the SessionState");
     }
 
+    /**
+     *
+     * @return
+     */
     Identity authorize();
 }

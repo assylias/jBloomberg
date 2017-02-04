@@ -25,9 +25,9 @@ You can create a Maven dependency to download jBloomberg artifact:
 
 You need to manually install the jar of the Bloomberg API in your maven repository for this to work.
 
-Download the file (version 3.8.7.2) from Bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
+Download the file (version 3.8.8.2) from Bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
 
-    mvn install:install-file -Dfile=c:/temp/blpapi-3.8.7-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.7.2 -Dpackaging=jar
+    mvn install:install-file -Dfile=c:/temp/blpapi-3.8.8-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.8.2 -Dpackaging=jar
 
 ###Description
 
@@ -59,7 +59,7 @@ Apache License v2.0
 
 - guava (Apache License v2.0)
 - slf4j (MIT License)
-- Bloomberg BLPAPI (tested with 3.8.7.2) (MIT-like License)
+- Bloomberg BLPAPI (tested with 3.8.8.2) (MIT-like License)
 - Big Blue Utils (Apache License v2.0)
 
 ####Test dependencies

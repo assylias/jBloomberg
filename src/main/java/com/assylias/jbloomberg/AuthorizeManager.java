@@ -14,26 +14,35 @@ import java.io.IOException;
  */
 public final class AuthorizeManager {
     /**
-     * 授权成功
+     * authorize success event
      */
     private static final Name AUTHORIZATION_SUCCESS = Name
             .getName("AuthorizationSuccess");
     /**
-     * 授权失败
+     * authorize failed event
      */
     private static final Name AUTHORIZATION_FAILURE = Name
             .getName("AuthorizationFailure");
     /**
-     * 获取Token成功
+     * get token success event
      */
     private static final Name TOKEN_SUCCESS = Name
             .getName("TokenGenerationSuccess");
     /**
-     * 获取Token失败
+     * get token failed event
      */
     private static final Name TOKEN_FAILURE = Name
             .getName("TokenGenerationFailure");
 
+    /**
+     * try open authapi service to get token
+     *
+     * @param session
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws BloombergException
+     */
     public synchronized Identity authorize(Session session) throws IOException, InterruptedException, BloombergException {
 
         if (!session.openService(BloombergServiceType.API_AUTHORIZATION.getUri())) {
@@ -61,6 +70,14 @@ public final class AuthorizeManager {
         }
     }
 
+    /**
+     * authorize event processor
+     *
+     * @param session
+     * @param event
+     * @return
+     * @throws BloombergException
+     */
     private Identity processToken(Session session, Event event) throws BloombergException {
         try {
             MessageIterator msgIter = event.messageIterator();
