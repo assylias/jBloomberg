@@ -20,7 +20,7 @@
 ###Added
 
 - Added a few methods to monitor errors encountered when subscribing to real time data
-
+- Added a few methods to deal with server api authorize
 ###Fixed
 
 - When subscribing to an expired security twice an exception was thrown

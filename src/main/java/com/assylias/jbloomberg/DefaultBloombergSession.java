@@ -9,13 +9,9 @@ import static com.assylias.jbloomberg.SessionState.STARTED;
 import static com.assylias.jbloomberg.SessionState.STARTING;
 import static com.assylias.jbloomberg.SessionState.STARTUP_FAILURE;
 import static com.assylias.jbloomberg.SessionState.TERMINATED;
-import com.bloomberglp.blpapi.CorrelationID;
-import com.bloomberglp.blpapi.DuplicateCorrelationIDException;
-import com.bloomberglp.blpapi.InvalidRequestException;
-import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.RequestQueueOverflowException;
-import com.bloomberglp.blpapi.Session;
-import com.bloomberglp.blpapi.SessionOptions;
+
+import com.bloomberglp.blpapi.*;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,7 +19,9 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
+
 import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
@@ -39,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +107,7 @@ public class DefaultBloombergSession implements BloombergSession {
     private final SubscriptionManager subscriptionManager = new SubscriptionManager(subscriptionDataQueue,
             eventsManager);
 
+    private final AuthorizeManager authorizeManager = new AuthorizeManager();
 
     /**
      * Creates a new BloombergSession using default SessionOptions {@link SessionOptions#SessionOptions()}.
@@ -120,7 +120,6 @@ public class DefaultBloombergSession implements BloombergSession {
      * Creates a new BloombergSession using the provided SessionOptions.
      *
      * @param sessionOptions a non null {@link SessionOptions}.
-     *
      * @throws NullPointerException if the argument is null.
      */
     public DefaultBloombergSession(SessionOptions sessionOptions) {
@@ -135,7 +134,6 @@ public class DefaultBloombergSession implements BloombergSession {
      *
      * @param sessionOptions       a non null {@link SessionOptions}.
      * @param sessionStateListener a listener that will be called every time the {@link SessionState} of this BloombergSession changes.
-     *
      * @throws NullPointerException if any of the arguments are null.
      */
     public DefaultBloombergSession(SessionOptions sessionOptions, Consumer<SessionState> sessionStateListener) {
@@ -225,7 +223,7 @@ public class DefaultBloombergSession implements BloombergSession {
 
     /**
      * Submits a request to the Bloomberg Session and returns immediately.
-     *
+     * <p>
      * Calling get() on the returned future may block for a very long time - it is advised to use the get(timeout)
      * version.<br>
      * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
@@ -237,11 +235,9 @@ public class DefaultBloombergSession implements BloombergSession {
      * </ul>
      *
      * @return a Future that contains the result of the request. The future can be cancelled to cancel a long running
-     *         request.
-     *
+     * request.
      * @throws IllegalStateException if the start method was not called before this method
      * @throws NullPointerException  if request is null
-     *
      */
     @Override
     public <T extends RequestResult> Future<T> submit(final RequestBuilder<T> request) {
@@ -251,27 +247,32 @@ public class DefaultBloombergSession implements BloombergSession {
         }
         logger.debug("Submitting request {}", request);
         Callable<T> task = () -> {
-          BloombergServiceType serviceType = request.getServiceType();
-          CorrelationID cId = getNextCorrelationId();
-          try {
-            openService(serviceType);
-            ResultParser<T> parser = request.getResultParser();
-            eventHandler.setParser(cId, parser);
-            sendRequest(request, cId);
-            return parser.getResult();
-          } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
-                  IllegalStateException e) {
-            throw new BloombergException("Could not process the request", e);
-          } catch (InterruptedException e) {
-            session.cancel(cId);
-            throw new CancellationException("The request was cancelled");
-          }
+            BloombergServiceType serviceType = request.getServiceType();
+            CorrelationID cId = getNextCorrelationId();
+            try {
+                openService(serviceType);
+                ResultParser<T> parser = request.getResultParser();
+                eventHandler.setParser(cId, parser);
+                sendRequest(request, cId);
+                return parser.getResult();
+            } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
+                    IllegalStateException e) {
+                throw new BloombergException("Could not process the request", e);
+            } catch (InterruptedException e) {
+                session.cancel(cId);
+                throw new CancellationException("The request was cancelled");
+            }
         };
         return executor.submit(task);
     }
 
     @Override
     public void subscribe(SubscriptionBuilder subscription) {
+        subscribe(subscription, null);
+    }
+
+    @Override
+    public void subscribe(SubscriptionBuilder subscription, Identity identity) {
         if (state.get() == SessionState.NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
@@ -280,7 +281,7 @@ public class DefaultBloombergSession implements BloombergSession {
             if (state.get() != SessionState.STARTED) {
                 throw new RuntimeException("The Bloomberg session could not be started");
             }
-            subscriptionManager.subscribe(subscription);
+            subscriptionManager.subscribe(subscription, identity);
         } catch (IOException e) {
             throw new RuntimeException("Could not complete subscription request", e);
         } catch (InterruptedException e) {
@@ -288,14 +289,37 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
-    @Override public SessionState getSessionState() {
+    @Override
+    public SessionState getSessionState() {
         return state.get();
+    }
+
+    @Override
+    public Identity authorize() {
+        if (state.get() == SessionState.NEW) {
+            throw new IllegalStateException("A request can't be submitted before the session is started");
+        }
+        try {
+            sessionStartup.await(); //once the latch counts down, we know that the session has been set.
+            if (state.get() != SessionState.STARTED) {
+                throw new RuntimeException("The Bloomberg session could not be started");
+            }
+            return authorizeManager.authorize(session);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not complete authorize request", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not complete authorize request", e);
+        }
+        return null;
     }
 
     /**
      * Opens the the service if it has not been opened before, otherwise does nothing. This call blocks until the
      * service is opened or an exception is thrown.
      * <p>
+     *
      * @throws IOException          if the service could not be opened (Bloomberg API exception)
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
@@ -323,7 +347,6 @@ public class DefaultBloombergSession implements BloombergSession {
     }
 
     /**
-     *
      * @return the result of the request
      * <p>
      * @throws IllegalStateException           If the session is not established
