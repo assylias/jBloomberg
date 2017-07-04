@@ -1,17 +1,17 @@
-##Welcome to jBloomberg
+## Welcome to jBloomberg
 
-jBloomberg is a high-level API that wraps the [low level Bloomberg Desktop Java API](http://www.openbloomberg.com/open-api/).
+jBloomberg is a high-level API that wraps the [Bloomberg Desktop Java API](https://www.bloomberg.com/professional/support/api-library/).
 Although most features of the underlying Bloomberg API are available, some options might not be reachable through the jBloomberg API.
 
-You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index.html) for more information, including example usages.
+You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index.html) for more information, including example usages on the package page.
 
-###Requirements
+### Requirements
 
 **As of v3, Java 8 is required.**
 
-###Usage
+### Usage
 
-####Maven dependency
+#### Maven dependency
 
 You can create a Maven dependency to download jBloomberg artifact:
 
@@ -21,7 +21,7 @@ You can create a Maven dependency to download jBloomberg artifact:
       <version>3.4</version>
     </dependency>
 
-####Installing Bloomberg jar
+#### Installing Bloomberg jar
 
 You need to manually install the jar of the Bloomberg API in your maven repository for this to work.
 
@@ -29,7 +29,7 @@ Download the file (version 3.8.7.2) from Bloomberg's website. Extract and save t
 
     mvn install:install-file -Dfile=c:/temp/blpapi-3.8.7-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.7.2 -Dpackaging=jar
 
-###Description
+### Description
 
 The main advantages of this library vs. the Bloomberg API are:
 
@@ -45,29 +45,29 @@ to Java developers. For example, a historical data request returns a `Future<His
 It should however be noted that using jBloomberg does increase memory consumption and GC vs. using BLPAPI directly although for most
 applications that should not be noticeable.
 
-###Stability
+### Stability
 
 Note that the API is not stable yet and its design could be subject to changes in the future.
 
-###License
+### License
 
 Apache License v2.0
 
-###Dependencies
+### Dependencies
 
-####Source dependencies
+#### Source dependencies
 
 - guava (Apache License v2.0)
 - slf4j (MIT License)
 - Bloomberg BLPAPI (tested with 3.8.7.2) (MIT-like License)
-- Big Blue Utils (Apache License v2.0)
+- [Big Blue Utils](https://bitbucket.org/assylias/bigblue-utils) (Apache License v2.0)
 
-####Test dependencies
+#### Test dependencies
 
 - jmockit (MIT License)
 - testNG (Apache License v2.0)
 
-##Issues
+## Issues
 
 If you find a bug or want a new feature you can ask in the [Issues section](https://github.com/assylias/jBloomberg/issues) on github.
 For general questions or if you are unable to get something to work you can ask on stackoverflow using the
