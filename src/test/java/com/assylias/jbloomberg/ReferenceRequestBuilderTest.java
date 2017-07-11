@@ -20,7 +20,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testConstructor_TickersContainsNull() {
-        new ReferenceRequestBuilder(Arrays.<String>asList(null), Arrays.asList("a"));
+        new ReferenceRequestBuilder(Arrays.asList((String) null), Arrays.asList("a"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
@@ -40,7 +40,7 @@ public class ReferenceRequestBuilderTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testConstructor_FieldsContainsNull() {
-        new ReferenceRequestBuilder(Arrays.asList("a"), Arrays.<String>asList(null));
+        new ReferenceRequestBuilder(Arrays.asList("a"), Arrays.asList((String) null));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")

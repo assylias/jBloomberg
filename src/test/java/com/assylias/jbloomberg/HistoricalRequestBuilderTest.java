@@ -25,7 +25,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
     public void testConstructor_TickersContainsNull() {
-        new HistoricalRequestBuilder(Arrays.<String>asList(null), Arrays.asList("a"), NOW, NOW);
+        new HistoricalRequestBuilder(Arrays.asList((String) null), Arrays.asList("a"), NOW, NOW);
     }
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
@@ -45,7 +45,7 @@ public class HistoricalRequestBuilderTest {
 
     @Test(groups="unit",expectedExceptions = NullPointerException.class)
     public void testConstructor_FieldsContainsNull() {
-        new HistoricalRequestBuilder(Arrays.asList("a"), Arrays.<String>asList(null), NOW, NOW);
+        new HistoricalRequestBuilder(Arrays.asList("a"), Arrays.asList((String) null), NOW, NOW);
     }
 
     @Test(groups="unit",expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = ".*empty.*")
