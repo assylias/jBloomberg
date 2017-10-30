@@ -9,6 +9,8 @@ You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index
 
 **As of v3, Java 8 is required.**
 
+The library is compatible with Java 9.
+
 ### Usage
 
 #### Maven dependency
@@ -18,7 +20,7 @@ You can create a Maven dependency to download jBloomberg artifact:
     <dependency>
       <groupId>com.assylias</groupId>
       <artifactId>jbloomberg</artifactId>
-      <version>3.4</version>
+      <version>3.5</version>
     </dependency>
 
 #### Installing Bloomberg jar
@@ -60,7 +62,6 @@ Apache License v2.0
 - guava (Apache License v2.0)
 - slf4j (MIT License)
 - Bloomberg BLPAPI (tested with 3.8.7.2) (MIT-like License)
-- [Big Blue Utils](https://bitbucket.org/assylias/bigblue-utils) (Apache License v2.0)
 
 #### Test dependencies
 

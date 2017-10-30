@@ -3,11 +3,17 @@
 ### Added
 
 - Added a few methods to monitor errors encountered when subscribing to real time data
+- Added new method `<T> T as(TypeReference<T> type)` on `TypedObject` to allow "casting" into a generic type
 
 ### Fixed
 
 - When subscribing to an expired security twice an exception was thrown
 - Deal with incorrect date/time type returned by the real time feed
+
+### Changed
+
+- removed dependency on external library Big Blue Utils
+- package of TypedObject changed from com.assylias.bigblue.utils to com.assylias.jbloomberg
 
 ## [v3.4]
 
