@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.bigblue.utils.TypedObject;
 import com.google.common.collect.Table;
 import java.time.LocalDate;
 import java.util.Map;

@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.bigblue.utils.TypedObject;
 import com.google.common.collect.Multimap;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;

@@ -4,7 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import com.assylias.bigblue.utils.TypedObject;
 import com.bloomberglp.blpapi.CorrelationID;
 import java.util.Collections;
 import java.util.Set;
