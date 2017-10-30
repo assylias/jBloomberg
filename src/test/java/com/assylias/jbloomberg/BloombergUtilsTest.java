@@ -7,6 +7,13 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Schema;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -14,71 +21,50 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.NonStrictExpectations;
-import static org.testng.Assert.*;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 public class BloombergUtilsTest {
 
     @Test(groups = "unit")
-    public void test_ProcessRunning() {
+    public void test_ProcessRunning(@Mocked ShellUtils utils) {
         setBbcommStartedFlag(false);
-        new MockUp<ShellUtils>() {
-            @Mock(invocations = 1)
-            public boolean isProcessRunning(String processName) {
-                return true;
-            }
-        };
+        new Expectations() {{
+            utils.isProcessRunning(anyString); result = true; times = 1;
+        }};
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
     @Test(groups = "unit")
-    public void test_NoRetryOnceRunning() {
+    public void test_NoRetryOnceRunning(@Mocked ShellUtils utils) {
         setBbcommStartedFlag(true);
-        new MockUp<ShellUtils>() {
-            @Mock(invocations = 0)
-            public boolean isProcessRunning(String processName) {
-                return true;
+        new Expectations() {{
+            utils.isProcessRunning(anyString); times = 0;
+        }};
+        assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
+    }
+
+    @Test(groups = "unit")
+    public void test_ProcessNotRunning_StartBbCommSucceeds(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
+        setBbcommStartedFlag(false);
+        new Expectations() {
+            {
+                utils.isProcessRunning(anyString); result = true;
+                pb.start(); times = 0;
             }
         };
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
     @Test(groups = "unit")
-    public void test_ProcessNotRunning_StartBbCommSucceeds(@Mocked final ProcessBuilder pb, @Mocked final Process p) throws IOException {
+    public void test_ProcessNotRunning_StartBbCommFails(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
         setBbcommStartedFlag(false);
-        new MockUp<ShellUtils>() {
-            @Mock
-            public boolean isProcessRunning(String processName) {
-                return false;
-            }
-        };
-        new NonStrictExpectations() {
+        new Expectations() {
             {
-                pb.start();
-                result = p;
-                p.getInputStream();
-                result = new ByteArrayInputStream("started".getBytes());
-            }
-        };
-        assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
-    }
-
-    @Test(groups = "unit")
-    public void test_ProcessNotRunning_StartBbCommFails(@Mocked final ProcessBuilder pb, @Mocked final Process p) throws IOException {
-        setBbcommStartedFlag(false);
-        new MockUp<ShellUtils>() {
-            @Mock
-            public boolean isProcessRunning(String processName) {
-                return false;
-            }
-        };
-        new NonStrictExpectations() {
-            {
+                utils.isProcessRunning(anyString); result = false;
                 pb.start();
                 result = p;
                 p.getInputStream();

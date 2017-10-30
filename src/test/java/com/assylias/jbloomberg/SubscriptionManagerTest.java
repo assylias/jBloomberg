@@ -8,6 +8,14 @@ import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,13 +28,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import mockit.Mock;
-import mockit.MockUp;
-import static org.testng.Assert.*;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 @Test(groups = "unit")
 public class SubscriptionManagerTest {
@@ -203,7 +210,7 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         final AtomicInteger expectedInvocations = new AtomicInteger();
         new MockUp<ConcurrentConflatedEventsManager>() {
-            @Mock(invocations=2)
+            @Mock
             public void addEventListener(String ticker, CorrelationID id, RealtimeField field, DataChangeListener lst) {
                 if ((ticker.equals("ABC") && id.value() == 0) || (ticker.equals("DEF") && id.value() == 1)) {
                     expectedInvocations.incrementAndGet();

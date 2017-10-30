@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>19.0</version>
+      <version>23.3-jre</version>
     </dependency>
 
     <!-- Logging -->
@@ -53,26 +53,26 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.13</version>
+      <version>1.7.21</version>
     </dependency>
 
     <!-- TESTS -->
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>6.9.10</version>
+      <version>6.11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.jmockit</groupId>
       <artifactId>jmockit</artifactId>
-      <version>1.21</version>
+      <version>1.36</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.13</version>
+      <version>1.7.21</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -81,7 +81,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.7.0</version>
         <configuration>
           <compilerArgument>-Xlint</compilerArgument>
         </configuration>
@@ -89,10 +89,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.19.1</version>
+        <version>2.20.1</version>
         <configuration>
-          <forkCount>1</forkCount>
-          <reuseForks>true</reuseForks>
+          <argLine>
+               -Djdk.attach.allowAttachSelf <!-- required to run test with jmockit on JDK 9 -->
+          </argLine>
           <systemPropertyVariables>
             <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
             <org.slf4j.simpleLogger.logFile>System.out</org.slf4j.simpleLogger.logFile>
@@ -102,7 +103,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
+        <version>2.10.4</version>
         <configuration>
           <additionalparam>-Xdoclint:all</additionalparam>
           <additionalparam>-Xdoclint:-missing</additionalparam>
@@ -119,7 +120,7 @@
           <plugin>
             <groupId>org.pitest</groupId>
             <artifactId>pitest-maven</artifactId>
-            <version>1.1.10</version>
+            <version>1.2.3</version>
             <executions>
               <execution>
                 <id>pitest</id>
