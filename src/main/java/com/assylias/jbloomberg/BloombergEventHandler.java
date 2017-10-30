@@ -4,8 +4,6 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTED;
-import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTUP_FAILURE;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Event;
@@ -13,16 +11,20 @@ import com.bloomberglp.blpapi.EventHandler;
 import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTED;
+import static com.assylias.jbloomberg.BloombergEventHandler.BloombergConnectionState.SESSION_STARTUP_FAILURE;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An implementation of EventHandler. This is where all the messages are received from the Bloomberg session and
@@ -169,7 +171,7 @@ final class BloombergEventHandler implements EventHandler {
 
     /**
      *
-     * @param runnable a runnable to run if the session startup process fails
+     * @param runOnSessionStartupFailure a runnable to run if the session startup process fails
      */
     void onSessionStartupFailure(Consumer<BloombergException> runOnSessionStartupFailure) {
         this.runOnSessionStartupFailure = runOnSessionStartupFailure;
