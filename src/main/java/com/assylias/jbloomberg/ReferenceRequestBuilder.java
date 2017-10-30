@@ -72,6 +72,9 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
     public ReferenceRequestBuilder(Collection<String> tickers, Collection<String> fields) {
         Preconditions.checkNotNull(tickers, "The collection of tickers cannot be null");
         Preconditions.checkNotNull(fields, "The collection of fields cannot be null");
+        if (tickers.contains(null)) throw new NullPointerException("The list of tickers must not contain null strings");
+        if (fields.contains(null)) throw new NullPointerException("The list of fields must not contain empty strings");
+
         Preconditions.checkArgument(!tickers.isEmpty(), "The list of tickers must not be empty");
         Preconditions.checkArgument(!fields.isEmpty(), "The list of fields must not be empty");
         Preconditions.checkArgument(!tickers.contains(""), "The list of tickers must not contain empty strings");
