@@ -126,7 +126,7 @@ final class BloombergEventHandler implements EventHandler {
                         logger.debug("[{}] id=[{}] {}", type, id, msg);
 
                         String msgType = msg.messageType().toString();
-                        if (!"SubscriptionStarted ".equals(msgType)) {
+                        if (msgType == null || !msgType.startsWith("SubscriptionStarted")) {
                             logger.debug("[{}] id=[{}] {}", type, id, msg);
                             Element msgElement = msg.asElement();
                             Data data = null;
