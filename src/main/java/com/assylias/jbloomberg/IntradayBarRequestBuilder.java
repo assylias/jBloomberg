@@ -94,8 +94,8 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     /**
      * Adjust historical pricing based on the DPDF&lt;GO&gt; BLOOMBERG PROFESSIONAL service function.
      */
-    public IntradayBarRequestBuilder adjustDefault() {
-        this.adjustDefault = true;
+    public IntradayBarRequestBuilder noAdjustDefault() {
+        this.adjustDefault = false;
         return this;
     }
 
