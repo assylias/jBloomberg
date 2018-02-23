@@ -18,7 +18,8 @@ public enum IntradayBarField {
     LOW("low"),
     CLOSE("close"),
     VOLUME("volume"),
-    NUM_EVENTS("numEvents");
+    NUM_EVENTS("numEvents"),
+    VALUE("value");
 
     private final static Map<String, IntradayBarField> map = new HashMap<>(IntradayBarField.values().length, 1);
 
