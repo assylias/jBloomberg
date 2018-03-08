@@ -218,7 +218,6 @@ public class DefaultBloombergSession implements BloombergSession {
             subscriptionManager.stop(this);
             session.stop();//started ? SYNC : ASYNC); //if not started, something's wrong, don't spend too much time here...
             state.set(TERMINATED);
-            updateStateListener();
             logger.info("Stopped Bloomberg session #{}", sessionId);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
