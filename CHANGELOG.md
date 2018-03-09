@@ -1,3 +1,15 @@
+## [v3.6]
+
+### Fixed
+
+- bbcomm.exe can also be located in c:/blp/DAPI
+- the price adjustments in `HistoricalRequestBuilder` and `IntradayBarRequestBuilder` were DPDF dependent
+
+### Changed
+
+- deprecate the `adjustDefault` method in `HistoricalRequestBuilder` and `IntradayBarRequestBuilder` as this is now the default behaviour
+- add an `ignorePricingDefaults` method
+
 ## [v3.5]
 
 ### Added

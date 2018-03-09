@@ -160,6 +160,16 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
         return this;
     }
 
+
+    /**
+     * This method is now a no-op as the builder will by default use the Pricing Defaults (see {@link HistoricalRequestBuilder#HistoricalRequestBuilder(String, String, LocalDate, LocalDate)}).
+     */
+    @Deprecated
+    public HistoricalRequestBuilder adjustDefault() {
+        this.usePricingDefaults = true;
+        return this;
+    }
+
     /**
      * No price adjustment will be made for splits, distributions etc., regardless of the DPDF&lt;GO&gt; settings.
      */

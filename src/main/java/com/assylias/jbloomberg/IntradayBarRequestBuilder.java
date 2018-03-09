@@ -90,6 +90,15 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     }
 
     /**
+     * This method is now a no-op as the builder will by default use the Pricing Defaults (see {@link IntradayBarRequestBuilder#IntradayBarRequestBuilder(String, OffsetDateTime, OffsetDateTime)}).
+     */
+    @Deprecated
+    public IntradayBarRequestBuilder adjustDefault() {
+        this.usePricingDefaults = true;
+        return this;
+    }
+
+    /**
      * No price adjustment will be made for splits, distributions etc., regardless of the DPDF&lt;GO&gt; settings.
      */
     public IntradayBarRequestBuilder ignorePricingDefaults() {
