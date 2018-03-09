@@ -4,19 +4,23 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.DateUtils.toLocalDate;
-import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
-import static com.assylias.jbloomberg.DateUtils.toOffsetTime;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.ElementIterator;
 import com.bloomberglp.blpapi.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +31,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.assylias.jbloomberg.DateUtils.toLocalDate;
+import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
+import static com.assylias.jbloomberg.DateUtils.toOffsetTime;
 
 /**
  * A utility class that should not be very useful for the users of the API.
@@ -38,7 +44,7 @@ final class BloombergUtils {
     private final static Logger logger = LoggerFactory.getLogger(BloombergUtils.class);
     private static volatile boolean isBbcommStarted = false;
     private final static String BBCOMM_PROCESS = "bbcomm.exe";
-    private final static String BBCOMM_FOLDER = "C:/blp/API";
+    private final static String[] BBCOMM_FOLDER = { "C:/blp/API", "C:/blp/DAPI" };
 
     private BloombergUtils() {
     }
@@ -130,7 +136,7 @@ final class BloombergUtils {
     private static Boolean getStartingCallable() throws IOException {
         logger.info("Starting {} manually", BBCOMM_PROCESS);
         ProcessBuilder pb = new ProcessBuilder(BBCOMM_PROCESS);
-        pb.directory(new File(BBCOMM_FOLDER));
+        pb.directory(getBbcommFolder());
         pb.redirectErrorStream(true);
         Process p = pb.start();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")))) {
@@ -144,6 +150,14 @@ final class BloombergUtils {
             }
             return false;
         }
+    }
+
+    private static File getBbcommFolder() {
+        for (String p : BBCOMM_FOLDER) {
+            Path folder = Paths.get(p);
+            if (Files.exists(folder.resolve(BBCOMM_PROCESS))) return folder.toFile();
+        }
+        throw new AssertionError("Could not locate " + BBCOMM_PROCESS + " in any of the default folders " + Arrays.toString(BBCOMM_FOLDER));
     }
 
     private static boolean getResultWithTimeout(Callable<Boolean> startBloombergProcess, int timeout, TimeUnit timeUnit) {

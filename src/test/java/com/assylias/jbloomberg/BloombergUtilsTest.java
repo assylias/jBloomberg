@@ -11,12 +11,16 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+import mockit.Verifications;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
@@ -89,6 +93,29 @@ public class BloombergUtilsTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    @Test (groups = "unit") public void test_bbcomm_location_API(@Mocked ProcessBuilder pb) {
+      new Expectations(Files.class, ShellUtils.class) {{
+        ShellUtils.isProcessRunning(anyString); result = false;
+        Files.exists(Paths.get("C:/blp/API/bbcomm.exe")); result = true;
+      }};
+      BloombergUtils.startBloombergProcessIfNecessary();
+      new Verifications() {{
+        pb.directory(new File("C:/blp/API"));
+      }};
+    }
+
+    @Test (groups = "unit") public void test_bbcomm_location_DAPI(@Mocked ProcessBuilder pb) {
+      new Expectations(Files.class, ShellUtils.class) {{
+        ShellUtils.isProcessRunning(anyString); result = false;
+        Files.exists(Paths.get("C:/blp/API/bbcomm.exe")); result = false; //doesn't exist: check in c:/blp/DAPI
+        Files.exists(Paths.get("C:/blp/DAPI/bbcomm.exe")); result = true;
+      }};
+      BloombergUtils.startBloombergProcessIfNecessary();
+      new Verifications() {{
+        pb.directory(new File("C:/blp/DAPI"));
+      }};
     }
 
     /**
