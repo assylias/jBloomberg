@@ -51,7 +51,6 @@ public class IntradayBarResultParserTest {
     public void testParse_OK() throws Exception {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("IBM US Equity", NOW.minusDays(5), NOW);
         builder.adjustAbnormalDistributions()
-                .noAdjustDefault()
                 .adjustNormalDistributions()
                 .adjustSplits()
                 .fillInitialBar()

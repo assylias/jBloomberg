@@ -11,9 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This class enables to build an IntradayBarData historical request while ensuring argument safety. Typically, instead
- * of
- * passing
- * strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
+ * of passing strings arguments (and typos) as with the standard Bloomberg API, the possible options used to override the behaviour
  * of the query have been wrapped in enums or relevant primitive types.
  * <p>
  * All methods, including the constructors, throw NullPointerException when null arguments are passed in.
@@ -30,11 +28,11 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     private boolean adjustNormal = false;
     private boolean adjustAbnormal = false;
     private boolean adjustSplit = false;
-    private boolean adjustDefault = true;
+    private boolean usePricingDefaults = true;
 
     /**
      * Creates a RequestBuilder with an event type TRADE. The Builder can be further customised with the provided
-     * methods.
+     * methods. By default, this RequestBuilder uses Bloomberg's Pricing Defaults (accessible via DPDF&lt;GO&gt;).
      *
      * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
      *                      IBM US Equity)
@@ -51,7 +49,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
 
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
-     * methods.
+     * methods. By default, this RequestBuilder uses Bloomberg's Pricing Defaults (accessible via DPDF&lt;GO&gt;).
      * <p>
      * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
      *                      IBM US Equity)
@@ -92,10 +90,10 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     }
 
     /**
-     * Adjust historical pricing based on the DPDF&lt;GO&gt; BLOOMBERG PROFESSIONAL service function.
+     * No price adjustment will be made for splits, distributions etc., regardless of the DPDF&lt;GO&gt; settings.
      */
-    public IntradayBarRequestBuilder noAdjustDefault() {
-        this.adjustDefault = false;
+    public IntradayBarRequestBuilder ignorePricingDefaults() {
+        this.usePricingDefaults = false;
         return this;
     }
 
@@ -103,33 +101,44 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      * Adjust historical pricing to reflect: Special Cash, Liquidation, Capital Gains, Long-Term Capital Gains,
      * Short-Term Capital Gains, Memorial, Return of Capital, Rights Redemption, Miscellaneous, Return Premium,
      * Preferred Rights Redemption, Proceeds/Rights, Proceeds/Shares, Proceeds/ Warrants.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public IntradayBarRequestBuilder adjustAbnormalDistributions() {
         this.adjustAbnormal = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
     /**
      * Adjust historical pricing to reflect: Regular Cash, Interim, 1st Interim, 2nd Interim, 3rd Interim, 4th Interim,
      * 5th Interim, Income, Estimated, Partnership Distribution, Final, Interest on Capital, Distribution, Prorated.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public IntradayBarRequestBuilder adjustNormalDistributions() {
         this.adjustNormal = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
     /**
      * Adjust historical pricing and/or volume to reflect: Spin-Offs, Stock Splits/Consolidations, Stock Dividend/Bonus,
      * Rights Offerings/ Entitlement.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public IntradayBarRequestBuilder adjustSplits() {
         this.adjustSplit = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
     @Override
     public String toString() {
-        return "IntradayBarRequestBuilder{" + super.toString() + ", period=" + period + ", fillInitialBar=" + fillInitialBar + ", adjNormal=" + adjustNormal + ", adjAbnormal=" + adjustAbnormal + ", adjSplit=" + adjustSplit + ", adjDefault=" + adjustDefault + '}';
+        return "IntradayBarRequestBuilder{" + super.toString() + ", period=" + period + ", fillInitialBar=" + fillInitialBar
+                + ", adjNormal=" + adjustNormal + ", adjAbnormal=" + adjustAbnormal + ", adjSplit=" + adjustSplit
+                + ", usePricingDefaults=" + usePricingDefaults + '}';
     }
 
     @Override
@@ -141,7 +150,7 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
         request.set("adjustmentNormal", adjustNormal);
         request.set("adjustmentAbnormal", adjustAbnormal);
         request.set("adjustmentSplit", adjustSplit);
-        request.set("adjustmentFollowDPDF", adjustDefault);
+        request.set("adjustmentFollowDPDF", usePricingDefaults);
     }
 
     @Override

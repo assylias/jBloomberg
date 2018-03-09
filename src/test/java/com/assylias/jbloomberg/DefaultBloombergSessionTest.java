@@ -90,7 +90,7 @@ public class DefaultBloombergSessionTest {
         }
     }
 
-    @Test(groups = "requires-bloomberg", timeOut = 1000)
+    @Test(groups = "requires-bloomberg", timeOut = 5000)
     public void testStart_allGood_withListener() throws Exception {
         AtomicReference<SessionState> lastState = new AtomicReference<> ();
         List<SessionState> states = new CopyOnWriteArrayList<>();

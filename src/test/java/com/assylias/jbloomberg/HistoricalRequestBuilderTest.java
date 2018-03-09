@@ -4,14 +4,21 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Request;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
 import java.util.Map;
-import static org.testng.Assert.*;
-import org.testng.annotations.Test;
+import java.util.function.UnaryOperator;
+
+import static org.testng.Assert.assertEquals;
 
 public class HistoricalRequestBuilderTest {
 
@@ -105,7 +112,7 @@ public class HistoricalRequestBuilderTest {
     public void testConstructor_AllOk_WithOverrides() {
         HistoricalRequestBuilder builder = new HistoricalRequestBuilder("IBM US Equity", "PX_LAST", NOW, NOW);
         builder.adjustAbnormalDistributions()
-                .adjustDefault()
+                .ignorePricingDefaults()
                 .adjustNormalDistributions()
                 .adjustSplits()
                 .currency(Currency.getInstance("USD"))
@@ -143,5 +150,32 @@ public class HistoricalRequestBuilderTest {
         } finally {
           session.stop();
         }
+    }
+
+    @DataProvider(name = "adjustments") public Object[][] adjustments() {
+        return new Object[][] {
+                // the operations to apply to the builder   adjNormal   adjAbnormal adjSplit    adjDpdf
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b, false, false, false, true },
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b.ignorePricingDefaults(), false, false, false, false },
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b.adjustNormalDistributions(), true, false, false, false },
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b.adjustAbnormalDistributions(), false, true, false, false},
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b.adjustSplits(), false, false, true, false},
+                { (UnaryOperator<HistoricalRequestBuilder>) b ->  b.adjustSplits().adjustNormalDistributions().adjustAbnormalDistributions(), true, true, true, false},
+        };
+    }
+
+    @Mocked Request request;
+
+    @Test(groups = "unit", dataProvider = "adjustments")
+    public void test_adjustments(UnaryOperator<HistoricalRequestBuilder> u, boolean adjNormal, boolean adjAbnormal, boolean adjSplit, boolean adjDpdf) {
+        u.apply(new HistoricalRequestBuilder("ABC", "DEF", NOW, NOW))
+         .buildRequest(request);
+
+        new Verifications() {{
+            request.set("adjustmentNormal", adjNormal);
+            request.set("adjustmentAbnormal", adjAbnormal);
+            request.set("adjustmentSplit", adjSplit);
+            request.set("adjustmentFollowDPDF", adjDpdf);
+        }};
     }
 }

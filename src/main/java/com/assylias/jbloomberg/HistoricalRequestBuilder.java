@@ -44,7 +44,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     private boolean adjNormal = false;
     private boolean adjAbnormal = false;
     private boolean adjSplit = false;
-    private boolean adjDefault = false;
+    private boolean usePricingDefaults = true;
     private final Map<String, String> overrides = new HashMap<>();
 
     /**
@@ -76,7 +76,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
 
     /**
      * Creates a HistoricalRequestBuilder with standard options. The Builder can be further customised with the provided
-     * methods.
+     * methods. By default, this RequestBuilder uses Bloomberg's Pricing Defaults (accessible via DPDF&lt;GO&gt;).
      * <p>
      * @param tickers   a collection of tickers for which data needs to be retrieved - tickers must be valid Bloomberg
      *                  symbols (for example: IBM US Equity)
@@ -161,10 +161,10 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     }
 
     /**
-     * Adjust historical pricing based on the DPDF<GO> BLOOMBERG PROFESSIONAL service function.
+     * No price adjustment will be made for splits, distributions etc., regardless of the DPDF&lt;GO&gt; settings.
      */
-    public HistoricalRequestBuilder adjustDefault() {
-        this.adjDefault = true;
+    public HistoricalRequestBuilder ignorePricingDefaults() {
+        this.usePricingDefaults = false;
         return this;
     }
 
@@ -172,27 +172,36 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
      * Adjust historical pricing to reflect: Special Cash, Liquidation, Capital Gains, Long-Term Capital Gains,
      * Short-Term Capital Gains, Memorial, Return of Capital, Rights Redemption, Miscellaneous, Return Premium,
      * Preferred Rights Redemption, Proceeds/Rights, Proceeds/Shares, Proceeds/ Warrants.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public HistoricalRequestBuilder adjustAbnormalDistributions() {
         this.adjAbnormal = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
     /**
      * Adjust historical pricing to reflect: Regular Cash, Interim, 1st Interim, 2nd Interim, 3rd Interim, 4th Interim,
      * 5th Interim, Income, Estimated, Partnership Distribution, Final, Interest on Capital, Distribution, Prorated.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public HistoricalRequestBuilder adjustNormalDistributions() {
         this.adjNormal = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
     /**
      * Adjust historical pricing and/or volume to reflect: Spin-Offs, Stock Splits/Consolidations, Stock
      * Dividend/Bonus, Rights Offerings/ Entitlement.
+     * <p>
+     * All other adjustments in the the DPDF&lt;GO&gt; settings are ignored, unless explicitly set with the other methods.
      */
     public HistoricalRequestBuilder adjustSplits() {
         this.adjSplit = true;
+        this.usePricingDefaults = false;
         return this;
     }
 
@@ -210,7 +219,10 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
 
     @Override
     public String toString() {
-        return "HistoricalQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", startDate=" + startDate + ", endDate=" + endDate + ", periodicityAdjustment=" + periodicityAdjustment + ", period=" + period + ", currency=" + currency + ", days=" + days + ", fill=" + fill + ", points=" + points + ", adjNormal=" + adjNormal + ", adjAbnormal=" + adjAbnormal + ", adjSplit=" + adjSplit + ", adjDefault=" + adjDefault + ", overrides=[" + Joiner.on(",").withKeyValueSeparator("=").join(overrides) + "]}";
+        return "HistoricalQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", startDate=" + startDate + ", endDate=" + endDate
+                + ", periodicityAdjustment=" + periodicityAdjustment + ", period=" + period + ", currency=" + currency + ", days=" + days
+                + ", fill=" + fill + ", points=" + points + ", adjNormal=" + adjNormal + ", adjAbnormal=" + adjAbnormal + ", adjSplit=" + adjSplit
+                + ", usePricingDefaults=" + usePricingDefaults + ", overrides=[" + Joiner.on(",").withKeyValueSeparator("=").join(overrides) + "]}";
     }
 
     @Override
@@ -242,7 +254,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
         request.set("adjustmentNormal", adjNormal);
         request.set("adjustmentAbnormal", adjAbnormal);
         request.set("adjustmentSplit", adjSplit);
-        request.set("adjustmentFollowDPDF", adjDefault);
+        request.set("adjustmentFollowDPDF", usePricingDefaults);
         request.set("startDate", startDate.format(BB_REQUEST_DATE_FORMATTER));
         request.set("endDate", endDate.format(BB_REQUEST_DATE_FORMATTER));
     }

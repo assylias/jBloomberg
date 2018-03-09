@@ -4,10 +4,17 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Request;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+
 import java.time.OffsetDateTime;
 import java.util.concurrent.TimeUnit;
+import java.util.function.UnaryOperator;
+
 import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
 
 public class IntradayBarRequestBuilderTest {
     private static final OffsetDateTime NOW = OffsetDateTime.now();
@@ -44,5 +51,32 @@ public class IntradayBarRequestBuilderTest {
         builder.period(24, TimeUnit.HOURS);
         builder.period(1, TimeUnit.DAYS);
         builder.period(60, TimeUnit.SECONDS);
+    }
+
+    @DataProvider(name = "adjustments") public Object[][] adjustments() {
+        return new Object[][] {
+            // the operations to apply to the builder   adjNormal   adjAbnormal adjSplit    adjDpdf
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b, false, false, false, true },
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b.ignorePricingDefaults(), false, false, false, false },
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b.adjustNormalDistributions(), true, false, false, false },
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b.adjustAbnormalDistributions(), false, true, false, false},
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b.adjustSplits(), false, false, true, false},
+            { (UnaryOperator<IntradayBarRequestBuilder>) b ->  b.adjustSplits().adjustNormalDistributions().adjustAbnormalDistributions(), true, true, true, false},
+        };
+    }
+
+    @Mocked Request request;
+
+    @Test(groups = "unit", dataProvider = "adjustments")
+    public void test_adjustments(UnaryOperator<IntradayBarRequestBuilder> u, boolean adjNormal, boolean adjAbnormal, boolean adjSplit, boolean adjDpdf) {
+        u.apply(new IntradayBarRequestBuilder("ABC", NOW, NOW))
+                .buildRequest(request);
+
+        new Verifications() {{
+            request.set("adjustmentNormal", adjNormal);
+            request.set("adjustmentAbnormal", adjAbnormal);
+            request.set("adjustmentSplit", adjSplit);
+            request.set("adjustmentFollowDPDF", adjDpdf);
+        }};
     }
 }
