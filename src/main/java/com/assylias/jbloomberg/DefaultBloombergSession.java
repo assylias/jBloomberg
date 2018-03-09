@@ -279,11 +279,11 @@ public class DefaultBloombergSession implements BloombergSession {
         try {
             sessionStartup.await(); //once the latch counts down, we know that the session has been set.
             if (state.get() != SessionState.STARTED) {
-                throw new RuntimeException("The Bloomberg session could not be started");
+                throw new BloombergException("The Bloomberg session could not be started");
             }
             subscriptionManager.subscribe(subscription);
         } catch (IOException e) {
-            throw new RuntimeException("Could not complete subscription request", e);
+            throw new BloombergException("Could not complete subscription request", e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
