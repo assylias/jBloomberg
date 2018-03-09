@@ -27,18 +27,19 @@ import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -244,13 +245,13 @@ public class DefaultBloombergSession implements BloombergSession {
      *
      */
     @Override
-    public <T extends RequestResult> Future<T> submit(final RequestBuilder<T> request) {
+    public <T extends RequestResult> CompletableFuture<T> submit(final RequestBuilder<T> request) {
         requireNonNull(request, "request cannot be null");
         if (state.get() == NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         logger.debug("Submitting request {}", request);
-        Callable<T> task = () -> {
+        Supplier<T> task = () -> {
           BloombergServiceType serviceType = request.getServiceType();
           CorrelationID cId = getNextCorrelationId();
           try {
@@ -267,7 +268,7 @@ public class DefaultBloombergSession implements BloombergSession {
             throw new CancellationException("The request was cancelled");
           }
         };
-        return executor.submit(task);
+        return CompletableFuture.supplyAsync(task, executor);
     }
 
     @Override

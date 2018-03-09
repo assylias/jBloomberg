@@ -4,7 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -77,7 +77,7 @@ public interface BloombergSession {
      * @throws NullPointerException  if request is null
      *
      */
-    <T extends RequestResult> Future<T> submit(RequestBuilder<T> request);
+    <T extends RequestResult> CompletableFuture<T> submit(RequestBuilder<T> request);
 
     /**
      * Subscribes to a stream of real time update. The SubscriptionBuilder object is used to specify the securities and

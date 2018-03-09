@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,6 +92,13 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
         Preconditions.checkArgument(!value.isEmpty(), "Value cannot be empty when adding overrides");
         overrides.put(field, value);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ReferenceQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", overrides=[" +
+                Joiner.on(",").withKeyValueSeparator("=").join(overrides) +
+                "]}";
     }
 
     @Override

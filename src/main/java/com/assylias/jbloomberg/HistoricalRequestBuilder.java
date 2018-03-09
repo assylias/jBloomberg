@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Request;
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -209,7 +210,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
 
     @Override
     public String toString() {
-        return "HistoricalQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", startDate=" + startDate + ", endDate=" + endDate + ", periodicityAdjustment=" + periodicityAdjustment + ", period=" + period + ", currency=" + currency + ", days=" + days + ", fill=" + fill + ", points=" + points + ", adjNormal=" + adjNormal + ", adjAbnormal=" + adjAbnormal + ", adjSplit=" + adjSplit + ", adjDefault=" + adjDefault + '}';
+        return "HistoricalQueryBuilder{" + "tickers=" + tickers + ", fields=" + fields + ", startDate=" + startDate + ", endDate=" + endDate + ", periodicityAdjustment=" + periodicityAdjustment + ", period=" + period + ", currency=" + currency + ", days=" + days + ", fill=" + fill + ", points=" + points + ", adjNormal=" + adjNormal + ", adjAbnormal=" + adjAbnormal + ", adjSplit=" + adjSplit + ", adjDefault=" + adjDefault + ", overrides=[" + Joiner.on(",").withKeyValueSeparator("=").join(overrides) + "]}";
     }
 
     @Override

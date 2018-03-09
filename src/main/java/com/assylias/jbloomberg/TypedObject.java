@@ -16,6 +16,8 @@
 package com.assylias.jbloomberg;
 
 import java.util.List;
+import java.util.Map;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -63,15 +65,31 @@ public class TypedObject {
     return o instanceof List;
   }
 
+  public boolean isMap() {
+    return o instanceof Map;
+  }
+
   @SuppressWarnings("unchecked")
   public List<TypedObject> asList() {
     return (List<TypedObject>) o;
   }
 
   @SuppressWarnings("unchecked")
+  public Map<String, TypedObject> asMap() {
+    return (Map<String, TypedObject>) o;
+  }
+
+
+  @SuppressWarnings("unchecked")
   public <T> List<T> asList(Class<T> clazz) {
     return (List<T>) o;
   }
+
+  @SuppressWarnings("unchecked")
+  public <T> Map<String, T> asMap(Class<T> clazz) {
+    return (Map<String, T>) o;
+  }
+
 
   public <T> T as(Class<T> clazz) {
     return clazz.cast(o);

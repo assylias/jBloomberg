@@ -9,7 +9,7 @@ package com.assylias.jbloomberg;
  * This can happen for example if there is no Bloomberg terminal installed on the machine, if the user is not logged on,
  * if the connection gets shutdown, if a malformed query is sent to the API etc.
  */
-public class BloombergException extends Exception {
+public class BloombergException extends RuntimeException {
 
     public BloombergException(String message) {
         super(message);

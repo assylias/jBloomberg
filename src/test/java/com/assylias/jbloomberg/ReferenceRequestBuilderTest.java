@@ -94,4 +94,12 @@ public class ReferenceRequestBuilderTest {
         assertEquals(new ReferenceRequestBuilder("ABC", "DEF").getRequestType(),
                 BloombergRequestType.REFERENCE_DATA);
     }
+
+    @Test
+    public void testToString() {
+        ReferenceRequestBuilder builder = new ReferenceRequestBuilder("ABC", "DEF");
+        builder.addOverride("a", "b");
+        builder.addOverride("c", "d");
+        assertTrue(builder.toString().contains("a=b,c=d"));
+    }
 }

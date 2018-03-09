@@ -4,14 +4,15 @@
  */
 package com.assylias.jbloomberg;
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,9 @@ public class IntradayTickData extends AbstractRequestResult {
         return security;
     }
 
+    public Table<OffsetDateTime, IntradayTickField, TypedObject> get() {
+        return ImmutableTable.copyOf(data);
+    }
     /**
      *
      * @param field the field for which the data is needed
