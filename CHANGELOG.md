@@ -9,6 +9,7 @@
 
 - deprecate the `adjustDefault` method in `HistoricalRequestBuilder` and `IntradayBarRequestBuilder` as this is now the default behaviour
 - add an `ignorePricingDefaults` method
+- `BloombergException` is now unchecked
 
 ## [v3.5]
 
