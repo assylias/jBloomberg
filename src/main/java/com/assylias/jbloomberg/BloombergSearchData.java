@@ -4,13 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
-
 import java.util.HashSet;
-import java.util.Map;
 
 /**
  * A class that represents the result returned from a Bloomberg saved SRCH query.  This is return as a list
