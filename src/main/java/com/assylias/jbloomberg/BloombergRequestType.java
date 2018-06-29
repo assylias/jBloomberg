@@ -14,8 +14,8 @@ public enum BloombergRequestType {
     INTRADAY_TICK("IntradayTickRequest"),
     INTRADAY_BAR("IntradayBarRequest"),
     REFERENCE_DATA("ReferenceDataRequest"),
-    PORTFOLIO_DATA("PortfolioDataRequest");
-
+    PORTFOLIO_DATA("PortfolioDataRequest"),
+    EXCELGETGRIDREQUEST_DATA("ExcelGetGridRequest");
     private final String requestName;
 
     BloombergRequestType(String requestName) {

@@ -34,6 +34,12 @@ abstract class AbstractRequestBuilder<T extends RequestResult> implements Reques
         }
     }
 
+    static void addValueToElement(Request request, String elementValue, String elementName) {
+        Element element = request.getElement(elementName);
+        element.setValue(elementValue);
+
+    }
+
     static void addOverrides(Request request, Map<String, String> overrides) {
         Element overridesElt = request.getElement("overrides");
         for (Map.Entry<String, String> e : overrides.entrySet()) {

@@ -209,6 +209,10 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         result.add(security, fieldName, value);
     }
 
+    protected void addSecurity(String security) {
+        result.add(security);
+    }
+
     protected void addSecurityError(String security) {
         result.addSecurityError(security);
     }
