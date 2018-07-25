@@ -5,14 +5,17 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import org.testng.annotations.Test;
+
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.*;
-import org.testng.annotations.Test;
 
 @Test(groups="unit", singleThreaded = true) //single threaded to make sure no other test adds keys at the same time
 public class EventsKeyTest {
@@ -52,7 +55,7 @@ public class EventsKeyTest {
             fail("Tasks did not complete");
         }
         int countKeysEnd = countKeys();
-        assertEquals(countKeysEnd - countKeysStart, 2000);
+        assertThat(countKeysEnd).isEqualTo(countKeysStart + 2000);
     }
 
     private static int countKeys() throws Exception {
