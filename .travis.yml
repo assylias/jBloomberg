@@ -1,0 +1,11 @@
+language: java
+jdk:
+ - openjdk8
+
+before_script:
+ - wget -q https://software.tech.bloomberg/BLPAPI-Stable-Generic/blpapi_java_3.8.8.2.zip
+ - unzip blpapi_java_3.8.8.2.zip
+ - mvn install:install-file -Dfile=blpapi_java_3.8.8.2/bin/blpapi-3.8.8-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.8-2 -Dpackaging=jar
+
+script:
+ - mvn test -Dgroups=unit
