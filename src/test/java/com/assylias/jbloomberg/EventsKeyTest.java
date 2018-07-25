@@ -69,7 +69,7 @@ public class EventsKeyTest {
             try {
                 start.await();
             } catch (InterruptedException ex) {}
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 10_000; i < 11_000; i++) {
                 EventsKey key1 = EventsKey.of(new CorrelationID(i), RealtimeField.ASK);
                 EventsKey key2 = EventsKey.of(new CorrelationID(i), RealtimeField.BID);
                 assertNotEquals(key1, key2); //pretend we are doing something
