@@ -185,7 +185,7 @@ public class DefaultBloombergSessionTest {
         }
     }
 
-    @Test(groups = "unit", expectedExceptions = CancellationException.class)
+    @Test(groups = "requires-bloomberg", expectedExceptions = CancellationException.class)
     public void testSubmit_RequestCancelled() throws Exception {
         new MockBloombergUtils(true);
         MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
