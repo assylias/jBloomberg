@@ -7,20 +7,23 @@ public class InstrumentListResultParser extends AbstractResultParser<InstrumentL
     private static final Name RESULTS = Name.getName("results");
     private static final Name DESCRIPTION = Name.getName("description");
 
-    @Override
-    protected InstrumentList getRequestResult() {
-        return new InstrumentList();
+    public InstrumentListResultParser() {
+        super((res, response) -> {
+            if (response.hasElement(RESULTS, true)) {
+                final Element results = response.getElement(RESULTS);
+                final int numResults = results.numValues();
+                for (int i = 0; i < numResults; i++) {
+                    final Element result = results.getValueAsElement(i);
+                    final String security = result.getElementAsString(SECURITY);
+                    final String description = result.getElementAsString(DESCRIPTION);
+                    res.add(security, description);
+                }
+            }
+        });
     }
 
     @Override
-    protected void parseResponseNoResponseError(final Element response) {
-        if (response.hasElement(RESULTS)) {
-            final Element results = response.getElement(RESULTS);
-            final int numResults = results.numValues();
-            for (int i = 0; i < numResults; i++) {
-                final Element result = results.getValueAsElement(i);
-                parseSecurityData(result);
-            }
-        }
+    protected InstrumentList getRequestResult() {
+        return new InstrumentList();
     }
 }

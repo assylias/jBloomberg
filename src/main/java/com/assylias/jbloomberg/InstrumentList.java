@@ -19,7 +19,6 @@ public class InstrumentList extends AbstractRequestResult {
         return data.isEmpty();
     }
 
-    @Override
     synchronized void add(final String security, final String description) {
         data.add(new Instrument(security, description));
     }

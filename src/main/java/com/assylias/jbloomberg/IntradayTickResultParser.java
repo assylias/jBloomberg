@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
 final class IntradayTickResultParser extends AbstractResultParser<IntradayTickData> {
-
-    private final static Logger logger = LoggerFactory.getLogger(IntradayTickResultParser.class);
     /**
      * The various element names
      */
@@ -30,13 +28,14 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
     /**
      * @param security the Bloomberg identifier of the security
      */
-    public IntradayTickResultParser(String security) {
+    public IntradayTickResultParser(final String security) {
+        super((res, response) -> {
+            if (response.hasElement(TICK_DATA, true)) {
+                final Element barData = response.getElement(TICK_DATA);
+                parseTickData(res, barData);
+            }
+        });
         this.security = security;
-    }
-
-    @Override
-    protected void addFieldError(String field) {
-        throw new UnsupportedOperationException("Intraday Tick Requests can't report a field exception");
     }
 
     @Override
@@ -47,8 +46,7 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
     /**
      * Only the fields we are interested in - the numEvents and value fields will be discarded
      */
-    private static enum TickDataElements {
-
+    private enum TickDataElements {
         TIME("time"),
         TYPE("type"),
         VALUE("value"),
@@ -59,9 +57,10 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
         BROKER_BUY_CODE("brokerBuyCode"),
         BROKER_SELL_CODE("brokerSellCode"),
         RPS_CODE("rpsCode");
+
         private final Name elementName;
 
-        private TickDataElements(String elementName) {
+        TickDataElements(String elementName) {
             this.elementName = new Name(elementName);
         }
 
@@ -70,37 +69,28 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
         }
     }
 
-    @Override
-    protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(TICK_DATA, true)) {
-            Element barData = response.getElement(TICK_DATA);
-            parseTickData(barData);
-        }
-    }
-
-    private void parseTickData(Element barData) {
+    private static void parseTickData(final IntradayTickData result, final Element barData) {
         if (barData.hasElement(TICK_DATA, true)) {
-            Element tickDataArray = barData.getElement(TICK_DATA);
-            parseTickDataArray(tickDataArray);
+            final Element tickDataArray = barData.getElement(TICK_DATA);
+            parseTickDataArray(result, tickDataArray);
         }
     }
 
     /**
      * There should be no more error at this point and we can happily parse the interesting portion of the response
-     *
      */
-    private void parseTickDataArray(Element tickDataArray) {
-        int countData = tickDataArray.numValues();
+    private static void parseTickDataArray(final IntradayTickData result, final Element tickDataArray) {
+        final int countData = tickDataArray.numValues();
         for (int i = 0; i < countData; i++) {
-            Element fieldData = tickDataArray.getValueAsElement(i);
-            Element field = fieldData.getElement(0);
-            if (!TickDataElements.TIME.asName().equals(field.name())) {
-                throw new AssertionError("Time field is supposed to be first but got: " + field.name());
+            final Element fieldData = tickDataArray.getValueAsElement(i);
+            final Element firstField = fieldData.getElement(0);
+            if (!TickDataElements.TIME.asName().equals(firstField.name())) {
+                throw new AssertionError("Time field is supposed to be first but got: " + firstField.name());
             }
-            Datetime dt = field.getValueAsDatetime();
+            final Datetime dt = firstField.getValueAsDatetime();
             for (int j = 1; j < fieldData.numElements(); j++) {
-                field = fieldData.getElement(j);
-                addField(toOffsetDateTime(dt), field);
+                final Element field = fieldData.getElement(j);
+                result.add(toOffsetDateTime(dt), field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
             }
         }
     }

@@ -4,14 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
-import com.bloomberglp.blpapi.Element;
-import com.bloomberglp.blpapi.InvalidConversionException;
-import com.bloomberglp.blpapi.InvalidRequestException;
-import com.bloomberglp.blpapi.Message;
-import com.bloomberglp.blpapi.Name;
-import com.bloomberglp.blpapi.NotFoundException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import com.bloomberglp.blpapi.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Locale;
@@ -20,8 +16,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 
 import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.*;
 
@@ -30,30 +26,39 @@ import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
 abstract class AbstractResultParser<T extends AbstractRequestResult> implements ResultParser<T> {
-
     private static final Logger logger = LoggerFactory.getLogger(AbstractResultParser.class);
-    protected final static DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; //'2011-12-03'
-    protected final static DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-    /**
-     * lock used to create the result object only once
-     */
-    private final Object lock = new Object();
+
+    protected static final DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; //'2011-12-03'
+    protected static final DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
     /**
      * List of received messages - must be thread safe
      */
     private final Collection<Message> messages = new ConcurrentLinkedQueue<>();
+
     /**
      * boolean used to make sure noMoreMessages is only called once - initially false.
      */
     private final AtomicBoolean noMoreMessagesHasRun = new AtomicBoolean();
+
     /**
      * Whether additional messages should be expected or not.
      */
     private final CountDownLatch noMoreMessages = new CountDownLatch(1);
+
     /**
      * The result of the parsing operation - guarded by lock
      */
-    private T result;
+    private final AtomicReference<T> result = new AtomicReference<>();
+
+    private final BiConsumer<T, Element> parseResponseNoResponseError;
+
+    /**
+     * @param parseResponseNoResponseError This consumer must parse the valid part of the response (typically, the securityData or barData Element)
+     */
+    protected AbstractResultParser(final BiConsumer<T, Element> parseResponseNoResponseError) {
+        this.parseResponseNoResponseError = parseResponseNoResponseError;
+    }
 
     @Override
     public void addMessage(Message msg) {
@@ -74,8 +79,7 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
     @Override
     public T getResult() throws InterruptedException {
         noMoreMessages.await();
-        setResultIfNull();
-        return result;
+        return setResultIfNull();
     }
 
     @Override
@@ -83,17 +87,18 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         if (!noMoreMessages.await(timeout, unit)) {
             throw new TimeoutException("Could not compute the result within " + timeout + " " + unit.toString().toLowerCase(Locale.ENGLISH));
         }
-        setResultIfNull();
-        return result;
+        return setResultIfNull();
     }
 
-    private void setResultIfNull() {
-        synchronized(lock) {
-            if (result == null) {
-                result = getRequestResult();
-                parse(messages);
+    private T setResultIfNull() {
+        return result.updateAndGet(r -> {
+            if (r == null) {
+                final T result = getRequestResult();
+                parse(result, messages);
+                return result;
             }
-        }
+            return r;
+        });
     }
 
     /**
@@ -104,17 +109,16 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
     protected static final Name SECURITY = new Name("security");
     protected static final Name DATE = new Name("date");
 
-    protected static enum SecurityDataElements {
+    protected enum SecurityDataElements {
 
         SECURITY("security"),
         SEQUENCE_NUMBER("sequenceNumber"),
         FIELD_DATA("fieldData"),
         FIELD_EXCEPTIONS("fieldExceptions"),
-        SECURITY_ERROR("securityError"),
-        DESCRIPTION("description");
+        SECURITY_ERROR("securityError");
         private final Name elementName;
 
-        private SecurityDataElements(String elementName) {
+        SecurityDataElements(String elementName) {
             this.elementName = new Name(elementName);
         }
 
@@ -122,9 +126,10 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
             return elementName;
         }
     }
+
     private static final Name RESPONSE_ERROR = new Name("responseError");
 
-    private static enum ErrorInfoElements {
+    private enum ErrorInfoElements {
 
         SOURCE("source"),
         CODE("code"),
@@ -133,7 +138,7 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         SUB_CATEGORY("subcategory");
         private final Name elementName;
 
-        private ErrorInfoElements(String elementName) {
+        ErrorInfoElements(String elementName) {
             this.elementName = new Name(elementName);
         }
 
@@ -144,31 +149,31 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
 
     protected abstract T getRequestResult();
 
-    private void parse(Collection<Message> messages) {
-        for (Message msg : messages) {
-            Element response = msg.asElement();
-            parseResponse(response);
+    private void parse(final T result, final Collection<Message> messages) {
+        for (final Message msg : messages) {
+            final Element response = msg.asElement();
+            parseResponse(result, response);
         }
     }
 
-    private void parseResponse(Element response) {
+    private void parseResponse(final T result, final Element response) {
         if (response.hasElement(RESPONSE_ERROR, true)) {
-            Element errorInfo = response.getElement(RESPONSE_ERROR);
+            final Element errorInfo = response.getElement(RESPONSE_ERROR);
             logger.info("Response error: {}", errorInfo);
-            String errorMessage = parseErrorInfo(errorInfo);
+            final String errorMessage = parseErrorInfo(errorInfo);
             if (isSecurityError(errorInfo)) { //Normally only happen for an IntradayBarRequest or IntradayTickRequest
                 result.addSecurityError(errorMessage);
             } else {
                 throw new InvalidRequestException("ResponseError received (generally caused by malformed request or service down): " + errorMessage);
             }
         }
-        parseResponseNoResponseError(response);
+        parseResponseNoResponseError.accept(result, response);
     }
 
     /**
      * @return a string representation of the error
      */
-    protected String parseErrorInfo(Element errorInfo) {
+    private static String parseErrorInfo(Element errorInfo) {
         try {
             return errorInfo.getElementAsString(ErrorInfoElements.MESSAGE.asName());
         } catch (NotFoundException | InvalidConversionException e) {
@@ -177,72 +182,32 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
     }
 
     /**
-     *
      * @param errorInfo an errorInfo element
-     *
      * @return true if this error is due to an invalid security
      */
-    private boolean isSecurityError(Element errorInfo) {
+    private static boolean isSecurityError(Element errorInfo) {
         return errorInfo.hasElement(ErrorInfoElements.CATEGORY.asName())
                 && errorInfo.getElementAsString(ErrorInfoElements.CATEGORY.asName()).equals("BAD_SEC");
     }
 
-    /**
-     * Trying to use the most specific primitive type.
-     * Primitives will get auto-boxed.
-     */
-    protected void addField(LocalDate date, String security, Element field) {
-        String fieldName = field.name().toString();
-        Object value = BloombergUtils.getSpecificObjectOf(field);
-        result.add(date, security, fieldName, value);
-    }
-
-    protected void addField(OffsetDateTime date, Element field) {
-        String fieldName = field.name().toString();
-        Object value = BloombergUtils.getSpecificObjectOf(field);
-        result.add(date, fieldName, value);
-    }
-
-    protected void addField(String security, Element field) {
-        String fieldName = field.name().toString();
-        Object value = BloombergUtils.getSpecificObjectOf(field);
-        result.add(security, fieldName, value);
-    }
-
-    protected void addSecurityError(String security) {
-        result.addSecurityError(security);
-    }
-
-    protected void addFieldError(String field) {
-        result.addFieldError(field);
-    }
-
-    /**
-     * This method must parse the valid part of the response (typically, the securityData or barData Element
-     *
-     * @param response The whole response element, including the responseError element if any (in which case it was
-     *                 empty).
-     */
-    protected abstract void parseResponseNoResponseError(Element response);
-
-    protected void parseSecurityData(Element securityData) {
-        String security = securityData.getElementAsString(SECURITY);
+    protected static <T extends AbstractRequestResult> void parseSecurityData(final T result, final Element securityData, final BiConsumer<String, Element> parseFieldDataArray) {
+        final String security = securityData.getElementAsString(SECURITY);
         if (securityData.hasElement(SECURITY_ERROR.asName(), true)) {
-            Element errorInfo = securityData.getElement(SECURITY_ERROR.asName());
+            final Element errorInfo = securityData.getElement(SECURITY_ERROR.asName());
             logger.info("Security error on {}: {}", security, errorInfo);
-            addSecurityError(security);
+            addSecurityError(result, security);
         } else if (securityData.hasElement(FIELD_EXCEPTIONS.asName(), true)) {
-            Element fieldExceptionsArray = securityData.getElement(FIELD_EXCEPTIONS.asName());
-            parseFieldExceptionsArray(fieldExceptionsArray);
+            final Element fieldExceptionsArray = securityData.getElement(FIELD_EXCEPTIONS.asName());
+            parseFieldExceptionsArray(result, fieldExceptionsArray);
         }
         if (securityData.hasElement(FIELD_DATA.asName(), true)) {
-            Element fieldDataArray = securityData.getElement(FIELD_DATA.asName());
-            parseFieldDataArray(security, fieldDataArray);
+            final Element fieldDataArray = securityData.getElement(FIELD_DATA.asName());
+            parseFieldDataArray.accept(security, fieldDataArray);
         }
-        if (securityData.hasElement(DESCRIPTION.asName())) {
-            final String description = securityData.getElementAsString(DESCRIPTION.asName());
-            result.add(security, description);
-        }
+    }
+
+    private static <T extends AbstractRequestResult> void addSecurityError(final T result, final String security) {
+        result.addSecurityError(security);
     }
 
     /**
@@ -251,17 +216,13 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
      * exception.
      * In other words, we assume that if there are several exceptions, each corresponds to a different field.
      */
-    protected void parseFieldExceptionsArray(Element fieldExceptionsArray) {
+    private static <T extends AbstractRequestResult> void parseFieldExceptionsArray(final T result, final Element fieldExceptionsArray) {
         for (int i = 0; i < fieldExceptionsArray.numValues(); i++) {
-            Element fieldException = fieldExceptionsArray.getValueAsElement(i);
-            String field = fieldException.getElementAsString("fieldId");
-            Element errorInfo = fieldException.getElement(ERROR_INFO);
+            final Element fieldException = fieldExceptionsArray.getValueAsElement(i);
+            final String field = fieldException.getElementAsString("fieldId");
+            final Element errorInfo = fieldException.getElement(ERROR_INFO);
             logger.info("Field exception on {}: {}", field, errorInfo);
-            addFieldError(field);
+            result.addFieldError(field);
         }
-    }
-
-    protected void parseFieldDataArray(String security, Element fieldDataArray) {
-        //does nothing here - needs to be implemented by subclasses if required
     }
 }

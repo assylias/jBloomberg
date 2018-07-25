@@ -15,40 +15,28 @@ import org.slf4j.LoggerFactory;
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
 final class ReferenceResultParser extends AbstractResultParser<ReferenceData> {
-
-    private static final Logger logger = LoggerFactory.getLogger(ReferenceResultParser.class);
+    public ReferenceResultParser() {
+        super((res, response) -> {
+            if (response.hasElement(SECURITY_DATA, true)) {
+                Element securityDataArray = response.getElement(SECURITY_DATA);
+                int numSecurities = securityDataArray.numValues();
+                for (int k = 0; k < numSecurities; k++) {
+                    Element securityData = securityDataArray.getValueAsElement(k);
+                    parseSecurityData(res, securityData, (security, fieldDataArray) -> {
+                        // There should be no more error at this point and we can happily parse the interesting portion of the response
+                        final int numberOfFields = fieldDataArray.numElements();
+                        for (int i = 0; i < numberOfFields; i++) {
+                            final Element field = fieldDataArray.getElement(i);
+                            res.add(security, field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     @Override
     protected ReferenceData getRequestResult() {
         return new ReferenceData();
-    }
-
-    @Override
-    protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(SECURITY_DATA, true)) {
-            Element securityDataArray = response.getElement(SECURITY_DATA);
-            parseSecurityDataArray(securityDataArray);
-        }
-    }
-
-    private void parseSecurityDataArray(Element securityDataArray) {
-        int numSecurities = securityDataArray.numValues();
-        for (int i = 0; i < numSecurities; i++) {
-            Element securityData = securityDataArray.getValueAsElement(i);
-            parseSecurityData(securityData);
-        }
-    }
-
-    /**
-     * There should be no more error at this point and we can happily parse the interesting portion of the response
-     *
-     */
-    @Override
-    protected void parseFieldDataArray(String security, Element fieldDataArray) {
-        int numberOfFields = fieldDataArray.numElements();
-        for (int i = 0; i < numberOfFields; i++) {
-            Element field = fieldDataArray.getElement(i);
-            addField(security, field);
-        }
     }
 }
