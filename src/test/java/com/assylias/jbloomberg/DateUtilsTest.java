@@ -24,9 +24,7 @@ import java.time.ZoneOffset;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
-/**
- *
- */
+@Test(groups = "unit")
 public class DateUtilsTest {
 
   @Test(expectedExceptions = NullPointerException.class) public void getDateTime_null() {

@@ -8,4 +8,4 @@ before_install:
  - mvn install:install-file -Dfile=blpapi_java_3.8.8.2/bin/blpapi-3.8.8-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.8-2 -Dpackaging=jar
 
 script:
- - mvn test -Dgroups=unit
+ - mvn test -Dgroups=unit -DexcludedGroups=windows
