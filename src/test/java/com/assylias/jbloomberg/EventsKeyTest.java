@@ -48,7 +48,7 @@ public class EventsKeyTest {
         int countKeysStart = countKeys();
         start.countDown();
         executor.shutdown();
-        if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+        if (!executor.awaitTermination(10, TimeUnit.SECONDS)) {
             fail("Tasks did not complete");
         }
         int countKeysEnd = countKeys();
