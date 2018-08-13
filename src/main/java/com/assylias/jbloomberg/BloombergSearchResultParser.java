@@ -19,9 +19,9 @@ import org.slf4j.LoggerFactory;
 final class BloombergSearchResultParser extends AbstractResultParser<BloombergSearchData> {
 
     private static final Logger logger = LoggerFactory.getLogger(BloombergSearchResultParser.class);
-    private static final Name DATARECORDS = new Name("DataRecords");
-    private static final Name DATAFIELDS = new Name("DataFields");
-    private static final Name STRINGVALUE = new Name("StringValue");
+    private static final Name DATA_RECORDS = new Name("DataRecords");
+    private static final Name DATA_FIELDS = new Name("DataFields");
+    private static final Name STRING_VALUE = new Name("StringValue");
     @Override
     protected BloombergSearchData getRequestResult() {
         return new BloombergSearchData();
@@ -29,8 +29,8 @@ final class BloombergSearchResultParser extends AbstractResultParser<BloombergSe
 
     @Override
     protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(DATARECORDS, true)) {
-            Element dataRecordsArray = response.getElement(DATARECORDS);
+        if (response.hasElement(DATA_RECORDS, true)) {
+            Element dataRecordsArray = response.getElement(DATA_RECORDS);
             parseDataRecordsArray(dataRecordsArray);
         }
     }
@@ -45,11 +45,13 @@ final class BloombergSearchResultParser extends AbstractResultParser<BloombergSe
 
     private void parseDataFieldsArray(Element dataFieldsArray) {
         int numValues = dataFieldsArray.numValues();
-        Element dataFields = dataFieldsArray.getElement(DATAFIELDS);
-        for (int i = 0; i < numValues; i++) {
-            Element dataField = dataFields.getValueAsElement(i);
-            String stringValue = dataField.getElementAsString(STRINGVALUE);
-            addSecurity(stringValue);
+        if (dataFieldsArray.hasElement(DATA_FIELDS)) {
+            Element dataFields = dataFieldsArray.getElement(DATA_FIELDS);
+            for (int i = 0; i < numValues; i++) {
+                Element dataField = dataFields.getValueAsElement(i);
+                String stringValue = dataField.getElementAsString(STRING_VALUE);
+                addSecurity(stringValue);
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Service;
 import com.bloomberglp.blpapi.Session;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
@@ -32,12 +33,6 @@ abstract class AbstractRequestBuilder<T extends RequestResult> implements Reques
         for (String item : collection) {
             element.appendValue(item);
         }
-    }
-
-    static void addValueToElement(Request request, String elementValue, String elementName) {
-        Element element = request.getElement(elementName);
-        element.setValue(elementValue);
-
     }
 
     static void addOverrides(Request request, Map<String, String> overrides) {

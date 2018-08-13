@@ -4,7 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Request;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * This class enables to build a BloombergSearchData request while ensuring argument safety. The only parameter
@@ -21,13 +24,13 @@ public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<
 
     //Required parameters
     private String domain;
-
+    private int limit = Integer.MIN_VALUE; //ignored if < 0
 
     /**
      * just takes 1 parameter which is the domain (i.e. the saved bsrch query name)
      */
     public BloombergSearchRequestBuilder(String domain) {
-        this.domain = domain;
+        this.domain = requireNonNull(domain, "domain must not be null");
     }
 
     @Override
@@ -45,9 +48,26 @@ public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<
         return BloombergRequestType.EXCELGETGRIDREQUEST_DATA;
     }
 
+    /**
+     * Limits the number of returned securities
+     * @param limit maximum number of securities returned by the request, must be > 0
+     * @throws IllegalArgumentException if limit is <= 0
+     */
+    public BloombergSearchRequestBuilder maxSecurities(int limit) {
+        if (limit <= 0) throw new IllegalArgumentException("limit should be > 0, received " + limit);
+        this.limit = limit;
+        return this;
+    }
+
     @Override
     protected void buildRequest(Request request) {
-        addValueToElement(request, domain, "Domain");
+        request.set("Domain", domain);
+        if (limit > 0) {
+            Element overridesElt = request.getElement("Overrides");
+            Element override = overridesElt.appendElement();
+            override.setElement("name", "LIMIT");
+            override.setElement("value", String.valueOf(limit));
+        }
     }
 
     @Override

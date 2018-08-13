@@ -4,7 +4,10 @@
  */
 package com.assylias.jbloomberg;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that represents the result returned from a Bloomberg saved SRCH query.  This is return as a list
@@ -16,7 +19,7 @@ public final class BloombergSearchData extends AbstractRequestResult {
     /**
      * a hashset which has the list of securities that are returned from the search.
      */
-    private final HashSet<String> data = new HashSet<>();
+    private final Set<String> data = new HashSet<>();
 
     @Override
     public synchronized boolean isEmpty() {
@@ -51,7 +54,7 @@ public final class BloombergSearchData extends AbstractRequestResult {
     /**
      * returns a cloned copy of the results.
      */
-    public HashSet<String> get() {
-        return (HashSet<String>) data.clone();
+    public Set<String> get() {
+        return ImmutableSet.copyOf(data);
     }
 }
