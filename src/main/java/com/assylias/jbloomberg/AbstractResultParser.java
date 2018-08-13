@@ -4,15 +4,15 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_DATA;
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_EXCEPTIONS;
-import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY_ERROR;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.InvalidConversionException;
 import com.bloomberglp.blpapi.InvalidRequestException;
 import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,8 +23,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.DESCRIPTION;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_DATA;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.FIELD_EXCEPTIONS;
+import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.SECURITY_ERROR;
 
 /**
  * Base class to parse results from requests.
@@ -111,7 +114,8 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         SEQUENCE_NUMBER("sequenceNumber"),
         FIELD_DATA("fieldData"),
         FIELD_EXCEPTIONS("fieldExceptions"),
-        SECURITY_ERROR("securityError");
+        SECURITY_ERROR("securityError"),
+        DESCRIPTION("description");
         private final Name elementName;
 
         private SecurityDataElements(String elementName) {
@@ -242,6 +246,10 @@ abstract class AbstractResultParser<T extends AbstractRequestResult> implements 
         if (securityData.hasElement(FIELD_DATA.asName(), true)) {
             Element fieldDataArray = securityData.getElement(FIELD_DATA.asName());
             parseFieldDataArray(security, fieldDataArray);
+        }
+        if (securityData.hasElement(DESCRIPTION.asName())) {
+            final String description = securityData.getElementAsString(DESCRIPTION.asName());
+            result.add(security, description);
         }
     }
 
