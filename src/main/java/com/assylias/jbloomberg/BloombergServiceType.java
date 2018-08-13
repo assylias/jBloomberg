@@ -17,7 +17,9 @@ public enum BloombergServiceType {
     API_FIELD_INFORMATION("//blp/apiflds"),
     PAGE_DATA("//blp/pagedata"),
     TECHNICAL_ANALYSIS("//blp/tasvc"),
-    API_AUTHORIZATION("//blp/apiauth");
+    API_AUTHORIZATION("//blp/apiauth"),
+    EXR_SERVICE("//blp/exrsvc");
+
     private final String serviceUri;
 
     BloombergServiceType(String serviceUri) {

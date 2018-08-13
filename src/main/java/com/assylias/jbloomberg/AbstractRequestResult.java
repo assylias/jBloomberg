@@ -60,4 +60,9 @@ abstract class AbstractRequestResult implements RequestResult {
     void add(String security, String field, Object value) {
         throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
+
+    //for BloombergSeacrhData
+    void add(String security) {
+        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
+    }
 }
