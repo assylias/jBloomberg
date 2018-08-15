@@ -63,7 +63,7 @@ public class BloombergUtilsTest {
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
-    @Test(groups = "unit")
+    @Test(groups = {"unit", "windows"})
     public void test_ProcessNotRunning_StartBbCommFails(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
         setBbcommStartedFlag(false);
         new Expectations() {
@@ -77,7 +77,6 @@ public class BloombergUtilsTest {
         };
         assertFalse(BloombergUtils.startBloombergProcessIfNecessary());
     }
-
 
     @Test(groups = "requires-bloomberg")
     public void testBbStart() throws Exception {

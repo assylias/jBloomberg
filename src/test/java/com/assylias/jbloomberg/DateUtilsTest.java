@@ -17,16 +17,16 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Datetime;
+import org.testng.annotations.Test;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
-import static org.testng.Assert.assertEquals;
-import org.testng.annotations.Test;
 
-/**
- *
- */
+import static org.testng.Assert.assertEquals;
+
+@Test(groups = "unit")
 public class DateUtilsTest {
 
   @Test(expectedExceptions = NullPointerException.class) public void getDateTime_null() {

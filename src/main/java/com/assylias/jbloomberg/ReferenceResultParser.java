@@ -5,8 +5,6 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,39 +14,27 @@ import org.slf4j.LoggerFactory;
  */
 final class ReferenceResultParser extends AbstractResultParser<ReferenceData> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReferenceResultParser.class);
+    @Override protected void parseResponseNoError(Element response, ReferenceData result) {
+        if (response.hasElement(SECURITY_DATA, true)) {
+            Element securityDataArray = response.getElement(SECURITY_DATA);
+            int numSecurities = securityDataArray.numValues();
+            for (int k = 0; k < numSecurities; k++) {
+                Element securityData = securityDataArray.getValueAsElement(k);
+                parseSecurityData(securityData, ReferenceResultParser::parse, result);
+            }
+        }
+    }
 
+    private static void parse(Element data, String security, ReferenceData result) {
+        // There should be no more error at this point and we can happily parse the interesting portion of the response
+        int numElements = data.numElements();
+        for (int i = 0; i < numElements; i++) {
+            Element field = data.getElement(i);
+            result.add(security, field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
+        }
+    }
     @Override
     protected ReferenceData getRequestResult() {
         return new ReferenceData();
-    }
-
-    @Override
-    protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(SECURITY_DATA, true)) {
-            Element securityDataArray = response.getElement(SECURITY_DATA);
-            parseSecurityDataArray(securityDataArray);
-        }
-    }
-
-    private void parseSecurityDataArray(Element securityDataArray) {
-        int numSecurities = securityDataArray.numValues();
-        for (int i = 0; i < numSecurities; i++) {
-            Element securityData = securityDataArray.getValueAsElement(i);
-            parseSecurityData(securityData);
-        }
-    }
-
-    /**
-     * There should be no more error at this point and we can happily parse the interesting portion of the response
-     *
-     */
-    @Override
-    protected void parseFieldDataArray(String security, Element fieldDataArray) {
-        int numberOfFields = fieldDataArray.numElements();
-        for (int i = 0; i < numberOfFields; i++) {
-            Element field = fieldDataArray.getElement(i);
-            addField(security, field);
-        }
     }
 }

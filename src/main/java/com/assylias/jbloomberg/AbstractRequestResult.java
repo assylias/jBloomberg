@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
@@ -30,12 +32,12 @@ abstract class AbstractRequestResult implements RequestResult {
 
     @Override
     public synchronized Set<String> getFieldErrors() {
-        return fieldErrors;
+        return ImmutableSet.copyOf(fieldErrors);
     }
 
     @Override
     public synchronized Set<String> getSecurityErrors() {
-        return securityErrors;
+        return ImmutableSet.copyOf(securityErrors);
     }
 
     synchronized void addSecurityError(String security) {
@@ -44,30 +46,5 @@ abstract class AbstractRequestResult implements RequestResult {
 
     synchronized void addFieldError(String field) {
         fieldErrors.add(field);
-    }
-
-    //for HistoricalData
-    void add(LocalDate date, String security, String field, Object value) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
-    }
-
-    //for IntradayBarData and IntradayTickData
-    void add(OffsetDateTime date, String field, Object value) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
-    }
-
-    //for ReferenceData
-    void add(String security, String field, Object value) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
-    }
-
-    //for BloombergSearchData
-    void add(String security) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
-    }
-
-    //for InstrumentList
-    void add(String security, String description) {
-        throw new UnsupportedOperationException("Subclasses need to override this method if it is required");
     }
 }

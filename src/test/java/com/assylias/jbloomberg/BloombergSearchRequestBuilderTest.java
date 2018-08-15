@@ -17,7 +17,7 @@ public class BloombergSearchRequestBuilderTest {
    * This test logs a warning message unless there is a Bloomberg search names "TEST-SRCH" that returns a non empty list of tickers.
    * To create such a search: {@code SRCH <Go>} and create a search called "TEST-SRCH".
    */
-  @Test public void test() throws ExecutionException, InterruptedException {
+  @Test(groups = "requires-bloomberg") public void test() throws ExecutionException, InterruptedException {
     BloombergSession bb = new DefaultBloombergSession();
     try {
       bb.start();
@@ -31,17 +31,17 @@ public class BloombergSearchRequestBuilderTest {
     }
   }
 
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(groups = "unit", expectedExceptions = NullPointerException.class)
   public void test_null_domain() {
     new BloombergSearchRequestBuilder(null);
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class)
   public void test_limit_zero() {
     new BloombergSearchRequestBuilder("").maxSecurities(0);
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class)
   public void test_limit_negative() {
     new BloombergSearchRequestBuilder("").maxSecurities(-10);
   }

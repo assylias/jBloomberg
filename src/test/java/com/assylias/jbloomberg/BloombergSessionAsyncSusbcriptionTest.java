@@ -4,19 +4,25 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.RealtimeField.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import static org.testng.Assert.*;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
+import static com.assylias.jbloomberg.RealtimeField.ASK;
+import static com.assylias.jbloomberg.RealtimeField.BID_SIZE;
+import static com.assylias.jbloomberg.RealtimeField.LAST_PRICE;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "requires-bloomberg")
 public class BloombergSessionAsyncSusbcriptionTest {
     private static final Logger LOG = LoggerFactory.getLogger(BloombergSessionAsyncSusbcriptionTest.class);
 
@@ -24,21 +30,21 @@ public class BloombergSessionAsyncSusbcriptionTest {
     private DefaultBloombergSession session;
 
     //NOTE: the latch could be moved as a member of the class but that creates some side effects (possibly due to testNG)
-    @BeforeMethod(groups = "requires-bloomberg")
+    @BeforeMethod
     public void beforeMethod() throws Exception {
         LOG.trace("beforeMethod");
         session = new DefaultBloombergSession();
         session.start();
     }
 
-    @AfterMethod(groups = "requires-bloomberg")
+    @AfterMethod
     public void afterMethod() {
         LOG.trace("afterMethod - entry");
         session.stop();
         LOG.trace("afterMethod - exit");
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testFeed() throws Exception {
         LOG.trace("testFeed");
         CountDownLatch latch = new CountDownLatch(1);
@@ -57,7 +63,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
     /**
      * in this test, the feed is started first and securities and fields are added afterwards
      */
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testFeedNewAdditions() throws Exception {
         LOG.trace("testFeedNewAdditions");
         CountDownLatch latch = new CountDownLatch(1);
@@ -85,7 +91,7 @@ public class BloombergSessionAsyncSusbcriptionTest {
     /**
      * Wrong ticker is ignored
      */
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testWrongTicker() throws Exception {
         LOG.trace("testWrongTicker");
         CountDownLatch latch = new CountDownLatch(1);

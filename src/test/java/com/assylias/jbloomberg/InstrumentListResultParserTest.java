@@ -7,35 +7,34 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
+@Test(groups = "requires-bloomberg")
 public class InstrumentListResultParserTest {
 
     private DefaultBloombergSession session = null;
 
-    @BeforeClass(groups = "requires-bloomberg")
+    @BeforeClass
     public void beforeClass() throws BloombergException {
         session = new DefaultBloombergSession();
         session.start();
     }
 
-    @AfterClass(groups = "requires-bloomberg")
+    @AfterClass
     public void afterClass() throws BloombergException {
         if (session != null) {
             session.stop();
         }
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OneInvalidSecurity() throws Exception {
         InstrumentListRequestBuilder ilrb = new InstrumentListRequestBuilder("NOT_A_REAL_TICKER");
         final InstrumentList instrumentList = session.submit(ilrb).get(2, TimeUnit.SECONDS);
         assertTrue(instrumentList.get().isEmpty());
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OneValidSecurity() throws Exception {
         InstrumentListRequestBuilder ilrb = new InstrumentListRequestBuilder("IBM US");
         final InstrumentList instrumentList = session.submit(ilrb).get(2, TimeUnit.SECONDS);
@@ -45,14 +44,14 @@ public class InstrumentListResultParserTest {
         assertTrue(instruments.stream().anyMatch(instrument -> instrument.getSecurity().equalsIgnoreCase("IBM US<equity>")));
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testLimitsNumberOfResponses() throws Exception {
         InstrumentListRequestBuilder ilrb = new InstrumentListRequestBuilder("", 10);
         final InstrumentList instrumentList = session.submit(ilrb).get(2, TimeUnit.SECONDS);
         assertEquals(instrumentList.get().size(), 10);
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_WithYellowKeyFilterAndLanguageOverride() throws Exception {
         InstrumentListRequestBuilder ilrb = new InstrumentListRequestBuilder("123", 10)
                 .withYellowKeyFilter(InstrumentListRequestBuilder.YellowKeyFilter.Equity)

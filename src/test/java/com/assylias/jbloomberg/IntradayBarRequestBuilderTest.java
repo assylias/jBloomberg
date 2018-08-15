@@ -16,34 +16,35 @@ import java.util.function.UnaryOperator;
 
 import static org.testng.Assert.assertEquals;
 
+@Test(groups = "unit")
 public class IntradayBarRequestBuilderTest {
     private static final OffsetDateTime NOW = OffsetDateTime.now();
 
-    @Test(groups = "unit")
+    @Test
     public void testRequestType() {
         assertEquals(new IntradayBarRequestBuilder("ABC", NOW, NOW).getRequestType(),
                 BloombergRequestType.INTRADAY_BAR);
     }
 
-    @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testInvalidPeriod_LessThan1() {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("ABC", NOW, NOW);
         builder.period(0, TimeUnit.MINUTES);
     }
 
-    @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testInvalidPeriod_MoreThan1440() {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("ABC", NOW, NOW);
         builder.period(1441, TimeUnit.MINUTES);
     }
 
-    @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void testInvalidPeriod_MoreThan1440_2() {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("ABC", NOW, NOW);
         builder.period(25, TimeUnit.HOURS);
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testInvalidPeriod_OK() {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("ABC", NOW, NOW);
         builder.period(1, TimeUnit.MINUTES);
@@ -67,7 +68,7 @@ public class IntradayBarRequestBuilderTest {
 
     @Mocked Request request;
 
-    @Test(groups = "unit", dataProvider = "adjustments")
+    @Test(dataProvider = "adjustments")
     public void test_adjustments(UnaryOperator<IntradayBarRequestBuilder> u, boolean adjNormal, boolean adjAbnormal, boolean adjSplit, boolean adjDpdf) {
         u.apply(new IntradayBarRequestBuilder("ABC", NOW, NOW))
                 .buildRequest(request);

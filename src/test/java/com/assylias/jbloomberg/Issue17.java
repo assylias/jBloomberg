@@ -5,29 +5,32 @@
 
 package com.assylias.jbloomberg;
 
-import java.util.concurrent.CountDownLatch;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.concurrent.CountDownLatch;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "requires-bloomberg")
 public class Issue17 {
   DefaultBloombergSession session = new DefaultBloombergSession();
 
-  @BeforeMethod(groups = "requires-bloomberg") public void start() throws BloombergException {
+  @BeforeMethod public void start() throws BloombergException {
     session.start();
   }
 
-  @AfterMethod(groups = "requires-bloomberg") public void stop() {
+  @AfterMethod public void stop() {
     session.stop();
   }
 
   /**
    * When subscribing to an expired ticker twice, the second subscription sends an exception
    */
-  @Test(groups = "requires-bloomberg")
+  @Test
   public void test() throws Exception {
     CountDownLatch errorLatch = new CountDownLatch(1);
     CountDownLatch dataLatch = new CountDownLatch(1);

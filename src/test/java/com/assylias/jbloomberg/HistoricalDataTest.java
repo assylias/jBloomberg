@@ -5,38 +5,41 @@
 package com.assylias.jbloomberg;
 
 import com.google.common.collect.Table;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import java.time.LocalDate;
 import java.util.Map;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
+@Test(groups = "unit")
 public class HistoricalDataTest {
 
     private static final LocalDate NOW = LocalDate.now();
 
     private HistoricalData data;
 
-    @BeforeMethod(groups = "unit")
+    @BeforeMethod
     public void beforeMethod() {
         data = new HistoricalData();
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testIsEmpty_Empty() {
         assertTrue(data.isEmpty());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testIsEmpty_NotEmpty() {
         data.add(NOW, "IBM", "PX LAST", 123.45);
         assertFalse(data.isEmpty());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testGetData() {
         data.add(NOW, "IBM", "PX LAST", 123);
         TypedObject value = data.forSecurity("IBM").forField("PX LAST").forDate(NOW);
@@ -46,7 +49,7 @@ public class HistoricalDataTest {
         assertEquals(123, value.asInt());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testGetData_SecurityMap() {
         data.add(NOW, "IBM", "PX LAST", 123);
         data.add(NOW, "IBM", "PX VOLUME", 456789);
@@ -55,7 +58,7 @@ public class HistoricalDataTest {
         assertEquals(123, values.get("PX LAST").asInt());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testGetData_FieldMap() {
         data.add(NOW, "IBM", "PX LAST", 123);
         data.add(NOW, "IBM", "PX VOLUME", 123000);
@@ -74,7 +77,7 @@ public class HistoricalDataTest {
         assertEquals(data.forField("PX LAST").forSecurity("IBM").forDate(NOW).asInt(), 123);
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testGetData_DateMap() {
         LocalDate before = NOW.minusDays(5);
         data.add(NOW, "IBM", "PX LAST", 123);
@@ -86,7 +89,7 @@ public class HistoricalDataTest {
         assertEquals(124, values.get(before).asInt());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testGetData_Empty() {
         data.add(NOW, "IBM", "PX LAST", 123);
 
@@ -107,7 +110,7 @@ public class HistoricalDataTest {
         assertNull(data.forSecurity("IBM").forField("DEF").forDate(NOW.minusDays(5)));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testToString() {
         //not really testing the output - just making sure no exception is thrown here
         assertFalse(data.toString().isEmpty());

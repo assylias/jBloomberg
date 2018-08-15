@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * A ResultParser to parse the responses received from the Bloomberg Session when sending a Bloomeberg Search Data
- * request.
+ * A ResultParser to parse the responses received from the Bloomberg Session when sending a Bloomeberg Search Data request.
  *
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
@@ -22,35 +21,35 @@ final class BloombergSearchResultParser extends AbstractResultParser<BloombergSe
     private static final Name DATA_RECORDS = new Name("DataRecords");
     private static final Name DATA_FIELDS = new Name("DataFields");
     private static final Name STRING_VALUE = new Name("StringValue");
+
+    @Override protected void parseResponseNoError(Element response, BloombergSearchData result) {
+        if (response.hasElement(DATA_RECORDS, true)) {
+            Element dataRecordsArray = response.getElement(DATA_RECORDS);
+            parseDataRecordsArray(dataRecordsArray, result);
+        }
+    }
+
     @Override
     protected BloombergSearchData getRequestResult() {
         return new BloombergSearchData();
     }
 
-    @Override
-    protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(DATA_RECORDS, true)) {
-            Element dataRecordsArray = response.getElement(DATA_RECORDS);
-            parseDataRecordsArray(dataRecordsArray);
-        }
-    }
-
-    private void parseDataRecordsArray(Element dataRecordsArray) {
+    private void parseDataRecordsArray(Element dataRecordsArray, BloombergSearchData result) {
         int numValues = dataRecordsArray.numValues();
         for (int i = 0; i < numValues; i++) {
             Element dataFields = dataRecordsArray.getValueAsElement(i);
-            parseDataFieldsArray(dataFields);
+            parseDataFieldsArray(dataFields, result);
         }
     }
 
-    private void parseDataFieldsArray(Element dataFieldsArray) {
+    private void parseDataFieldsArray(Element dataFieldsArray, BloombergSearchData result) {
         int numValues = dataFieldsArray.numValues();
         if (dataFieldsArray.hasElement(DATA_FIELDS)) {
             Element dataFields = dataFieldsArray.getElement(DATA_FIELDS);
             for (int i = 0; i < numValues; i++) {
                 Element dataField = dataFields.getValueAsElement(i);
                 String stringValue = dataField.getElementAsString(STRING_VALUE);
-                addSecurity(stringValue);
+                result.add(stringValue);
             }
         }
     }

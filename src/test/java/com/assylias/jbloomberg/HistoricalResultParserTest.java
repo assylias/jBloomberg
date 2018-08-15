@@ -4,36 +4,40 @@
  */
 package com.assylias.jbloomberg;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import static org.testng.Assert.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "requires-bloomberg")
 public class HistoricalResultParserTest {
 
     private static final LocalDate NOW = LocalDate.now();
     private DefaultBloombergSession session = null;
 
-    @BeforeClass(groups = "requires-bloomberg")
+    @BeforeClass
     public void beforeClass() throws BloombergException {
         session = new DefaultBloombergSession();
         session.start();
     }
 
-    @AfterClass(groups = "requires-bloomberg")
+    @AfterClass
     public void afterClass() throws BloombergException {
         if (session != null) {
             session.stop();
         }
     }
 
-    @Test(groups = "requires-bloomberg", expectedExceptions = BloombergException.class,
+    @Test(expectedExceptions = BloombergException.class,
     expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
     @SuppressWarnings("unchecked")
     public void testParse_NoTickerErrorResponse() throws Exception {
@@ -50,28 +54,28 @@ public class HistoricalResultParserTest {
         }
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OneInvalidSecurity() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("XXX", "PX_LAST", NOW, NOW);
         RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OneInvalidField() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("IBM US Equity", "XXX", NOW, NOW);
         RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OneSecurityOneFieldOk() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("IBM US Equity", "PX_LAST", NOW.minusDays(5), NOW);
         RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_TwoSecuritiesTwoFieldsOk() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST"), NOW.minusDays(5), NOW)

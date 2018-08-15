@@ -5,6 +5,9 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -15,15 +18,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
+@Test(groups = "unit")
 public class EventsManagerTest {
 
     private EventsManager em;
@@ -34,7 +37,7 @@ public class EventsManagerTest {
     private RealtimeField field;
     private String ticker;
 
-    @BeforeMethod(groups = "unit")
+    @BeforeMethod
     public void beforeMethod() {
         em = new ConcurrentConflatedEventsManager();
         id = new CorrelationID(0);
@@ -42,7 +45,7 @@ public class EventsManagerTest {
         ticker = "TICKER";
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testFire_FieldNotRegistered() throws Exception {
         DataChangeListener lst = getDataChangeListener(1);
         em.addEventListener(ticker, id, field, lst);
@@ -50,7 +53,7 @@ public class EventsManagerTest {
         assertFalse(latch.await(10, TimeUnit.MILLISECONDS));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testFire_Ok() throws Exception {
         DataChangeListener lst = getDataChangeListener(1);
         em.addEventListener(ticker, id, field, lst);
@@ -61,7 +64,7 @@ public class EventsManagerTest {
         assertEquals(evt.getNewValue().asInt(), 1234);
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testFire_SameValueTwiceSentOnce() throws Exception {
         DataChangeListener lst = getDataChangeListener(2);
         em.addEventListener(ticker, id, field, lst);
@@ -77,7 +80,7 @@ public class EventsManagerTest {
     //data points on the same security
     //The problem is that the current setup does not allow to strongly guarantee the order and the solution is probably
     //to have a single queue but that may prove to be an issue performance wise if some listeners do a lot of work with new data...
-    @Test(groups = "unit", enabled = false, invocationCount = 20, threadPoolSize = 2)
+    @Test(enabled = false, invocationCount = 20, threadPoolSize = 2)
     public void testFire_2Listeners() throws Exception {
         CountDownLatch latch = new CountDownLatch(4);
         String ticker = "" + new Random().nextDouble();
@@ -101,7 +104,7 @@ public class EventsManagerTest {
       return "latch.count  = " + latch.getCount() + ", evt = " + String.valueOf(e);
     }
 
-    @Test(groups = "unit")
+    @Test
     public void test2Listeners2Securities() throws Exception {
         latch = new CountDownLatch(2);
         CorrelationID id1 = new CorrelationID(0);
@@ -131,7 +134,7 @@ public class EventsManagerTest {
         assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void test1Listener2Securities() throws Exception {
         final CountDownLatch latch1 = new CountDownLatch(1);
         final CountDownLatch latch2 = new CountDownLatch(1);
@@ -163,7 +166,7 @@ public class EventsManagerTest {
         assertTrue(latch2.await(100, TimeUnit.MILLISECONDS));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testFire_Concurrent() throws Exception {
         final int NUM_EVENTS = 10_000;
         final int NUM_THREADS = 100;
@@ -209,7 +212,7 @@ public class EventsManagerTest {
         assertEquals(oldValues.size(), NUM_EVENTS); //including null
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testFire_Performance() throws Exception {
         final int NUM_EVENTS = 1_000_000;
         final int NUM_THREADS = 1;
