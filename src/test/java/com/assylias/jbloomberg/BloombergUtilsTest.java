@@ -63,9 +63,6 @@ public class BloombergUtilsTest {
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
-    /**
-     * Marked requires-bloomberg as test fails if bbcomm.exe not available
-     */
     @Test(groups = {"unit", "windows"})
     public void test_ProcessNotRunning_StartBbCommFails(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
         setBbcommStartedFlag(false);
@@ -80,7 +77,6 @@ public class BloombergUtilsTest {
         };
         assertFalse(BloombergUtils.startBloombergProcessIfNecessary());
     }
-
 
     @Test(groups = "requires-bloomberg")
     public void testBbStart() throws Exception {

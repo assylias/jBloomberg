@@ -15,12 +15,14 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 /**
  * @author Yann Le Tallec

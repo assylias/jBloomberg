@@ -46,7 +46,6 @@ public final class BloombergSearchData extends AbstractRequestResult {
     /**
      * Adds a value to the search results.
      */
-    @Override
     synchronized void add(String security) {
         data.add(security);
     }

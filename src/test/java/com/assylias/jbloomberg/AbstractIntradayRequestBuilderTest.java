@@ -4,53 +4,56 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.OffsetDateTime;
-import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
+
+import static org.testng.Assert.assertEquals;
+
+@Test(groups = "unit")
 public class AbstractIntradayRequestBuilderTest {
 
     private static final OffsetDateTime NOW = OffsetDateTime.now();
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testConstructor_NullTicker() {
         new Impl(null, NOW, NOW);
     }
 
-    @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class,
+    @Test(expectedExceptions = IllegalArgumentException.class,
     expectedExceptionsMessageRegExp = ".*empty.*")
     public void testConstructor_EmptyTicker() {
         new Impl("", NOW, NOW);
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*null.*")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*null.*")
     public void testConstructor_NullType() {
         new Impl("ABC", null, NOW, NOW);
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class,
+    @Test(expectedExceptions = NullPointerException.class,
     expectedExceptionsMessageRegExp = ".*start.*")
     public void testConstructor_NullStartDate() {
         new Impl("ABC", null, NOW);
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*end.*")
+    @Test(expectedExceptions = NullPointerException.class, expectedExceptionsMessageRegExp = ".*end.*")
     public void testConstructor_NullEndDate() {
         new Impl("ABC", NOW, null);
     }
 
-    @Test(groups = "unit", expectedExceptions = IllegalArgumentException.class,
+    @Test(expectedExceptions = IllegalArgumentException.class,
     expectedExceptionsMessageRegExp = ".*date.*")
     public void testConstructor_EndBeforeStart() {
         new Impl("ABC", NOW, NOW.minusDays(1));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testConstructor_AllOk() {
         new Impl("ABC", "TRADE", NOW, NOW);
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testServiceType() {
         assertEquals(new IntradayBarRequestBuilder("ABC", NOW, NOW).getServiceType(),
                 BloombergServiceType.REFERENCE_DATA);

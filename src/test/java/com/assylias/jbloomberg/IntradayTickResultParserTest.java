@@ -4,34 +4,37 @@
  */
 package com.assylias.jbloomberg;
 
-import java.time.OffsetDateTime;
-import java.util.concurrent.TimeUnit;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertTrue;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.time.OffsetDateTime;
+import java.util.concurrent.TimeUnit;
+
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "requires-bloomberg")
 public class IntradayTickResultParserTest {
 
     private static final OffsetDateTime NOW = OffsetDateTime.now();
     private final String INVALID_SECURITY = "XXX";
     private DefaultBloombergSession session = null;
 
-    @BeforeClass(groups = "requires-bloomberg")
+    @BeforeClass
     public void beforeClass() throws BloombergException {
         session = new DefaultBloombergSession();
         session.start();
     }
 
-    @AfterClass(groups = "requires-bloomberg")
+    @AfterClass
     public void afterClass() throws BloombergException {
         if (session != null) {
             session.stop();
         }
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_InvalidSecurity() throws Exception {
         RequestBuilder<IntradayTickData> builder = new IntradayTickRequestBuilder(INVALID_SECURITY, NOW.minusDays(5), NOW);
         IntradayTickData data = session.submit(builder).get(5, TimeUnit.MINUTES);
@@ -41,7 +44,7 @@ public class IntradayTickResultParserTest {
         assertTrue(data.isEmpty());
     }
 
-    @Test(groups = "requires-bloomberg")
+    @Test
     public void testParse_OK() throws Exception {
         RequestBuilder<IntradayTickData> builder = new IntradayTickRequestBuilder("SPX Index", NOW.minusDays(5), NOW)
                 .includeBicMicCodes()

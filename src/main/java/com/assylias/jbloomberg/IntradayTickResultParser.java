@@ -4,12 +4,11 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Name;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
 
 /**
  *
@@ -28,14 +27,15 @@ final class IntradayTickResultParser extends AbstractResultParser<IntradayTickDa
     /**
      * @param security the Bloomberg identifier of the security
      */
-    public IntradayTickResultParser(final String security) {
-        super((res, response) -> {
-            if (response.hasElement(TICK_DATA, true)) {
-                final Element barData = response.getElement(TICK_DATA);
-                parseTickData(res, barData);
-            }
-        });
+    public IntradayTickResultParser(String security) {
         this.security = security;
+    }
+
+    @Override protected void parseResponseNoError(Element response, IntradayTickData result) {
+        if (response.hasElement(TICK_DATA, true)) {
+            final Element barData = response.getElement(TICK_DATA);
+            parseTickData(result, barData);
+        }
     }
 
     @Override

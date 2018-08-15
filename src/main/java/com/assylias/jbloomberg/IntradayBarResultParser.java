@@ -28,14 +28,15 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
     /**
      * @param security the Bloomberg identifier of the security
      */
-    public IntradayBarResultParser(final String security) {
-        super((res, response) -> {
-            if (response.hasElement(BAR_DATA, true)) {
-                Element barData = response.getElement(BAR_DATA);
-                parseBarData(res, barData);
-            }
-        });
+    public IntradayBarResultParser(String security) {
         this.security = security;
+    }
+
+    @Override protected void parseResponseNoError(Element response, IntradayBarData result) {
+        if (response.hasElement(BAR_DATA, true)) {
+            Element barData = response.getElement(BAR_DATA);
+            parseBarData(result, barData);
+        }
     }
 
     @Override
@@ -57,7 +58,7 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
 
         private final Name elementName;
 
-        BarTickDataElements(final String elementName) {
+        BarTickDataElements(String elementName) {
             this.elementName = new Name(elementName);
         }
 
@@ -66,7 +67,7 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
         }
     }
 
-    private static void parseBarData(final IntradayBarData result, final Element barData) {
+    private static void parseBarData(IntradayBarData result, Element barData) {
         if (barData.hasElement(BAR_TICK_DATA, true)) {
             final Element barTickDataArray = barData.getElement(BAR_TICK_DATA);
             parseBarTickDataArray(result, barTickDataArray);
@@ -76,7 +77,7 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
     /**
      * There should be no more error at this point and we can happily parse the interesting portion of the response
      */
-    private static void parseBarTickDataArray(final IntradayBarData result, final Element barTickDataArray) {
+    private static void parseBarTickDataArray(IntradayBarData result, Element barTickDataArray) {
         final int countData = barTickDataArray.numValues();
         for (int i = 0; i < countData; i++) {
             final Element fieldData = barTickDataArray.getValueAsElement(i);

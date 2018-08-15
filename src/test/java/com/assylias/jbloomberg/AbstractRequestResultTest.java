@@ -4,33 +4,36 @@
  */
 package com.assylias.jbloomberg;
 
-import static org.testng.Assert.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "unit")
 public class AbstractRequestResultTest {
 
 
     private AbstractRequestResult data;
 
-    @BeforeMethod(groups = "unit")
+    @BeforeMethod
     public void beforeMethod() {
         data = new AbstractRequestResultImpl();
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testHasErrors_None() {
         assertFalse(data.hasErrors());
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testHasError_Security() {
         data.addSecurityError("Sec");
         assertTrue(data.hasErrors());
         assertTrue(data.getSecurityErrors().contains("Sec"));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testHasError_Field() {
         data.addFieldError("Field");
         assertTrue(data.hasErrors());

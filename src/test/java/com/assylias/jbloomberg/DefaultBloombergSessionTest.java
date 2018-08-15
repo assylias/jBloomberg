@@ -6,6 +6,11 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
+import mockit.Mocked;
+import mockit.Verifications;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -16,12 +21,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import mockit.Mocked;
-import mockit.Verifications;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 public class DefaultBloombergSessionTest {
 

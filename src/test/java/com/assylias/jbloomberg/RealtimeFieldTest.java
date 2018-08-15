@@ -4,12 +4,15 @@
  */
 package com.assylias.jbloomberg;
 
-import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
+@Test(groups = "unit")
 public class RealtimeFieldTest {
 
-    @Test(groups = "unit")
+    @Test
     public void testContains() {
         String aFieldThatExists = RealtimeField.ALL_PRICE.toString();
         String aFieldThatDoesNotExist = "A FIELD THAT DOES NOT EXIST OU BIEN?";
@@ -18,19 +21,19 @@ public class RealtimeFieldTest {
         assertFalse(RealtimeField.contains(aFieldThatDoesNotExist));
     }
 
-    @Test(groups = "unit")
+    @Test
     public void testContainsIgnoreCase() {
         String aFieldThatExists = "bid";
         assertFalse(RealtimeField.contains(aFieldThatExists));
         assertTrue(RealtimeField.containsIgnoreCase(aFieldThatExists));
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testContains_null() {
         assertFalse(RealtimeField.contains(null));
     }
 
-    @Test(groups = "unit", expectedExceptions = NullPointerException.class)
+    @Test(expectedExceptions = NullPointerException.class)
     public void testContainsIgnoreCase_null() {
         assertFalse(RealtimeField.containsIgnoreCase(null));
     }
