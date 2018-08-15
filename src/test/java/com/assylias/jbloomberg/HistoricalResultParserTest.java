@@ -37,8 +37,7 @@ public class HistoricalResultParserTest {
         }
     }
 
-    @Test(expectedExceptions = BloombergException.class,
-    expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
+    @Test(expectedExceptions = BloombergException.class, expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
     @SuppressWarnings("unchecked")
     public void testParse_NoTickerErrorResponse() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("ABC", "ABC", NOW, NOW);
@@ -48,7 +47,7 @@ public class HistoricalResultParserTest {
         Collection<String> tickers = (Collection<String>) f.get(hrb);
         tickers.clear();
         try {
-            session.submit(hrb).get(2, TimeUnit.SECONDS);
+            session.submit(hrb).get(5, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             throw (Exception) e.getCause();
         }
