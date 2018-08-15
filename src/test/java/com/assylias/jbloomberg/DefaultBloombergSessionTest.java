@@ -145,7 +145,7 @@ public class DefaultBloombergSessionTest {
         session.submit(mock.getMockInstance()).get(2, TimeUnit.SECONDS);
     }
 
-    @Test(groups = "unit", expectedExceptions = BloombergException.class,
+    @Test(groups = {"unit", "windows"}, expectedExceptions = BloombergException.class,
           expectedExceptionsMessageRegExp = ".*session.*")
     public void testSubmit_SessionStartupFailure() throws Exception {
         MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);
@@ -185,7 +185,7 @@ public class DefaultBloombergSessionTest {
         }
     }
 
-    @Test(groups = "unit", expectedExceptions = CancellationException.class)
+    @Test(groups = "requires-bloomberg", expectedExceptions = CancellationException.class)
     public void testSubmit_RequestCancelled() throws Exception {
         new MockBloombergUtils(true);
         MockRequestBuilder<?> request = new MockRequestBuilder<>().serviceType(BloombergServiceType.PAGE_DATA);

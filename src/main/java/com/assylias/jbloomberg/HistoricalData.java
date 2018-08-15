@@ -73,7 +73,6 @@ public final class HistoricalData extends AbstractRequestResult {
     /**
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
-    @Override
     synchronized void add(LocalDate date, String security, String field, Object value) {
         Table<LocalDate, String, TypedObject> securityTable = data.get(security);
         if (securityTable == null) {

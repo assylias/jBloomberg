@@ -23,9 +23,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
- *
  * @author Yann Le Tallec
  */
+@Test(groups = "unit")
 public class IntradayBarDataTest {
 
     private static final OffsetDateTime NOW = OffsetDateTime.now();

@@ -17,17 +17,7 @@ public class AbstractResultParserTest {
 
     @BeforeMethod(groups="unit")
     public void beforeMethod() {
-        parser = new AbstractResultParser () {
-            @Override
-            protected void parseResponseNoResponseError(Element response) {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-            @Override
-            protected AbstractRequestResult getRequestResult() {
-                return null;
-            }
-        };
+        parser = new StubResultParser(() -> null);
     }
 
     @Test(groups="unit", expectedExceptions = TimeoutException.class)

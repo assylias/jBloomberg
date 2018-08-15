@@ -41,12 +41,6 @@ public class IntradayTickResultParserTest {
         assertTrue(data.isEmpty());
     }
 
-    @Test(groups = "unit", expectedExceptions = UnsupportedOperationException.class)
-    public void testParse_CantAddFieldError() throws Exception {
-        IntradayTickResultParser parser = new IntradayTickResultParser(INVALID_SECURITY);
-        parser.addFieldError("");
-    }
-
     @Test(groups = "requires-bloomberg")
     public void testParse_OK() throws Exception {
         RequestBuilder<IntradayTickData> builder = new IntradayTickRequestBuilder("SPX Index", NOW.minusDays(5), NOW)

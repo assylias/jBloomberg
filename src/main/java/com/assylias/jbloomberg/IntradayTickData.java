@@ -77,7 +77,6 @@ public class IntradayTickData extends AbstractRequestResult {
     /**
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
-    @Override
     synchronized void add(OffsetDateTime date, String field, Object value) {
         try {
             IntradayTickField f = IntradayTickField.of(field);

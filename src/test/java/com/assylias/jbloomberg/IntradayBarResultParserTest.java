@@ -41,12 +41,6 @@ public class IntradayBarResultParserTest {
         assertTrue(data.isEmpty());
     }
 
-    @Test(groups = "unit", expectedExceptions = UnsupportedOperationException.class)
-    public void testParse_CantAddFieldError() throws Exception {
-        IntradayBarResultParser parser = new IntradayBarResultParser(INVALID_SECURITY);
-        parser.addFieldError("");
-    }
-
     @Test(groups = "requires-bloomberg")
     public void testParse_OK() throws Exception {
         IntradayBarRequestBuilder builder = new IntradayBarRequestBuilder("IBM US Equity", NOW.minusDays(5), NOW);

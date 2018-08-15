@@ -4,12 +4,11 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
 import com.bloomberglp.blpapi.Datetime;
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Name;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static com.assylias.jbloomberg.DateUtils.toOffsetDateTime;
 
 /**
  *
@@ -18,8 +17,6 @@ import org.slf4j.LoggerFactory;
  * This implementation is thread safe as the Bloomberg API might send results through more than one thread.
  */
 final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData> {
-
-    private final static Logger logger = LoggerFactory.getLogger(IntradayBarResultParser.class);
     /**
      * The various element names
      */
@@ -31,13 +28,14 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
     /**
      * @param security the Bloomberg identifier of the security
      */
-    public IntradayBarResultParser(String security) {
+    public IntradayBarResultParser(final String security) {
+        super((res, response) -> {
+            if (response.hasElement(BAR_DATA, true)) {
+                Element barData = response.getElement(BAR_DATA);
+                parseBarData(res, barData);
+            }
+        });
         this.security = security;
-    }
-
-    @Override
-    protected void addFieldError(String field) {
-        throw new UnsupportedOperationException("Intraday Bar Requests can't report a field exception");
     }
 
     @Override
@@ -48,8 +46,7 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
     /**
      * Only the fields we are interested in - the numEvents and value fields will be discarded
      */
-    private static enum BarTickDataElements {
-
+    private enum BarTickDataElements {
         TIME("time"),
         OPEN("open"),
         HIGH("high"),
@@ -57,9 +54,10 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
         CLOSE("close"),
         VOLUME("volume"),
         NUM_EVENTS("numEvents");
+
         private final Name elementName;
 
-        private BarTickDataElements(String elementName) {
+        BarTickDataElements(final String elementName) {
             this.elementName = new Name(elementName);
         }
 
@@ -68,38 +66,29 @@ final class IntradayBarResultParser extends AbstractResultParser<IntradayBarData
         }
     }
 
-    @Override
-    protected void parseResponseNoResponseError(Element response) {
-        if (response.hasElement(BAR_DATA, true)) {
-            Element barData = response.getElement(BAR_DATA);
-            parseBarData(barData);
-        }
-    }
-
-    private void parseBarData(Element barData) {
+    private static void parseBarData(final IntradayBarData result, final Element barData) {
         if (barData.hasElement(BAR_TICK_DATA, true)) {
-            Element barTickDataArray = barData.getElement(BAR_TICK_DATA);
-            parseBarTickDataArray(barTickDataArray);
+            final Element barTickDataArray = barData.getElement(BAR_TICK_DATA);
+            parseBarTickDataArray(result, barTickDataArray);
         }
     }
 
     /**
      * There should be no more error at this point and we can happily parse the interesting portion of the response
-     *
      */
-    private void parseBarTickDataArray(Element barTickDataArray) {
-        int countData = barTickDataArray.numValues();
+    private static void parseBarTickDataArray(final IntradayBarData result, final Element barTickDataArray) {
+        final int countData = barTickDataArray.numValues();
         for (int i = 0; i < countData; i++) {
-            Element fieldData = barTickDataArray.getValueAsElement(i);
-            Element field = fieldData.getElement(0);
-            if (!BarTickDataElements.TIME.asName().equals(field.name())) {
-                throw new AssertionError("Time field is supposed to be first but got: " + field.name());
+            final Element fieldData = barTickDataArray.getValueAsElement(i);
+            final Element firstField = fieldData.getElement(0);
+            if (!BarTickDataElements.TIME.asName().equals(firstField.name())) {
+                throw new AssertionError("Time field is supposed to be first but got: " + firstField.name());
             }
-            Datetime dt = field.getValueAsDatetime();
+            final Datetime dt = firstField.getValueAsDatetime();
 
             for (int j = 1; j < fieldData.numElements(); j++) {
-                field = fieldData.getElement(j);
-                addField(toOffsetDateTime(dt), field);
+                final Element field = fieldData.getElement(j);
+                result.add(toOffsetDateTime(dt), field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
             }
         }
     }

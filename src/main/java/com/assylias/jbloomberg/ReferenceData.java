@@ -70,7 +70,6 @@ public final class ReferenceData extends AbstractRequestResult {
     /**
      * Adds a value to the HistoricalData structure for that security / field / date combination.
      */
-    @Override
     synchronized void add(String security, String field, Object value) {
         data.put(security, field, TypedObject.of(value));
     }
