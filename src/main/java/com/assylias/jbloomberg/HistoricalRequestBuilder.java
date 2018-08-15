@@ -315,7 +315,6 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
 
         /**
          * Include all weekdays (Monday to Friday) in the data set
-         * <p>
          */
         NON_TRADING_WEEKDAYS, //TODO: Confirm if other days are returned in some countries (Russia, Korea, Taiwan, Israel...)
         /**

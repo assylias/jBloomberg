@@ -31,10 +31,10 @@ public class InstrumentListRequestBuilder extends AbstractRequestBuilder<Instrum
 
     /**
      * Creates an InstrumentListRequestBuilder to search for instruments that match the string given in the query, returning at most maxResults instruments.
-     * @param query a string to be sought, for example "IBM US" will return IBM US&lt;equity&gt;, options on IBM etc.
-     * @param maxResults the maximum number of results to be returned, must be > 0
+     * @param query a string to be sought, for example "IBM US" will return {@code IBM US<equity>}, options on IBM etc.
+     * @param maxResults the maximum number of results to be returned, must be {@code > 0}
      * @throws NullPointerException if query is null
-     * @throws IllegalArgumentException if maxResults is <= 0
+     * @throws IllegalArgumentException if {@code maxResults <= 0}
      */
     public InstrumentListRequestBuilder(String query, int maxResults) {
         this.query = Preconditions.checkNotNull(query);

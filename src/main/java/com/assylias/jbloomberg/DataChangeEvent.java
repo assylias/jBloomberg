@@ -92,7 +92,7 @@ public final class DataChangeEvent {
 
     /**
      *
-     * @return A description of the DataChangeEvent in the form: IBM US Equity,LAST_PRICE: 50.10==>50.15
+     * @return A description of the DataChangeEvent in the form: {@code IBM US Equity,LAST_PRICE: 50.10==>50.15}
      */
     @Override
     public String toString() {

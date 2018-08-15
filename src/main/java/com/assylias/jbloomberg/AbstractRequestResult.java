@@ -6,8 +6,6 @@ package com.assylias.jbloomberg;
 
 import com.google.common.collect.ImmutableSet;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 

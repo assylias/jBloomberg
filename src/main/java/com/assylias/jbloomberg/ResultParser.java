@@ -13,9 +13,9 @@ import java.util.concurrent.TimeoutException;
  * A ResultParser parses the responses received from the Bloomberg Session after having sent a request.
  * Once the final response has been received, the noMoreMessage method must be called to allow the parser to start its
  * parsing job.
- * </p>
+ * <p>
  * This interface has been made public for convenience but users should not need to implement it.
- * </p>
+ * <p>
  * All implementations are thread safe.
  */
 public interface ResultParser<T extends RequestResult> {

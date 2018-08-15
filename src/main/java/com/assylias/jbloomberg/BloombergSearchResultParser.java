@@ -6,8 +6,6 @@ package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
 import com.bloomberglp.blpapi.Name;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -17,7 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 final class BloombergSearchResultParser extends AbstractResultParser<BloombergSearchData> {
 
-    private static final Logger logger = LoggerFactory.getLogger(BloombergSearchResultParser.class);
     private static final Name DATA_RECORDS = new Name("DataRecords");
     private static final Name DATA_FIELDS = new Name("DataFields");
     private static final Name STRING_VALUE = new Name("StringValue");

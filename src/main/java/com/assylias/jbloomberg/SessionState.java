@@ -7,19 +7,20 @@ package com.assylias.jbloomberg;
 import com.bloomberglp.blpapi.Name;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
-import java.util.HashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * SessionState is an enum representing the possible states of a {@link BloombergSession} and its underlying Bloomberg {@link Session}. The typical lifecycle
  * is as follows:<br>
- * NEW -> STARTING -> CONNECTION_UP -> STARTED -> CONNECTION_DOWN -> TERMINATED<br>
+ * {@code NEW -> STARTING -> CONNECTION_UP -> STARTED -> CONNECTION_DOWN -> TERMINATED}<br>
  * <br>
  * If the connection is lost and recovered (because {@link SessionOptions#setAutoRestartOnDisconnection} has been set to true in the SessionOptions), the events
  * will be:<br>
- * CONNECTION_DOWN -> CONNECTION_UP<br>
+ * {@code CONNECTION_DOWN -> CONNECTION_UP}<br>
  * <br>
  * Note that even if the CONNECTION_UP signal is sent, the session will not return anything until the user is logged on the local machine if using the local
  * Bloomberg terminal as a data source.

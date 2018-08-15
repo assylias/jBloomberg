@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
 public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<BloombergSearchData> {
 
     //Required parameters
-    private String domain;
+    private final String domain;
     private int limit = Integer.MIN_VALUE; //ignored if < 0
 
     /**
@@ -50,8 +50,8 @@ public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<
 
     /**
      * Limits the number of returned securities
-     * @param limit maximum number of securities returned by the request, must be > 0
-     * @throws IllegalArgumentException if limit is <= 0
+     * @param limit maximum number of securities returned by the request, must be {@code > 0}
+     * @throws IllegalArgumentException if {@code limit <= 0}
      */
     public BloombergSearchRequestBuilder maxSecurities(int limit) {
         if (limit <= 0) throw new IllegalArgumentException("limit should be > 0, received " + limit);

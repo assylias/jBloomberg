@@ -34,8 +34,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
      * Creates a RequestBuilder with an event type TRADE. The Builder can be further customised with the provided
      * methods.
      *
-     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
-     *                      IBM US Equity)
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM US Equity)
      * @param startDateTime the start of the date range (inclusive) for which to retrieve data
      * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
      *
@@ -50,13 +49,12 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     /**
      * Creates a RequestBuilder with standard options. The Builder can be further customised with the provided
      * methods.
-     * <p>
-     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example:
-     *                      IBM US Equity)
+     *
+     * @param ticker        a ticker for which data needs to be retrieved - must be valid Bloomberg symbol (for example: IBM US Equity)
      * @param eventType     the eventType to retrieve for the selected ticker
      * @param startDateTime the start of the date range (inclusive) for which to retrieve data
      * @param endDateTime   the end of the date range (inclusive) for which to retrieve data
-     * <p>
+     *
      * @throws NullPointerException     if any of the parameters is null
      * @throws IllegalArgumentException if the ticker is an empty string or if the start date is strictly after the end
      *                                  date
@@ -68,7 +66,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     /**
      * Include any condition codes that may be associated to a tick. Condition codes identify extraordinary trading and
      * quoting circumstances. Condition codes are returned as a comma delimited list of exchange condition codes
-     * associated with the event. Review QR<GO> for more information on each code returned.
+     * associated with the event. Review {@code QR<GO>} for more information on each code returned.
      */
     public IntradayTickRequestBuilder includeConditionCodes() {
         this.includeConditionCodes = true;
@@ -84,7 +82,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     }
 
     /**
-     * Include the exchange code where this tick originated. Review QR<GO> for more information.
+     * Include the exchange code where this tick originated. Review {@code QR<GO>} for more information.
      */
     public IntradayTickRequestBuilder includeExchangeCodes() {
         this.includeExchangeCodes = true;
@@ -93,7 +91,7 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
 
     /**
      * Include the broker code of the trade. The broker code for Canadian, Finnish, Mexican, Philippine, and Swedish
-     * equities only. The Market Maker Lookup screen, MMTK<GO>, displays further information on market makers and their
+     * equities only. The Market Maker Lookup screen, {@code MMTK<GO>}, displays further information on market makers and their
      * corresponding codes.
      */
     public IntradayTickRequestBuilder includeBrokerCodes() {

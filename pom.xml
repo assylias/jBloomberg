@@ -103,10 +103,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
+        <version>3.0.1</version>
         <configuration>
-          <additionalparam>-Xdoclint:all</additionalparam>
-          <additionalparam>-Xdoclint:-missing</additionalparam>
+          <additionalOptions>
+            <option>-Xdoclint:all</option>
+            <option>-Xdoclint:-missing</option>
+          </additionalOptions>
         </configuration>
       </plugin>
       <plugin>
@@ -115,7 +117,6 @@
         <version>3.0.2</version>
         <configuration>
           <archive>
-            <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>-->
             <manifestEntries>
               <Automatic-Module-Name>com.assylias.jbloomberg</Automatic-Module-Name>
             </manifestEntries>
