@@ -22,7 +22,7 @@ You can create a Maven dependency to download jBloomberg artifact:
     <dependency>
       <groupId>com.assylias</groupId>
       <artifactId>jbloomberg</artifactId>
-      <version>3.6</version>
+      <version>3.7</version>
     </dependency>
 
 #### Installing Bloomberg jar

@@ -18,7 +18,7 @@ import java.nio.file.Paths;
  */
 public class BloombergUtilsEnvTest {
 
-  @Test (groups = "unit") public void test_bbcomm_location_other(@Mocked ProcessBuilder pb) {
+  @Test (groups = { "unit", "windows" }) public void test_bbcomm_location_other(@Mocked ProcessBuilder pb) {
     new Expectations(Files.class, ShellUtils.class, System.class) {{
       System.getenv(anyString); result = "C:/custom";
       ShellUtils.isProcessRunning(anyString); result = false;
