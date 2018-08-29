@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -49,11 +48,13 @@ final class BloombergUtils {
     private final static String[] BBCOMM_FOLDER;
 
     static {
-        final Optional<String[]> userSpecifiedBBComm = Optional.ofNullable(System.getenv(BBCOMM_FOLDER_ENV_VAR)).map(s -> {
-            logger.info("User specified location of BBComm under {}", s);
-            return new String[]{s};
-        });
-        BBCOMM_FOLDER = userSpecifiedBBComm.orElse(new String[]{"C:/blp/API", "C:/blp/DAPI"});
+        String userSpecifiedBBComm = System.getenv(BBCOMM_FOLDER_ENV_VAR);
+        if (userSpecifiedBBComm != null) {
+            logger.info("User specified location of {}: {}", BBCOMM_PROCESS, userSpecifiedBBComm);
+            BBCOMM_FOLDER =  new String[] { userSpecifiedBBComm };
+        } else {
+            BBCOMM_FOLDER = new String[] {"C:/blp/API", "C:/blp/DAPI"};
+        }
     }
 
     private BloombergUtils() {
@@ -143,13 +144,13 @@ final class BloombergUtils {
     }
 
     private static Boolean getStartingCallable() throws IOException {
-        final File bbcommFolder = getBbcommFolder();
-        final File bbcomm = new File(bbcommFolder, BBCOMM_PROCESS);
+        File bbcommFolder = getBbcommFolder();
+        File bbcomm = new File(bbcommFolder, BBCOMM_PROCESS);
         logger.info("Starting {} manually", bbcomm.getAbsolutePath());
-        final ProcessBuilder pb = new ProcessBuilder(bbcomm.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(bbcomm.getAbsolutePath());
         pb.directory(bbcommFolder);
         pb.redirectErrorStream(true);
-        final Process p = pb.start();
+        Process p = pb.start();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -168,7 +169,7 @@ final class BloombergUtils {
             Path folder = Paths.get(p);
             if (Files.exists(folder.resolve(BBCOMM_PROCESS))) return folder.toFile();
         }
-        throw new AssertionError("Could not locate " + BBCOMM_PROCESS + " in any of the default folders " + Arrays.toString(BBCOMM_FOLDER));
+        throw new AssertionError("Could not locate " + BBCOMM_PROCESS + " in any of the folders " + Arrays.toString(BBCOMM_FOLDER));
     }
 
     private static boolean getResultWithTimeout(Callable<Boolean> startBloombergProcess, int timeout, TimeUnit timeUnit) {
