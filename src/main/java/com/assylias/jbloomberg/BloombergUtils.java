@@ -44,7 +44,18 @@ final class BloombergUtils {
     private final static Logger logger = LoggerFactory.getLogger(BloombergUtils.class);
     private static volatile boolean isBbcommStarted = false;
     private final static String BBCOMM_PROCESS = "bbcomm.exe";
-    private final static String[] BBCOMM_FOLDER = { "C:/blp/API", "C:/blp/DAPI" };
+    private final static String BBCOMM_FOLDER_ENV_VAR = "jbloomberg.bbcomm";
+    private final static String[] BBCOMM_FOLDER;
+
+    static {
+        String userSpecifiedBBComm = System.getenv(BBCOMM_FOLDER_ENV_VAR);
+        if (userSpecifiedBBComm != null) {
+            logger.info("User specified location of {}: {}", BBCOMM_PROCESS, userSpecifiedBBComm);
+            BBCOMM_FOLDER =  new String[] { userSpecifiedBBComm };
+        } else {
+            BBCOMM_FOLDER = new String[] {"C:/blp/API", "C:/blp/DAPI"};
+        }
+    }
 
     private BloombergUtils() {
     }
@@ -75,15 +86,15 @@ final class BloombergUtils {
         } else if (field.datatype() == Schema.Datatype.DATE
                 || field.datatype() == Schema.Datatype.TIME
                 || field.datatype() == Schema.Datatype.DATETIME) {
-          Datetime dt = field.getValueAsDatetime();
-          if (dt.hasParts(Datetime.DATE)) {
-            return dt.hasParts(Datetime.TIME) ? toOffsetDateTime(dt)
-                                              : toLocalDate(dt);
-          } else {
-            if (dt.hasParts(Datetime.TIME)) return toOffsetTime(dt);
-            logger.warn("Not a valid date time: Element={}, Datetime={}", field, dt);
-            return null;
-          }
+            Datetime dt = field.getValueAsDatetime();
+            if (dt.hasParts(Datetime.DATE)) {
+                return dt.hasParts(Datetime.TIME) ? toOffsetDateTime(dt)
+                        : toLocalDate(dt);
+            } else {
+                if (dt.hasParts(Datetime.TIME)) return toOffsetTime(dt);
+                logger.warn("Not a valid date time: Element={}, Datetime={}", field, dt);
+                return null;
+            }
         } else if (field.isArray()) {
             List<Object> list = new ArrayList<>(field.numValues());
             for (int i = 0; i < field.numValues(); i++) {
@@ -108,7 +119,7 @@ final class BloombergUtils {
      * Starts the bbcomm process if necessary, which is required to connect to the Bloomberg data feed.<br>
      * This method will block up to one second if it needs to manually start the process. If the process is not
      * started by the end of the timeout, this method will return false but the process might start later on.
-     * <p>
+     *
      * @return true if bbcomm was started successfully within one second, false otherwise.
      */
     public static boolean startBloombergProcessIfNecessary() {
@@ -116,7 +127,6 @@ final class BloombergUtils {
     }
 
     /**
-     *
      * @return true if the bbcomm process is running
      */
     private static boolean isBloombergProcessRunning() {
@@ -134,9 +144,11 @@ final class BloombergUtils {
     }
 
     private static Boolean getStartingCallable() throws IOException {
-        logger.info("Starting {} manually", BBCOMM_PROCESS);
-        ProcessBuilder pb = new ProcessBuilder(BBCOMM_PROCESS);
-        pb.directory(getBbcommFolder());
+        File bbcommFolder = getBbcommFolder();
+        File bbcomm = new File(bbcommFolder, BBCOMM_PROCESS);
+        logger.info("Starting {} manually", bbcomm.getAbsolutePath());
+        ProcessBuilder pb = new ProcessBuilder(bbcomm.getAbsolutePath());
+        pb.directory(bbcommFolder);
         pb.redirectErrorStream(true);
         Process p = pb.start();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream(), Charset.forName("UTF-8")))) {
@@ -157,14 +169,14 @@ final class BloombergUtils {
             Path folder = Paths.get(p);
             if (Files.exists(folder.resolve(BBCOMM_PROCESS))) return folder.toFile();
         }
-        throw new AssertionError("Could not locate " + BBCOMM_PROCESS + " in any of the default folders " + Arrays.toString(BBCOMM_FOLDER));
+        throw new AssertionError("Could not locate " + BBCOMM_PROCESS + " in any of the folders " + Arrays.toString(BBCOMM_FOLDER));
     }
 
     private static boolean getResultWithTimeout(Callable<Boolean> startBloombergProcess, int timeout, TimeUnit timeUnit) {
         ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
-          Thread t = new Thread(r, "Bloomberg - bbcomm starter thread");
-          t.setDaemon(true);
-          return t;
+            Thread t = new Thread(r, "Bloomberg - bbcomm starter thread");
+            t.setDaemon(true);
+            return t;
         });
         Future<Boolean> future = executor.submit(startBloombergProcess);
 
