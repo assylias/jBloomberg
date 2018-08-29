@@ -217,7 +217,7 @@ public class DefaultBloombergSessionTest {
         final DefaultBloombergSession session = new DefaultBloombergSession();
         RequestBuilder<?> request = new HistoricalRequestBuilder("a", "a", DATE_NOW, DATE_NOW);
         session.start();
-        session.submit(request).get(2, TimeUnit.SECONDS);
+        session.submit(request).get(10, TimeUnit.SECONDS);
         session.stop();
     }
 
