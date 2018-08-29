@@ -1,3 +1,16 @@
+## [v3.7]
+
+### Added
+
+- `BloombergSearchRequestBuilder` to query SRCH screens
+- `InstrumentListRequestBuilder` to search instruments containing a given string
+- `PortfolioRequestBuilder` to query PRTU portfolios
+
+### Fixed
+
+- Added an automatic module name for Java 9+ compatibility
+- bbcomm.exe can also be located in a custom location, which can be configured using an environment variable `jbloomberg.bbcomm`
+
 ## [v3.6]
 
 ### Fixed
