@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
-import static java.util.Objects.requireNonNull;
 import java.util.Set;
+import static java.util.Objects.requireNonNull;
 
 /**
  * A SubscriptionBuilder is used to build real time streaming subscription requests.
@@ -22,10 +22,11 @@ import java.util.Set;
 public final class SubscriptionBuilder {
 
     private final Set<DataChangeListener> dataListeners = new HashSet<>();
-    private final Set<String> securities = new HashSet<> ();
+    private final Set<String> securities = new HashSet<>();
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
-    private SubscriptionErrorListener errorListener = e-> { /* no-op */ };
+    private SubscriptionErrorListener errorListener = e -> { /* no-op */ };
     private double throttle = 0;
+    private boolean convertTimestampsToUTC = false;
 
     BloombergServiceType getServiceType() {
         return BloombergServiceType.MARKET_DATA;
@@ -112,13 +113,21 @@ public final class SubscriptionBuilder {
      * throttle is not set, all updates will be received. If the argument is 0, no throttle is applied.
      *
      * @param throttleFrequency the maximum frequency at which data is updated, in seconds.
-     *
      * @throws IllegalArgumentException if throttle is not 0 or between 0.1 and 86,400.
      */
     public SubscriptionBuilder throttle(double throttleFrequency) {
         Preconditions.checkArgument(throttleFrequency >= 0.1 || throttleFrequency == 0, "frequency must be 0 or >= 0.1 (was " + throttleFrequency + ")");
         Preconditions.checkArgument(throttleFrequency <= 86400, "frequency must be <= 86,400 (was " + throttleFrequency + ")");
         throttle = throttleFrequency;
+        return this;
+    }
+
+    /**
+     * By default timestamps reflect the users preference set in <tt>TZDF</tt>, set this option to force
+     * timestamps to be returned in UTC consistently across users and locations.
+     */
+    public SubscriptionBuilder convertTimestampsToUTC() {
+        convertTimestampsToUTC = true;
         return this;
     }
 
@@ -140,11 +149,17 @@ public final class SubscriptionBuilder {
 
     Set<String> getFieldsAsString() {
         ImmutableSet.Builder<String> set = ImmutableSet.builder();
-        for (RealtimeField f : fields) {set.add(f.toString());}
+        for (RealtimeField f : fields) {
+            set.add(f.toString());
+        }
         return set.build();
     }
 
     double getThrottle() {
         return throttle;
+    }
+
+    public boolean isConvertTimestampsToUTC() {
+        return convertTimestampsToUTC;
     }
 }
