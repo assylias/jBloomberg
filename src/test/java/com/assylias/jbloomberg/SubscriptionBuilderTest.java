@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 @Test(groups = "unit")
 public class SubscriptionBuilderTest {
@@ -154,6 +152,18 @@ public class SubscriptionBuilderTest {
     public void testThrottle_2() {
         SubscriptionBuilder sb = new SubscriptionBuilder();
         assertEquals(sb.getThrottle(), 0d);
+    }
+
+    @Test
+    public void testConvertTimestampsToUTC_1() {
+        SubscriptionBuilder sb = new SubscriptionBuilder().convertTimestampsToUTC();
+        assertTrue(sb.isConvertTimestampsToUTC());
+    }
+
+    @Test
+    public void testConvertTimestampsToUTC_2() {
+        SubscriptionBuilder sb = new SubscriptionBuilder();
+        assertFalse(sb.isConvertTimestampsToUTC());
     }
 
     @Test

@@ -153,6 +153,18 @@ public class SubscriptionManagerTest {
     }
 
     @Test
+    public void testReSubscribe_ModifyConvertTimestampsToUTC() throws IOException {
+        sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK));
+        assertFalse(subscriptions.isConvertTimestampsToUTC("ABC"));
+        sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").convertTimestampsToUTC());
+        assertTrue(subscriptions.isConvertTimestampsToUTC("ABC"));
+        sm.subscribe(new SubscriptionBuilder().addSecurity("ABC"));
+        assertFalse(subscriptions.isConvertTimestampsToUTC("ABC"));
+        assertEquals(subscriptions.getSubscriptionsReceived(), 1);
+        assertEquals(subscriptions.getReSubscriptionsReceived(), 2);
+    }
+
+    @Test
     public void testDispatch_1() throws Exception {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
@@ -370,6 +382,14 @@ class Subscriptions {
             return s.length >= 2 ? Double.parseDouble(s[1].split(" ")[0]) : 0;
         } else {
             return 0;
+        }
+    }
+
+    boolean isConvertTimestampsToUTC(String ticker) {
+        if (subscriptions.containsKey(ticker)) {
+            return subscriptions.get(ticker).subscriptionString().contains("useGMT");
+        } else {
+            return false;
         }
     }
 
