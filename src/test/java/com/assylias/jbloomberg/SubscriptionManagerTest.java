@@ -100,7 +100,7 @@ public class SubscriptionManagerTest {
         assertTrue(subscriptions.subscriptions.get("ABC").subscriptionString().contains("useGMT"));
 
         //without throttle
-        sm.subscribe(new SubscriptionBuilder().addSecurity("DEF").addField(RealtimeField.BID).throttle(5));
+        sm.subscribe(new SubscriptionBuilder().addSecurity("DEF").addField(RealtimeField.BID));
         assertTrue(subscriptions.subscriptions.get("ABC").subscriptionString().contains("useGMT"));
     }
 
