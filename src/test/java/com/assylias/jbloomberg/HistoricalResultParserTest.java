@@ -23,6 +23,7 @@ public class HistoricalResultParserTest {
 
     private static final LocalDate NOW = LocalDate.now();
     private DefaultBloombergSession session = null;
+    private static final int TIMEOUT = 10;
 
     @BeforeClass
     public void beforeClass() throws BloombergException {
@@ -47,7 +48,7 @@ public class HistoricalResultParserTest {
         Collection<String> tickers = (Collection<String>) f.get(hrb);
         tickers.clear();
         try {
-            session.submit(hrb).get(5, TimeUnit.SECONDS);
+            session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             throw (Exception) e.getCause();
         }
@@ -56,21 +57,21 @@ public class HistoricalResultParserTest {
     @Test
     public void testParse_OneInvalidSecurity() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("XXX", "PX_LAST", NOW, NOW);
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        RequestResult data = session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
     }
 
     @Test
     public void testParse_OneInvalidField() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("IBM US Equity", "XXX", NOW, NOW);
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        RequestResult data = session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
     }
 
     @Test
     public void testParse_OneSecurityOneFieldOk() throws Exception {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder("IBM US Equity", "PX_LAST", NOW.minusDays(5), NOW);
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        RequestResult data = session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
@@ -79,7 +80,7 @@ public class HistoricalResultParserTest {
         HistoricalRequestBuilder hrb = new HistoricalRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST"), NOW.minusDays(5), NOW)
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE).days(HistoricalRequestBuilder.Days.ALL_CALENDAR_DAYS);
-        RequestResult data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        RequestResult data = session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 }

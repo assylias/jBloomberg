@@ -21,6 +21,7 @@ import static org.testng.Assert.assertTrue;
 public class ReferenceResultParserTest {
 
     private DefaultBloombergSession session = null;
+    private static final int TIMEOUT = 10;
 
     @BeforeClass
     public void beforeClass() throws BloombergException {
@@ -38,14 +39,14 @@ public class ReferenceResultParserTest {
     @Test(expectedExceptions = BloombergException.class, expectedExceptionsMessageRegExp = ".*[Rr]equest.*")
     @SuppressWarnings("unchecked")
     public void testParse_NoTickerErrorResponse() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("ABC", "ABC");
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("ABC", "ABC");
         //Remove the tickers to provoke a ResponseError
-        Field f = hrb.getClass().getDeclaredField("tickers");
+        Field f = rrb.getClass().getDeclaredField("tickers");
         f.setAccessible(true);
-        Collection<String> tickers = (Collection<String>) f.get(hrb);
+        Collection<String> tickers = (Collection<String>) f.get(rrb);
         tickers.clear();
         try {
-            session.submit(hrb).get(2, TimeUnit.SECONDS);
+            session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
             throw (Exception) e.getCause();
         }
@@ -53,58 +54,58 @@ public class ReferenceResultParserTest {
 
     @Test
     public void testParse_OneInvalidSecurity() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("XXX", "PX_LAST");
-        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("XXX", "PX_LAST");
+        ReferenceData data = session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
         assertTrue(data.getSecurityErrors().contains("XXX"));
     }
 
     @Test
     public void testParse_OneInvalidField() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("IBM US Equity", "XXX");
-        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("IBM US Equity", "XXX");
+        ReferenceData data = session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertTrue(data.hasErrors());
         assertTrue(data.getFieldErrors().contains("XXX"));
     }
 
     @Test
     public void testParse_OneSecurityOneFieldOk() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("IBM US Equity", "PX_LAST");
-        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("IBM US Equity", "PX_LAST");
+        ReferenceData data = session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
     @Test
     public void testParse_TwoSecuritiesTwoFieldsOk() throws Exception {
-        RequestBuilder<ReferenceData> hrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
+        RequestBuilder<ReferenceData> rrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST", "CRNCY_ADJ_MKT_CAP"));
-        ReferenceData data = session.submit(hrb).get(60, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(rrb).get(60, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
         assertTrue(data.forSecurity("IBM US Equity").forField("PX_LAST").asDouble() > 0);
     }
 
     @Test
     public void testParse_TwoSecuritiesTwoFieldsWithOverride() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder(Arrays.asList("IBM US Equity", "SIE GY Equity"),
                 Arrays.asList("PX_LAST", "CRNCY_ADJ_MKT_CAP"))
                 .addOverride("EQY_FUND_CRNCY", "USD");
-        ReferenceData data = session.submit(hrb).get(2, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
     @Test
     public void testParse_OtherFieldTypes() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity",
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("SIE GY Equity",
                 Arrays.asList("CUR_EMPLOYEES", "CUR_NUM_EMPLOYEES_AS_PER_DT", "EQY_CONSOLIDATED"));
-        ReferenceData data = session.submit(hrb).get(5, TimeUnit.SECONDS);
+        ReferenceData data = session.submit(rrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testParse_BulkData() throws Exception {
-        ReferenceRequestBuilder hrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
-        ReferenceData data = session.submit(hrb).get(15, TimeUnit.MINUTES);
+        ReferenceRequestBuilder rrb = new ReferenceRequestBuilder("SIE GY Equity","TOP_20_HOLDERS_PUBLIC_FILINGS");
+        ReferenceData data = session.submit(rrb).get(15, TimeUnit.MINUTES);
         assertFalse(data.isEmpty());
     }
 }
