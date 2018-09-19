@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -174,11 +175,8 @@ final class SubscriptionManager {
         addListenersToEventsManager(builder, ticker, sh.id);
         subscriptionsByTicker.put(ticker, sh);
         subscriptionsById.put(sh.id, sh); //THIS IS THE ONLY PLACE WHERE WE WRITE TO THAT MAP
-        if (sh.throttle != 0) {
-            return new Subscription(ticker, sh.getFieldsAsList(), sh.getThrottleAsList(), sh.id);
-        } else {
-            return new Subscription(ticker, sh.getFieldsAsList(), sh.id);
-        }
+
+        return new Subscription(ticker, sh.getFieldsAsList(), getSubscriptionOptions(sh), sh.id);
     }
 
     private SubscriptionList getReSubscriptionsList(SubscriptionBuilder builder) {
@@ -195,11 +193,13 @@ final class SubscriptionManager {
         SubscriptionHolder sh = subscriptionsByTicker.get(ticker);
         sh.update(builder);
         addListenersToEventsManager(builder, ticker, sh.id);
-        if (sh.throttle != 0) {
-            return new Subscription(ticker, sh.getFieldsAsList(), sh.getThrottleAsList(), sh.id);
-        } else {
-            return new Subscription(ticker, sh.getFieldsAsList(), sh.id);
-        }
+
+        return new Subscription(ticker, sh.getFieldsAsList(), getSubscriptionOptions(sh), sh.id);
+    }
+
+    private static List<String> USE_GMT = Collections.singletonList("useGMT");
+    private List<String> getSubscriptionOptions(SubscriptionHolder sh) {
+        return sh.throttle == 0 ? USE_GMT : Arrays.asList("useGMT", sh.getThrottleOption());
     }
 
     private void addListenersToEventsManager(SubscriptionBuilder builder, String ticker, CorrelationID id) {
@@ -230,8 +230,8 @@ final class SubscriptionManager {
             return list;
         }
 
-        List<String> getThrottleAsList() {
-            return Arrays.asList("interval=" + throttle);
+        String getThrottleOption() {
+            return "interval=" + throttle;
         }
 
         void update(SubscriptionBuilder builder) {

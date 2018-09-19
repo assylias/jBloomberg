@@ -8,7 +8,6 @@ import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import org.testng.annotations.AfterMethod;
@@ -92,6 +91,17 @@ public class SubscriptionManagerTest {
     @Test(expectedExceptions=IllegalStateException.class)
     public void stopNull() {
         sm.stop(new DefaultBloombergSession());
+    }
+
+    @Test
+    public void testSubscribe_MustUseGmt() throws IOException {
+        //with throttle
+        sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.BID).throttle(5));
+        assertTrue(subscriptions.subscriptions.get("ABC").subscriptionString().contains("useGMT"));
+
+        //without throttle
+        sm.subscribe(new SubscriptionBuilder().addSecurity("DEF").addField(RealtimeField.BID).throttle(5));
+        assertTrue(subscriptions.subscriptions.get("ABC").subscriptionString().contains("useGMT"));
     }
 
     @Test
