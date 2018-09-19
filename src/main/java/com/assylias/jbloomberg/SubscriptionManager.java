@@ -198,7 +198,7 @@ final class SubscriptionManager {
         return new Subscription(ticker, sh.getFieldsAsList(), getSubscriptionOptions(sh), sh.id);
     }
 
-    private static List<String> USE_GMT = Collections.singletonList("useGMT");
+    private static final List<String> USE_GMT = Collections.singletonList("useGMT");
     private List<String> getSubscriptionOptions(SubscriptionHolder sh) {
         return sh.throttle == 0 ? USE_GMT : Arrays.asList("useGMT", sh.getThrottleOption());
     }
