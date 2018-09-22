@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -31,6 +32,7 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
     private final Set<String> tickers = new HashSet<>();
     private final Set<String> fields = new HashSet<>();
     //Optional parameters
+    private Identity identity = null;
     private final Map<String, String> overrides = new HashMap<>();
 
     /**
@@ -85,6 +87,16 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
         this.fields.addAll(fields);
     }
 
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public ReferenceRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
+    }
+
     public ReferenceRequestBuilder addOverride(String field, String value) {
         Preconditions.checkNotNull(field, "Field cannot be null when adding overrides");
         Preconditions.checkNotNull(value, "Value cannot be null when adding overrides");
@@ -109,6 +121,11 @@ public final class ReferenceRequestBuilder extends AbstractRequestBuilder<Refere
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.REFERENCE_DATA;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

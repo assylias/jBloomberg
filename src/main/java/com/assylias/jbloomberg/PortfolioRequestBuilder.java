@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 
 import java.time.LocalDate;
@@ -24,6 +25,8 @@ public final class PortfolioRequestBuilder extends AbstractRequestBuilder<Refere
 
     //Delegates most of the work to ReferenceRequestBuilder as most of the internal mechanics is similar
     private final ReferenceRequestBuilder rrb;
+
+    private Identity identity = null;
 
     /**
      * Equivalent to calling
@@ -70,6 +73,16 @@ public final class PortfolioRequestBuilder extends AbstractRequestBuilder<Refere
         return this;
     }
 
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public PortfolioRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "PortfolioRequestBuilder: " + rrb.toString();
@@ -83,6 +96,11 @@ public final class PortfolioRequestBuilder extends AbstractRequestBuilder<Refere
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.PORTFOLIO_DATA;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import java.time.OffsetDateTime;
 
@@ -23,6 +24,7 @@ import java.time.OffsetDateTime;
 public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<IntradayTickData> {
 
     //Optional parameters
+    private Identity identity = null;
     private boolean includeConditionCodes;
     private boolean includeNonPlottableEvents;
     private boolean includeExchangeCodes;
@@ -61,6 +63,16 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
      */
     public IntradayTickRequestBuilder(String ticker, IntradayTickEventType eventType, OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
         super(ticker, eventType.toString(), startDateTime, endDateTime);
+    }
+
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public IntradayTickRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
     }
 
     /**
@@ -138,6 +150,11 @@ public class IntradayTickRequestBuilder extends AbstractIntradayRequestBuilder<I
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.INTRADAY_TICK;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

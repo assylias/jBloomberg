@@ -154,7 +154,7 @@ final class SubscriptionManager {
 
         list = getNewSubscriptionsList(subscriptionBuilder);
         if (!list.isEmpty()) {
-            session.getBloombergSession().subscribe(list);
+            session.getBloombergSession().subscribe(list, subscriptionBuilder.getIdentity());
         }
     }
 

@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.Session;
 
@@ -32,6 +33,11 @@ public interface RequestBuilder<T extends RequestResult> {
      * @return a properly built request that can be submitted to the session
      */
     Request buildRequest(Session session);
+
+    /**
+     * @return Identity used when making request
+     */
+    Identity getIdentity();
 
     /**
      *

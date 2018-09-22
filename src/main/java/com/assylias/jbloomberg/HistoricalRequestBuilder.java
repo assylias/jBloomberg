@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
@@ -35,6 +36,7 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     private final LocalDate startDate;
     private final LocalDate endDate;
     //Optional parameters
+    private Identity identity = null;
     private PeriodicityAdjustment periodicityAdjustment = PeriodicityAdjustment.ACTUAL;
     private Period period = Period.DAILY;
     private Currency currency = null;
@@ -105,6 +107,16 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
 
         this.tickers.addAll(tickers);
         this.fields.addAll(fields);
+    }
+
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public HistoricalRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
     }
 
     /**
@@ -243,6 +255,11 @@ public final class HistoricalRequestBuilder extends AbstractRequestBuilder<Histo
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.HISTORICAL_DATA;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

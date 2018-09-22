@@ -43,7 +43,7 @@ public class BloombergEventHandlerTest {
     }
 
     @Test
-    public void testProcessEvent_Response(@Mocked final ResultParser parser) throws Exception {
+    public void testProcessEvent_Response(@Mocked final ResultParser<?> parser) throws Exception {
         final BloombergEventHandler handler = new BloombergEventHandler(new ArrayBlockingQueue<>(1), x -> {});
         CorrelationID cId = new CorrelationID(1);
         handler.setParser(cId, parser);

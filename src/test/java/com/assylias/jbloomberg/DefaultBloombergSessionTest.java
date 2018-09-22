@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
 import mockit.Mocked;
@@ -22,8 +23,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.*;
 
 public class DefaultBloombergSessionTest {
 
@@ -258,5 +258,21 @@ public class DefaultBloombergSessionTest {
         IntradayBarData result = future.get();
         session1.stop();
         session2.stop();
+    }
+
+    @Test(groups = "requires-bloomberg")
+    public void testGetIdentity() throws Exception {
+        final SessionOptions sessionOptions = new SessionOptions();
+        sessionOptions.setAuthenticationOptions("AuthenticationMode=APPLICATION_ONLY;ApplicationAuthenticationType=APPNAME_AND_KEY;ApplicationName=foo");
+        final DefaultBloombergSession session = new DefaultBloombergSession(sessionOptions);
+        session.start();
+        try {
+            session.getIdentity().get();
+            fail("Expected auth to fail");
+        } catch (ExecutionException e) {
+            assertTrue(e.getCause().getCause().getMessage().contains("Failed to generate token - NO_AUTH - INVALID_APP - App not in emrs appid=foo"));
+        } finally {
+            session.stop();
+        }
     }
 }

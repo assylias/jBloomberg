@@ -9,13 +9,9 @@ import static com.assylias.jbloomberg.SessionState.STARTED;
 import static com.assylias.jbloomberg.SessionState.STARTING;
 import static com.assylias.jbloomberg.SessionState.STARTUP_FAILURE;
 import static com.assylias.jbloomberg.SessionState.TERMINATED;
-import com.bloomberglp.blpapi.CorrelationID;
-import com.bloomberglp.blpapi.DuplicateCorrelationIDException;
-import com.bloomberglp.blpapi.InvalidRequestException;
-import com.bloomberglp.blpapi.Request;
-import com.bloomberglp.blpapi.RequestQueueOverflowException;
-import com.bloomberglp.blpapi.Session;
-import com.bloomberglp.blpapi.SessionOptions;
+
+import com.bloomberglp.blpapi.*;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -224,6 +220,45 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
+    public CompletableFuture<Identity> getIdentity() {
+        Supplier<Identity> task = () -> {
+            CorrelationID cId = getNextCorrelationId();
+            try {
+                // open service first to ensure we are connected
+                openService(BloombergServiceType.API_AUTHORIZATION);
+
+                TokenResultParser tokenResultParser = new TokenResultParser();
+                eventHandler.setParser(cId, tokenResultParser);
+                session.generateToken(cId);
+                TokenResultParser.Result token = tokenResultParser.getResult();
+                if (token.isEmpty()) {
+                    throw new IllegalStateException("Failed to generate token - " + token.getError());
+                }
+
+                Service service = session.getService(BloombergServiceType.API_AUTHORIZATION.getUri());
+                Request authRequest = service.createAuthorizationRequest();
+                authRequest.set("token", tokenResultParser.getRequestResult().getToken());
+                Identity identity = session.createIdentity();
+
+                AuthorizationResultParser authorizationResultParser = new AuthorizationResultParser();
+                eventHandler.setParser(cId, authorizationResultParser);
+                session.sendAuthorizationRequest(authRequest, identity, cId);
+                AuthorizationResultParser.Result auth = authorizationResultParser.getResult();
+                if (auth.isAuthorized()) {
+                    return identity;
+                }
+                throw new IllegalStateException("Failed to authorize user - " + auth.getError());
+            } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
+                    IllegalStateException e) {
+                throw new BloombergException("Could not process the request", e);
+            } catch (InterruptedException e) {
+                session.cancel(cId);
+                throw new CancellationException("The request was cancelled");
+            }
+        };
+        return CompletableFuture.supplyAsync(task, executor);
+    }
+
     /**
      * Submits a request to the Bloomberg Session and returns immediately.
      *
@@ -335,7 +370,7 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     private CorrelationID sendRequest(final RequestBuilder<?> request, CorrelationID cId) throws IOException {
         Request bbRequest = request.buildRequest(session);
-        session.sendRequest(bbRequest, cId);
+        session.sendRequest(bbRequest, request.getIdentity(), cId);
         return cId;
     }
 

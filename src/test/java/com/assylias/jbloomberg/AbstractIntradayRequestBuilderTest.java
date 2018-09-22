@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import org.testng.annotations.Test;
 
 import java.time.OffsetDateTime;
@@ -69,6 +70,10 @@ public class AbstractIntradayRequestBuilderTest {
         @Override
         public BloombergRequestType getRequestType() {
             throw new UnsupportedOperationException("Not supported yet.");
+        }
+        @Override
+        public Identity getIdentity() {
+            return null;
         }
         @Override
         public ResultParser getResultParser() {

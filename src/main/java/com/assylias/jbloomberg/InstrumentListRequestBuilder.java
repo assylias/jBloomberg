@@ -1,5 +1,6 @@
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
 
@@ -19,6 +20,7 @@ public class InstrumentListRequestBuilder extends AbstractRequestBuilder<Instrum
     private final String query;
     private final int maxResults;
     //Optional parameters
+    private Identity identity = null;
     private YellowKeyFilter yellowKeyFilter = null;
     private LanguageOverride languageOverride = null;
 
@@ -40,6 +42,16 @@ public class InstrumentListRequestBuilder extends AbstractRequestBuilder<Instrum
         this.query = Preconditions.checkNotNull(query);
         if (maxResults <= 0) throw new IllegalArgumentException("maxResults must be > 0, received " + maxResults);
         this.maxResults = maxResults;
+    }
+
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public InstrumentListRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
     }
 
   /**
@@ -66,6 +78,11 @@ public class InstrumentListRequestBuilder extends AbstractRequestBuilder<Instrum
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.INSTRUMENT_LIST;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override

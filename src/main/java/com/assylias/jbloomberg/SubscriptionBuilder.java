@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -24,6 +25,7 @@ public final class SubscriptionBuilder {
     private final Set<DataChangeListener> dataListeners = new HashSet<>();
     private final Set<String> securities = new HashSet<> ();
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
+    private Identity identity = null;
     private SubscriptionErrorListener errorListener = e-> { /* no-op */ };
     private double throttle = 0;
 
@@ -107,6 +109,16 @@ public final class SubscriptionBuilder {
     }
 
     /**
+     * Specify the {@link Identity} used when subscribing
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public SubscriptionBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
+    }
+
+    /**
      * Throttles the real time data feed. This is useful to reduce bandwidth usage or CPU activity. <br>
      * If the feed is throttled, each event that is received will be a snapshot at the time of the refresh. If the
      * throttle is not set, all updates will be received. If the argument is 0, no throttle is applied.
@@ -136,6 +148,10 @@ public final class SubscriptionBuilder {
 
     Set<RealtimeField> getFields() {
         return Sets.immutableEnumSet(fields);
+    }
+
+    public Identity getIdentity() {
+        return identity;
     }
 
     Set<String> getFieldsAsString() {

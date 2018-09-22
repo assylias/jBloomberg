@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 
 import static java.util.Objects.requireNonNull;
@@ -26,11 +27,23 @@ public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<
     private final String domain;
     private int limit = Integer.MIN_VALUE; //ignored if < 0
 
+    private Identity identity = null;
+
     /**
      * just takes 1 parameter which is the domain (i.e. the saved bsrch query name)
      */
     public BloombergSearchRequestBuilder(String domain) {
         this.domain = requireNonNull(domain, "domain must not be null");
+    }
+
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public BloombergSearchRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
     }
 
     @Override
@@ -46,6 +59,11 @@ public final class BloombergSearchRequestBuilder extends AbstractRequestBuilder<
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.EXCELGETGRIDREQUEST_DATA;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     /**

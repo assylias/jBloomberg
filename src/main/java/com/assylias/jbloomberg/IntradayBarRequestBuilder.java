@@ -4,6 +4,7 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Request;
 import com.google.common.base.Preconditions;
 import java.time.OffsetDateTime;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuilder<IntradayBarData> {
 
     //Optional parameters
+    private Identity identity = null;
     private int period = 1;
     private boolean fillInitialBar = false;
     private boolean adjustNormal = false;
@@ -63,6 +65,16 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
      */
     public IntradayBarRequestBuilder(String ticker, IntradayBarEventType eventType, OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
         super(ticker, eventType.toString(), startDateTime, endDateTime);
+    }
+
+    /**
+     * Specify the {@link Identity} used to make request
+     *
+     * @param identity Identity to use when making API requests
+     */
+    public IntradayBarRequestBuilder withIdentity(Identity identity) {
+        this.identity = identity;
+        return this;
     }
 
     /**
@@ -165,6 +177,11 @@ public final class IntradayBarRequestBuilder extends AbstractIntradayRequestBuil
     @Override
     public BloombergRequestType getRequestType() {
         return BloombergRequestType.INTRADAY_BAR;
+    }
+
+    @Override
+    public Identity getIdentity() {
+        return identity;
     }
 
     @Override
