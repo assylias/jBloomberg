@@ -335,6 +335,7 @@ public class DefaultBloombergSession implements BloombergSession {
      */
     private CorrelationID sendRequest(final RequestBuilder<?> request, CorrelationID cId) throws IOException {
         Request bbRequest = request.buildRequest(session);
+        logger.trace("{}", bbRequest);
         session.sendRequest(bbRequest, cId);
         return cId;
     }
