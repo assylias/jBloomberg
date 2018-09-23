@@ -5,7 +5,6 @@ import com.bloomberglp.blpapi.Name;
 
 public class AuthorizationResultParser extends AbstractResultParser<AuthorizationResultParser.Result> {
     private static final Name AUTHORIZATION_SUCCESS = Name.getName("AuthorizationSuccess");
-    private static final Name AUTHORIZATION_FAILURE = Name.getName("AuthorizationFailure");
 
     @Override
     protected Result getRequestResult() {
@@ -18,7 +17,7 @@ public class AuthorizationResultParser extends AbstractResultParser<Authorizatio
             result.authorized = true;
         } else {
             Element reason = response.getElement("reason");
-            result.error = String.format("%s - %s - %s", reason.getElementAsString("category"), reason.getElementAsString("subcategory"), reason.getElementAsString("description"));
+            result.error = String.format("%s - %s - %s", reason.getElementAsString("category"), reason.getElementAsString("subcategory"), reason.getElementAsString("message"));
         }
     }
 

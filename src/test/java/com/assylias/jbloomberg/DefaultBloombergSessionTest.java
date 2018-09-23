@@ -261,16 +261,30 @@ public class DefaultBloombergSessionTest {
     }
 
     @Test(groups = "requires-bloomberg")
-    public void testGetIdentity() throws Exception {
+    public void testGetTokenIdentity() throws Exception {
         final SessionOptions sessionOptions = new SessionOptions();
         sessionOptions.setAuthenticationOptions("AuthenticationMode=APPLICATION_ONLY;ApplicationAuthenticationType=APPNAME_AND_KEY;ApplicationName=foo");
         final DefaultBloombergSession session = new DefaultBloombergSession(sessionOptions);
         session.start();
         try {
-            session.getIdentity().get();
+            session.getTokenIdentity().get();
             fail("Expected auth to fail");
         } catch (ExecutionException e) {
             assertTrue(e.getCause().getCause().getMessage().contains("Failed to generate token - NO_AUTH - INVALID_APP - App not in emrs appid=foo"));
+        } finally {
+            session.stop();
+        }
+    }
+
+    @Test(groups = "requires-bloomberg")
+    public void testGetUserIdentity() throws Exception {
+        final DefaultBloombergSession session = new DefaultBloombergSession();
+        session.start();
+        try {
+            session.getUserIdentity(1, "1.2.3.4").get();
+            fail("Expected auth to fail");
+        } catch (ExecutionException e) {
+            assertEquals("Failed to authorize user -  -  - Not Authorized.", e.getCause().getCause().getMessage());
         } finally {
             session.stop();
         }

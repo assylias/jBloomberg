@@ -220,24 +220,44 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
-    public CompletableFuture<Identity> getIdentity() {
+    public CompletableFuture<Identity> getTokenIdentity() {
+        return getIdentity(authRequest -> {
+            CorrelationID cId = getNextCorrelationId();
+            TokenResultParser tokenResultParser = new TokenResultParser();
+            eventHandler.setParser(cId, tokenResultParser);
+            session.generateToken(cId);
+            TokenResultParser.Result token = tokenResultParser.getResult();
+            if (token.isEmpty()) {
+                throw new IllegalStateException("Failed to generate token - " + token.getError());
+            }
+            authRequest.set("token", tokenResultParser.getRequestResult().getToken());
+        });
+    }
+
+    public CompletableFuture<Identity> getUserIdentity(int uuid, String ipAddress) {
+        return getIdentity(authRequest -> {
+            authRequest.set("uuid", uuid);
+            authRequest.set("ipAddress", ipAddress);
+        });
+    }
+
+    public CompletableFuture<Identity> getUserIdentity(String authId, String ipAddress) {
+        return getIdentity(authRequest -> {
+            authRequest.set("authId", authId);
+            authRequest.set("ipAddress", ipAddress);
+        });
+    }
+
+    private CompletableFuture<Identity> getIdentity(AuthRequestBuilder authRequestBuilder) {
         Supplier<Identity> task = () -> {
             CorrelationID cId = getNextCorrelationId();
             try {
                 // open service first to ensure we are connected
                 openService(BloombergServiceType.API_AUTHORIZATION);
 
-                TokenResultParser tokenResultParser = new TokenResultParser();
-                eventHandler.setParser(cId, tokenResultParser);
-                session.generateToken(cId);
-                TokenResultParser.Result token = tokenResultParser.getResult();
-                if (token.isEmpty()) {
-                    throw new IllegalStateException("Failed to generate token - " + token.getError());
-                }
-
                 Service service = session.getService(BloombergServiceType.API_AUTHORIZATION.getUri());
                 Request authRequest = service.createAuthorizationRequest();
-                authRequest.set("token", tokenResultParser.getRequestResult().getToken());
+                authRequestBuilder.build(authRequest);
                 Identity identity = session.createIdentity();
 
                 AuthorizationResultParser authorizationResultParser = new AuthorizationResultParser();
@@ -402,5 +422,10 @@ public class DefaultBloombergSession implements BloombergSession {
     @Override
     public String toString() {
         return "Session #" + sessionId + " [" + state.get() + "]";
+    }
+
+    @FunctionalInterface
+    private interface AuthRequestBuilder {
+        void build(Request authRequest) throws IOException, InterruptedException;
     }
 }
