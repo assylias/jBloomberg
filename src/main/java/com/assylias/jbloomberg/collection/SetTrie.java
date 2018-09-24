@@ -5,6 +5,9 @@ import com.google.common.collect.Sets;
 
 import java.util.*;
 
+/**
+ * Based on the data structure described in Savnik, I: Index Data Structure for Fast Subset and Superset Queries
+ */
 public final class SetTrie<T> {
     private final Comparator<T> comparator;
     private final TreeMap<T, Node> firstGeneration;
