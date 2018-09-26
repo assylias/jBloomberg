@@ -53,9 +53,12 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
     @Override
     public void addEventListener(String ticker, CorrelationID id, Set<RealtimeField> fields, DataChangeListener lst) {
         logger.debug("addEventListener({}, {}, {}, {})", ticker, id, fields, lst);
-        subscribedFields.computeIfAbsent(id, i -> SetTrie.create()).add(fields);
-        Listeners listenersInMap = listenersMap.computeIfAbsent(EventsKey.of(id, fields), k -> new Listeners(ticker));
-        listenersInMap.addListener(lst);
+        for (RealtimeField field : fields) {
+            Set<RealtimeField> singleField = Collections.singleton(field);
+            subscribedFields.computeIfAbsent(id, i -> SetTrie.create()).add(singleField);
+            Listeners listenersInMap = listenersMap.computeIfAbsent(EventsKey.of(id, singleField), k -> new Listeners(ticker));
+            listenersInMap.addListener(lst);
+        }
     }
 
     @Override
@@ -75,7 +78,7 @@ final class ConcurrentConflatedEventsManager implements EventsManager {
         for (Set<RealtimeField> key : keys) {
             Listeners lst = listenersMap.get(EventsKey.of(id, key));
             if (lst == null) {
-                return; //skip that event: nobody's listening anyway
+                continue; //skip that event: nobody's listening anyway
             }
             String ticker = lst.ticker;
             List<DataChangeEvent> events = new LinkedList<>();
