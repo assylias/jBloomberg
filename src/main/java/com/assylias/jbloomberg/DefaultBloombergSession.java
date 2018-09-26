@@ -230,7 +230,7 @@ public class DefaultBloombergSession implements BloombergSession {
             if (token.isEmpty()) {
                 throw new IllegalStateException("Failed to generate token - " + token.getError());
             }
-            authRequest.set("token", tokenResultParser.getRequestResult().getToken());
+            authRequest.set("token", token.getToken());
         });
     }
 
