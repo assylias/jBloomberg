@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,7 +49,7 @@ final class SubscriptionManager {
     /**
      * The queue that is used to transfer subscription data from Bloomberg to the interested parties
      */
-    private final BlockingQueue<Data> subscriptionDataQueue;
+    private final BlockingQueue<DataOrSubscriptionError> subscriptionDataQueue;
     /**
      * Everything runs in the same thread
      */
@@ -69,7 +70,7 @@ final class SubscriptionManager {
      */
     private final EventsManager eventsManager;
 
-    public SubscriptionManager(BlockingQueue<Data> subscriptionDataQueue, EventsManager eventsManager) {
+    public SubscriptionManager(BlockingQueue<DataOrSubscriptionError> subscriptionDataQueue, EventsManager eventsManager) {
         this.subscriptionDataQueue = subscriptionDataQueue;
         this.eventsManager = eventsManager;
     }
@@ -104,13 +105,21 @@ final class SubscriptionManager {
             public void run() {
                 try {
                     while (!Thread.currentThread().isInterrupted()) {
-                        Data data = subscriptionDataQueue.take();
-                        CorrelationID id = data.getCorrelationId();
-                        if (RealtimeField.containsIgnoreCase(data.getField())) {
-                            RealtimeField field = RealtimeField.valueOfIgnoreCase(data.getField());
-                            eventsManager.fireEvent(id, field, data.getValue());
-                        } else if (data.getValue() instanceof SubscriptionError) {
-                            SubscriptionError error = (SubscriptionError) data.getValue();
+                        DataOrSubscriptionError dataOrError = subscriptionDataQueue.take();
+                        CorrelationID id = dataOrError.getCorrelationId();
+                        if (!dataOrError.isError()) {
+                            EnumMap<RealtimeField, Object> data = new EnumMap<>(RealtimeField.class);
+                            for (Map.Entry<String, Object> e : dataOrError.getData().entrySet()) {
+                                if (RealtimeField.containsIgnoreCase(e.getKey())) {
+                                    RealtimeField field = RealtimeField.valueOfIgnoreCase(e.getKey());
+                                    data.put(field, e.getValue());
+                                }
+                            }
+                            if (!data.isEmpty()) {
+                                eventsManager.fireEvents(id, data);
+                            }
+                        } else {
+                            SubscriptionError error = dataOrError.getError();
                             logger.info("Subscription error [{}]: {}", error.getTopic(), error.getDescription());
                             if ("SubscriptionFailure".equals(error.getType())) {
                                 //we need to remove the subscription from our maps otherwise a resubscribe could throw an exception.
@@ -204,10 +213,11 @@ final class SubscriptionManager {
     }
 
     private void addListenersToEventsManager(SubscriptionBuilder builder, String ticker, CorrelationID id) {
-        for (RealtimeField field : builder.getFields()) {
-            for (DataChangeListener lst : builder.getListeners()) {
-                eventsManager.addEventListener(ticker, id, field, lst);
-            }
+        for (DataChangeListener lst : builder.getListeners()) {
+            eventsManager.addEventListener(ticker, id, builder.getFields(), lst);
+        }
+        for (DataChangeMultiListener lst : builder.getMultiListeners()) {
+            eventsManager.addEventMultiListener(ticker, id, builder.getFields(), lst);
         }
         eventsManager.onError(id, builder.getErrorListener());
     }

@@ -8,6 +8,7 @@ import com.bloomberglp.blpapi.CorrelationID;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -21,22 +22,22 @@ public class EventsKeyTest {
 
 
     public void testUnique() {
-        EventsKey key1 = EventsKey.of(new CorrelationID(0), RealtimeField.ASK);
-        EventsKey key2 = EventsKey.of(new CorrelationID(0), RealtimeField.ASK);
+        EventsKey key1 = EventsKey.of(new CorrelationID(0), EnumSet.of(RealtimeField.ASK));
+        EventsKey key2 = EventsKey.of(new CorrelationID(0), EnumSet.of(RealtimeField.ASK));
         assertEquals(key1, key2);
         assertSame(key1, key2);
     }
 
     public void testHash() {
-        EventsKey key1 = EventsKey.of(new CorrelationID(0), RealtimeField.ASK);
-        EventsKey key2 = EventsKey.of(new CorrelationID(0), RealtimeField.ASK);
+        EventsKey key1 = EventsKey.of(new CorrelationID(0), EnumSet.of(RealtimeField.ASK));
+        EventsKey key2 = EventsKey.of(new CorrelationID(0), EnumSet.of(RealtimeField.ASK));
         assertEquals(key1.hashCode(), key2.hashCode());
         assertNotEquals(key1.hashCode(), 0);
     }
 
     public void testNotEquals() {
-        EventsKey key1 = EventsKey.of(new CorrelationID(1), RealtimeField.ASK);
-        EventsKey key2 = EventsKey.of(new CorrelationID(2), RealtimeField.ASK);
+        EventsKey key1 = EventsKey.of(new CorrelationID(1), EnumSet.of(RealtimeField.ASK));
+        EventsKey key2 = EventsKey.of(new CorrelationID(2), EnumSet.of(RealtimeField.ASK));
         assertNotEquals(key1, key2);
         assertNotEquals(key1.hashCode(), key2.hashCode());
     }
@@ -69,8 +70,8 @@ public class EventsKeyTest {
                 start.await();
             } catch (InterruptedException ex) {}
             for (int i = 10_000; i < 11_000; i++) {
-                EventsKey key1 = EventsKey.of(new CorrelationID(i), RealtimeField.ASK);
-                EventsKey key2 = EventsKey.of(new CorrelationID(i), RealtimeField.BID);
+                EventsKey key1 = EventsKey.of(new CorrelationID(i), EnumSet.of(RealtimeField.ASK));
+                EventsKey key2 = EventsKey.of(new CorrelationID(i), EnumSet.of(RealtimeField.BID));
                 assertNotEquals(key1, key2); //pretend we are doing something
             }
         };

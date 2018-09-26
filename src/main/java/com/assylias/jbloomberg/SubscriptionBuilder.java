@@ -22,6 +22,7 @@ import java.util.Set;
 public final class SubscriptionBuilder {
 
     private final Set<DataChangeListener> dataListeners = new HashSet<>();
+    private final Set<DataChangeMultiListener> dataMultiListeners = new HashSet<>();
     private final Set<String> securities = new HashSet<> ();
     private final Set<RealtimeField> fields = EnumSet.noneOf(RealtimeField.class);
     private SubscriptionErrorListener errorListener = e-> { /* no-op */ };
@@ -40,6 +41,17 @@ public final class SubscriptionBuilder {
     public SubscriptionBuilder addListener(DataChangeListener lst) {
         requireNonNull(lst, "lst can't be null");
         dataListeners.add(lst);
+        return this;
+    }
+
+    /**
+     * Adds a listener that will be informed of any changes to the registered fields / securities.
+     *
+     * @param lst a listener
+     * @throws NullPointerException if lst is null
+     */
+    public SubscriptionBuilder addMultiListener(DataChangeMultiListener lst) {
+        dataMultiListeners.add(requireNonNull(lst, "lst can't be null"));
         return this;
     }
 
@@ -124,6 +136,10 @@ public final class SubscriptionBuilder {
 
     Set<DataChangeListener> getListeners() {
         return ImmutableSet.copyOf(dataListeners);
+    }
+
+    Set<DataChangeMultiListener> getMultiListeners() {
+        return ImmutableSet.copyOf(dataMultiListeners);
     }
 
     SubscriptionErrorListener getErrorListener() {
