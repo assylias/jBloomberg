@@ -125,6 +125,7 @@ public enum RealtimeField {
     DOWN_LIMIT,
     EBS_TOUCH_HIGH_REALTIME,
     EBS_TOUCH_LOW_REALTIME,
+    EID,
     EQY_SH_FOREIGN_RT,
     EVAL_JAPANESE_TIME,
     EXCH_VWAP,

@@ -220,6 +220,7 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
+    @Override
     public CompletableFuture<Identity> getTokenIdentity() {
         return getIdentity(authRequest -> {
             CorrelationID cId = getNextCorrelationId();
@@ -234,6 +235,7 @@ public class DefaultBloombergSession implements BloombergSession {
         });
     }
 
+    @Override
     public CompletableFuture<Identity> getUserIdentity(int uuid, String ipAddress) {
         return getIdentity(authRequest -> {
             authRequest.set("uuid", uuid);
@@ -241,6 +243,7 @@ public class DefaultBloombergSession implements BloombergSession {
         });
     }
 
+    @Override
     public CompletableFuture<Identity> getUserIdentity(String authId, String ipAddress) {
         return getIdentity(authRequest -> {
             authRequest.set("authId", authId);

@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -58,6 +60,63 @@ public interface BloombergSession {
     void stop();
 
     /**
+     * In order to access permissioned data it is necessary to supply an identity with the request.  In a centralised
+     * computation model the server itself may access data and permissions can be applied later. The Server MUST keep all
+     * EIDs associated with any data received and associate these EIDs with any calculations made on the data.
+     *
+     * @return a Future that contains the identity corresponding to the server identity
+     */
+    CompletableFuture<Identity> getTokenIdentity();
+
+    /**
+     * In a client/Server application, the Server needs to permission its clients, but in some cases the client will not be
+     * able to create a token. To list a few of them:
+     * <ul>
+     * <li>Client has no connectivity to B-PIPE</li>
+     * <li>Remote display access — the IP is not always the display IP — the API will handle most Citrix-use cases</li>
+     * <li>Web applications — client is a browser, so code cannot easily be added</li>
+     * </ul>
+     * For permissioning in these cases, a client Identity can be generated in the Server from any EMRS or SAPE
+     * name or alias and the Display IP:
+     * <ul>
+     * <li>No token is used</li>
+     * <li>The Identity is authorized using AUTH ID2 and IP instead of token</li>
+     * <li>All other coding is the same</li>
+     * <li>Note that all IPs must be dynamically and programmatically determined and not stored in config files or the like</li>
+     * </ul>
+     *
+     * @param uuid User UUID
+     * @param ipAddress User IP address
+     * @return a Future that contains the identity corresponding to the supplied user uuid
+     */
+    CompletableFuture<Identity> getUserIdentity(int uuid, String ipAddress);
+
+    /**
+     * In a client/Server application, the Server needs to permission its clients, but in some cases the client will not be
+     * able to create a token. To list a few of them:
+     * <ul>
+     * <li>Client has no connectivity to B-PIPE</li>
+     * <li>Remote display access — the IP is not always the display IP — the API will handle most Citrix-use cases</li>
+     * <li>Web applications — client is a browser, so code cannot easily be added</li>
+     * </ul>
+     * For permissioning in these cases, a client Identity can be generated in the Server from any EMRS or SAPE
+     * name or alias and the Display IP:
+     * <ul>
+     * <li>No token is used</li>
+     * <li>The Identity is authorized using AUTH ID2 and IP instead of token</li>
+     * <li>All other coding is the same</li>
+     * <li>Note that all IPs must be dynamically and programmatically determined and not stored in config files or the like</li>
+     * </ul>
+     *
+     * As per the Enterprise Developer Guide the authId must the be same as entered in EMRS &lt;GO&gt; or SAPE &lt;GO&gt;
+     *
+     * @param authId User UserEntry
+     * @param ipAddress User IP address
+     * @return a Future that contains the identity corresponding to the supplied user authId
+     */
+    CompletableFuture<Identity> getUserIdentity(String authId, String ipAddress);
+
+    /**
      * Submits a request to the Bloomberg Session and returns immediately. The generic paramater enables to distinguish
      * between single and multiple securities requests. The RequestResult object will be based on that type.
      *
@@ -90,7 +149,7 @@ public interface BloombergSession {
     /**
      * Returns the current {@link SessionState} of this Session. Note that there may be a slight delay between a change in
      * the state of the underlying Bloomberg connection and this method reflecting the change.
-     * 
+     *
      * @return The current {@link SessionState} of this Session.
      *
      * @throws UnsupportedOperationException if the operation is not supported.
