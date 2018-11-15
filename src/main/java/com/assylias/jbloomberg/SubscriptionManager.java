@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
 import com.google.common.base.Preconditions;
@@ -119,6 +120,8 @@ final class SubscriptionManager {
                                 subscriptionsById.remove(id);
                             }
                             eventsManager.fireError(id, error);
+                        } else {
+                            logger.trace("Unknown RT Field: {}", data.getField());
                         }
                     }
                 } catch (InterruptedException e) {
@@ -136,11 +139,12 @@ final class SubscriptionManager {
      * Updates the Bloomberg session to subscribe to the securities and fields specified in the builder.
      *
      * @param subscriptionBuilder the builder containing the details of the securities and fields to subscribe
+     * @param identity a handle to the user whose privileges are to be used for this request
      *
      * @throws IllegalStateException if a started session has not been set before this method is called
      * @throws IOException           if there is a communication error on subscribe
      */
-    synchronized void subscribe(SubscriptionBuilder subscriptionBuilder) throws IOException {
+    synchronized void subscribe(SubscriptionBuilder subscriptionBuilder, Identity identity) throws IOException {
         if (session == null) {
             throw new IllegalStateException("Can't subscribe to a session before it is started");
         }
@@ -154,8 +158,12 @@ final class SubscriptionManager {
 
         list = getNewSubscriptionsList(subscriptionBuilder);
         if (!list.isEmpty()) {
-            session.getBloombergSession().subscribe(list);
+            session.getBloombergSession().subscribe(list, identity);
         }
+    }
+
+    synchronized void subscribe(SubscriptionBuilder subscriptionBuilder) throws IOException {
+      subscribe(subscriptionBuilder, null);
     }
 
     private SubscriptionList getNewSubscriptionsList(SubscriptionBuilder builder) {

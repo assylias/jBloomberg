@@ -45,7 +45,7 @@ final class BloombergEventHandler implements EventHandler {
     private final static Logger logger = LoggerFactory.getLogger(BloombergEventHandler.class);
     private final BlockingQueue<Data> subscriptionDataQueue;
     private final Consumer<SessionState> stateListener;
-    private final Map<CorrelationID, ResultParser> parsers = new ConcurrentHashMap<>();
+    private final Map<CorrelationID, ResultParser<?>> parsers = new ConcurrentHashMap<>();
     private volatile Runnable runOnSessionStarted;
     private volatile Consumer<BloombergException> runOnSessionStartupFailure;
 
@@ -79,25 +79,27 @@ final class BloombergEventHandler implements EventHandler {
                     for (Message msg : event) {
                         logger.trace("[{}] {}", type, msg);
                         CorrelationID cId = msg.correlationID();
-                        ResultParser parser = parsers.get(cId);
+                        ResultParser<?> parser = parsers.get(cId);
                         if (parser != null) {
                             parser.addMessage(msg);
                         }
                     }
                     break;
                 case RESPONSE:
+                case TOKEN_STATUS:
+                case AUTHORIZATION_STATUS:
                     Set<CorrelationID> endOfTransmission = new HashSet<>();
                     for (Message msg : event) {
                         logger.trace("[{}] {}", type, msg);
                         CorrelationID cId = msg.correlationID();
-                        ResultParser parser = parsers.get(cId);
+                        ResultParser<?> parser = parsers.get(cId);
                         if (parser != null) {
                             endOfTransmission.add(cId);
                             parser.addMessage(msg);
                         }
                     }
                     for (CorrelationID cId : endOfTransmission) {
-                        ResultParser parser = parsers.remove(cId); //remove from the map - not needed any longer.
+                        ResultParser<?> parser = parsers.remove(cId); //remove from the map - not needed any longer.
                         parser.noMoreMessages();
                     }
                     break;
@@ -177,7 +179,7 @@ final class BloombergEventHandler implements EventHandler {
         this.runOnSessionStartupFailure = runOnSessionStartupFailure;
     }
 
-    void setParser(CorrelationID requestId, ResultParser parser) {
+    void setParser(CorrelationID requestId, ResultParser<?> parser) {
         parsers.put(requestId, parser);
     }
 

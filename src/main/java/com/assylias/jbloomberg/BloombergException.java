@@ -11,6 +11,8 @@ package com.assylias.jbloomberg;
  */
 public class BloombergException extends RuntimeException {
 
+    private static final long serialVersionUID = -4933393519048184988L;
+
     public BloombergException(String message) {
         super(message);
     }

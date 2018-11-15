@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
@@ -60,7 +61,7 @@ public class SubscriptionManagerTest {
         Sessions.resetCounter();
         new MockUp<Session>() {
             @Mock
-            public void subscribe(SubscriptionList list) {
+            public void subscribe(SubscriptionList list, Identity identity) {
                 for (Subscription s : list) {
                     subscriptions.add(s);
                 }

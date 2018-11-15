@@ -13,7 +13,7 @@ public class MockRequestBuilder<T extends AbstractRequestResult> extends MockUp<
 
     private BloombergServiceType serviceType;
 
-    public MockRequestBuilder serviceType(BloombergServiceType serviceType) {
+    public MockRequestBuilder<?> serviceType(BloombergServiceType serviceType) {
         this.serviceType = serviceType;
         return this;
     }

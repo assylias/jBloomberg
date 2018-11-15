@@ -34,29 +34,29 @@ import static org.testng.Assert.fail;
 public class BloombergUtilsTest {
 
     @Test(groups = "unit")
-    public void test_ProcessRunning(@Mocked ShellUtils utils) {
+    public void test_ProcessRunning() {
         setBbcommStartedFlag(false);
-        new Expectations() {{
-            utils.isProcessRunning(anyString); result = true; times = 1;
+        new Expectations(ShellUtils.class) {{
+            ShellUtils.isProcessRunning(anyString); result = true; times = 1;
         }};
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
     @Test(groups = "unit")
-    public void test_NoRetryOnceRunning(@Mocked ShellUtils utils) {
+    public void test_NoRetryOnceRunning() {
         setBbcommStartedFlag(true);
-        new Expectations() {{
-            utils.isProcessRunning(anyString); times = 0;
+        new Expectations(ShellUtils.class) {{
+            ShellUtils.isProcessRunning(anyString); times = 0;
         }};
         assertTrue(BloombergUtils.startBloombergProcessIfNecessary());
     }
 
     @Test(groups = "unit")
-    public void test_ProcessNotRunning_StartBbCommSucceeds(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
+    public void test_ProcessNotRunning_StartBbCommSucceeds(@Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
         setBbcommStartedFlag(false);
-        new Expectations() {
+        new Expectations(ShellUtils.class) {
             {
-                utils.isProcessRunning(anyString); result = true;
+                ShellUtils.isProcessRunning(anyString); result = true;
                 pb.start(); times = 0;
             }
         };
@@ -64,11 +64,11 @@ public class BloombergUtilsTest {
     }
 
     @Test(groups = {"unit", "windows"})
-    public void test_ProcessNotRunning_StartBbCommFails(@Mocked ShellUtils utils, @Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
+    public void test_ProcessNotRunning_StartBbCommFails(@Mocked ProcessBuilder pb, @Mocked Process p) throws IOException {
         setBbcommStartedFlag(false);
-        new Expectations() {
+        new Expectations(ShellUtils.class) {
             {
-                utils.isProcessRunning(anyString); result = false;
+                ShellUtils.isProcessRunning(anyString); result = false;
                 pb.start();
                 result = p;
                 p.getInputStream();

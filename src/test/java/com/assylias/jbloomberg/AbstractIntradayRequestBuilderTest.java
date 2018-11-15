@@ -59,7 +59,7 @@ public class AbstractIntradayRequestBuilderTest {
                 BloombergServiceType.REFERENCE_DATA);
     }
 
-    private static class Impl extends AbstractIntradayRequestBuilder {
+    private static class Impl extends AbstractIntradayRequestBuilder<IntradayBarData> {
         public Impl(String ticker, OffsetDateTime startDateTime, OffsetDateTime endDateTime) {
             this(ticker, "TRADE", startDateTime, endDateTime);
         }
@@ -71,7 +71,7 @@ public class AbstractIntradayRequestBuilderTest {
             throw new UnsupportedOperationException("Not supported yet.");
         }
         @Override
-        public ResultParser getResultParser() {
+        public ResultParser<IntradayBarData> getResultParser() {
             throw new UnsupportedOperationException("Not supported yet.");
         }
     }
