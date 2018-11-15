@@ -16,7 +16,8 @@ public enum BloombergRequestType {
     REFERENCE_DATA("ReferenceDataRequest"),
     PORTFOLIO_DATA("PortfolioDataRequest"),
     EXCELGETGRIDREQUEST_DATA("ExcelGetGridRequest"),
-    INSTRUMENT_LIST("instrumentListRequest");
+    INSTRUMENT_LIST("instrumentListRequest"),
+    USER_ENTITLEMENTS("UserEntitlementsRequest");
 
     private final String requestName;
 
