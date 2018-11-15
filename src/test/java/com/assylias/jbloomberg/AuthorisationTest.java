@@ -19,7 +19,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Test(groups = "requires-bloomberg")
@@ -45,7 +44,7 @@ public class AuthorisationTest {
 
   @Test
   public void desktopApi() throws Exception {
-    run("localhost", new Authorisation.Desktop());
+    run("localhost", new Authorisation.Desktop(), null);
   }
 
   @Test
@@ -58,59 +57,58 @@ public class AuthorisationTest {
     }
     int uuid = Integer.parseInt(props.getProperty("sapi.uuid"));
     String ipAddress = props.getProperty("sapi.ipAddress");
-    logger.debug("Testing Server API authorisation with {}/{}", uuid, ipAddress);
-    run(host, new Authorisation.ServerApi(uuid, ipAddress));
+    Authorisation.ServerApi authorisation = new Authorisation.ServerApi(uuid, ipAddress);
+    logger.debug("Testing authorisation with ", authorisation);
+    run(host, authorisation, null);
   }
 
   @Test
   public void enterpriseAuthId() throws Exception {
     if (!hasConfigFile) return;
     String host = props.getProperty("enterprise.serverHost");
-    if (host == null) {
+    String authId = props.getProperty("enterprise.authId");
+    if (host == null || authId == null) {
       logger.warn("Not running Enterprise Auth ID test: no settings provided in auth_setup");
       return;
     }
-    String authId = props.getProperty("enterprise.authId");
+    String authenticationOptions = props.getProperty("enterprise.authenticationOptions");
     String ipAddress = props.getProperty("enterprise.ipAddress");
     String appName = props.getProperty("enterprise.appName");
-    logger.debug("Testing Enterprise Auth ID authorisation with {}/{}/{}", authId, ipAddress, appName);
-    run(host, new Authorisation.EnterpriseId(authId, ipAddress, appName));
+    Authorisation.EnterpriseId authorisation = new Authorisation.EnterpriseId(authId, ipAddress, appName);
+    logger.debug("Testing authorisation with {} and options: {}", authorisation, authenticationOptions);
+    run(host, authorisation, authenticationOptions);
   }
 
   @Test
   public void enterpriseToken() throws Exception {
     if (!hasConfigFile) return;
     String host = props.getProperty("enterprise.serverHost");
-    String token = props.getProperty("enterprise.token");
-    if (host == null || token == null) {
+    if (host == null) {
       logger.warn("Not running Enterprise Token test: no settings provided in auth_setup");
       return;
     }
-    logger.debug("Testing Enterprise Token authorisation");
-    run(host, new Authorisation.EnterpriseToken());
+    String authenticationOptions = props.getProperty("enterprise.authenticationOptions");
+    logger.debug("Testing authorisation with options {}", authenticationOptions);
+    run(host, new Authorisation.EnterpriseToken(), authenticationOptions);
   }
 
-  private void run(String serverHost, Authorisation authorisation) throws ExecutionException, InterruptedException {
-    BloombergSession session;
-    if (serverHost != null) {
-      SessionOptions options = new SessionOptions();
-      options.setServerHost(serverHost);
-      session = new DefaultBloombergSession(options);
-    } else {
-      session = new DefaultBloombergSession();
-    }
+  private void run(String serverHost, Authorisation authorisation, String authenticationOptions) throws Exception {
+    SessionOptions options = new SessionOptions();
+    options.setServerHost(serverHost);
+    if (authenticationOptions != null) options.setAuthenticationOptions(authenticationOptions);
+    BloombergSession session = new DefaultBloombergSession(options);
 
     try {
       session.start();
       Identity identity = null;
       if (authorisation != null) identity = session.authorise(authorisation).get();
 
-      ReferenceRequestBuilder b = new ReferenceRequestBuilder("IBM US Equity", "PX_LAST");
+      ReferenceRequestBuilder b = new ReferenceRequestBuilder("EURUSD Curncy", "PX_LAST");
 
-      double p = session.submit(b, identity).get().forField("PX_LAST").forSecurity("IBM US Equity").asDouble();
+      double p = session.submit(b, identity).get().forField("PX_LAST").forSecurity("EURUSD Curncy").asDouble();
 
       CountDownLatch subscriptionStarted = new CountDownLatch(1);
-      session.subscribe(new SubscriptionBuilder().addSecurity("ES1 Index").addField(RealtimeField.LAST_PRICE).addListener(e -> subscriptionStarted.countDown()));
+      session.subscribe(new SubscriptionBuilder().addSecurity("EURUSD Curncy").addField(RealtimeField.LAST_PRICE).addListener(e -> subscriptionStarted.countDown()));
       subscriptionStarted.await(TIMEOUT, TimeUnit.MILLISECONDS);
     } finally {
       session.stop();

@@ -12,13 +12,10 @@ sapi.ipAddress=8.8.8.8
 ##Enterprise authorisation
 
 enterprise.serverHost=ent-server
+enterprise.authenticationOptions=APPLICATION_ONLY;ApplicationAuthenticationType=APPNAME_AND_KEY;ApplicationName=my_app_name
 
 #Enterprise with Auth ID
 
 enterprise.authId=ABC
 enterprise.ipAddress=8.8.8.8
 enterprise.appName=my_app
-
-##Enterprise with token
-
-enterprise.token

@@ -43,7 +43,7 @@ public interface Authorisation {
       });
     }
     @Override public String toString() {
-      return "Server API: uuid =" + uuid + ", ipAddress = " + ipAddress;
+      return "Server API: uuid = " + uuid + ", ipAddress = " + ipAddress;
     }
   }
 
@@ -70,7 +70,7 @@ public interface Authorisation {
       });
     }
     @Override public String toString() {
-      return "Enterprise using authId: authId =" + authId + ", ipAddress = " + ipAddress + ", appName = " + appName;
+      return "Enterprise using authId: authId = " + authId + ", ipAddress = " + ipAddress + ", appName = " + appName;
     }
   }
 
