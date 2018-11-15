@@ -1,18 +1,8 @@
 /*
- * Copyright 2017 Yann Le Tallec.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright (C) 2012 - present by Yann Le Tallec.
+ * Please see distribution for license.
  */
+
 package com.assylias.jbloomberg;
 
 import java.lang.reflect.Array;
@@ -61,16 +51,16 @@ final class TypeResolver {
     if (genericType instanceof ParameterizedType) {
       ParameterizedType paramType = (ParameterizedType) genericType;
       Type[] arguments = paramType.getActualTypeArguments();
-      result = new Class[arguments.length];
+      result = new Class<?>[arguments.length];
       for (int i = 0; i < arguments.length; i++) {
         result[i] = resolveRawClass(arguments[i], subType);
       }
     } else if (genericType instanceof TypeVariable) {
-      result = new Class[1];
+      result = new Class<?>[1];
       result[0] = resolveRawClass(genericType, subType);
     } else if (genericType instanceof Class) {
       TypeVariable<?>[] typeParams = ((Class<?>) genericType).getTypeParameters();
-      result = new Class[typeParams.length];
+      result = new Class<?>[typeParams.length];
       for (int i = 0; i < typeParams.length; i++) {
         result[i] = resolveRawClass(typeParams[i], subType);
       }

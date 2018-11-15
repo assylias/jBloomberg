@@ -76,7 +76,7 @@ public class EventsManagerTest {
         assertEquals(evt.getNewValue().asInt(), 1234);
     }
 
-    //TODO: it seems that the order of events is not preseved which could be an issue in case of two successive
+    //TODO: it seems that the order of events is not preserved which could be an issue in case of two successive
     //data points on the same security
     //The problem is that the current setup does not allow to strongly guarantee the order and the solution is probably
     //to have a single queue but that may prove to be an issue performance wise if some listeners do a lot of work with new data...

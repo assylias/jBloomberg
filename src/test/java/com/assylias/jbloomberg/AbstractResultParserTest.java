@@ -15,7 +15,7 @@ import static org.testng.Assert.assertTrue;
 @Test(groups="unit")
 public class AbstractResultParserTest {
 
-    private AbstractResultParser parser;
+    private AbstractResultParser<?> parser;
 
     @BeforeMethod
     public void beforeMethod() {

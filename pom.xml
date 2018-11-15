@@ -81,7 +81,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.0</version>
         <configuration>
           <compilerArgs>
             <arg>-Xlint</arg>
@@ -99,6 +99,7 @@
           <argLine>
                -Djdk.attach.allowAttachSelf <!-- required to run test with jmockit on JDK 9 -->
           </argLine>
+          <runOrder>random</runOrder>
           <systemPropertyVariables>
             <org.slf4j.simpleLogger.defaultLogLevel>info</org.slf4j.simpleLogger.defaultLogLevel>
             <org.slf4j.simpleLogger.logFile>System.out</org.slf4j.simpleLogger.logFile>
