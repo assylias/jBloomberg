@@ -119,6 +119,8 @@ final class SubscriptionManager {
                                 subscriptionsById.remove(id);
                             }
                             eventsManager.fireError(id, error);
+                        } else {
+                            logger.trace("Unknown RT Field: {}", data.getField());
                         }
                     }
                 } catch (InterruptedException e) {
