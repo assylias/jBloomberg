@@ -15,9 +15,11 @@ public class RealtimeFieldTest {
     @Test
     public void testContains() {
         String aFieldThatExists = RealtimeField.ALL_PRICE.toString();
+        String aFieldWithNumbers = "1_HOUR_PRICE_CHANGE_RT";
         String aFieldThatDoesNotExist = "A FIELD THAT DOES NOT EXIST OU BIEN?";
 
         assertTrue(RealtimeField.contains(aFieldThatExists));
+        assertTrue(RealtimeField.contains(aFieldWithNumbers));
         assertFalse(RealtimeField.contains(aFieldThatDoesNotExist));
     }
 
