@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -43,7 +44,7 @@ import static java.util.Objects.requireNonNull;
 final class BloombergEventHandler implements EventHandler {
 
     private final static Logger logger = LoggerFactory.getLogger(BloombergEventHandler.class);
-    private final BlockingQueue<Data> subscriptionDataQueue;
+    private final BlockingQueue<DataOrSubscriptionError> subscriptionDataQueue;
     private final Consumer<SessionState> stateListener;
     private final Map<CorrelationID, ResultParser<?>> parsers = new ConcurrentHashMap<>();
     private volatile Runnable runOnSessionStarted;
@@ -56,7 +57,7 @@ final class BloombergEventHandler implements EventHandler {
      *
      * @throws NullPointerException if any of the arguments are null.
      */
-    public BloombergEventHandler(BlockingQueue<Data> subscriptionDataQueue, Consumer<SessionState> stateListener) {
+    public BloombergEventHandler(BlockingQueue<DataOrSubscriptionError> subscriptionDataQueue, Consumer<SessionState> stateListener) {
         this.subscriptionDataQueue = requireNonNull(subscriptionDataQueue);
         this.stateListener = requireNonNull(stateListener);
     }
@@ -107,19 +108,20 @@ final class BloombergEventHandler implements EventHandler {
                     for (Message msg : event) {
                         CorrelationID id = msg.correlationID();
                         int numFields = msg.asElement().numElements();
+                        Map<String, Object> data = new LinkedHashMap<>();
                         for (int i = 0; i < numFields; ++i) {
                             Element field = msg.asElement().getElement(i);
                             if (!field.isNull()) {
-                                Data data = new Data(id, field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
-                                try {
-                                    subscriptionDataQueue.put(data);
-                                } catch (InterruptedException e) {
-                                    Thread.currentThread().interrupt();
-                                    return; //ignore the rest
-                                }
-                                logger.trace("[SUBS_DATA] {}", data);
+                                data.put(field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
                             }
                         }
+                        try {
+                            subscriptionDataQueue.put(DataOrSubscriptionError.of(id, data));
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return; //ignore the rest
+                        }
+                        logger.trace("[SUBS_DATA] {}", data);
                     }
                     break;
                 case SUBSCRIPTION_STATUS:
@@ -131,16 +133,16 @@ final class BloombergEventHandler implements EventHandler {
                         if (msgType == null || !msgType.startsWith("SubscriptionStarted")) {
                             logger.debug("[{}] id=[{}] {}", type, id, msg);
                             Element msgElement = msg.asElement();
-                            Data data = null;
+                            DataOrSubscriptionError data = null;
                             if (msgElement.hasElement("reason")){
                                 Element reason = msg.asElement().getElement("reason");
                                 if (reason.hasElement("errorCode") && reason.hasElement("category") && reason.hasElement("description")) {
                                     SubscriptionError e = new SubscriptionError(msgType, msg.topicName(), reason.getElementAsInt32("errorCode"),
                                             reason.getElementAsString("category"), reason.getElementAsString("description"));
-                                    data = new Data(id, "", e);
+                                    data = DataOrSubscriptionError.of(id, e);
                                 }
                             }
-                            if (data == null) data = new Data(id, "", new SubscriptionError(msgType, msg.topicName(), 0, "", msg.toString()));
+                            if (data == null) data = DataOrSubscriptionError.of(id, new SubscriptionError(msgType, msg.topicName(), 0, "", msg.toString()));
                             try {
                                 subscriptionDataQueue.put(data);
                             } catch (InterruptedException e) {

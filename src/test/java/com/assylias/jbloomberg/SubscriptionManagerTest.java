@@ -9,6 +9,7 @@ import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.Subscription;
 import com.bloomberglp.blpapi.SubscriptionList;
+import com.google.common.collect.ImmutableMap;
 import mockit.Mock;
 import mockit.MockUp;
 import org.testng.annotations.AfterMethod;
@@ -23,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -40,7 +42,7 @@ public class SubscriptionManagerTest {
 
     private SubscriptionManager sm;
     private Subscriptions subscriptions;
-    private BlockingQueue<Data> queue;
+    private BlockingQueue<DataOrSubscriptionError> queue;
     private CountDownLatch latch;
     private AtomicInteger countEvent;
     private EventsManager eventsManager;
@@ -168,7 +170,7 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(0), "ASK", 123));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 123)));
         assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
         assertEquals(countEvent.get(), 0);
     }
@@ -178,8 +180,8 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(2);
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(0), "ASK", 123));
-        queue.add(new Data(new CorrelationID(0), "ASK", 453));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 123)));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 453)));
         assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
         assertEquals(countEvent.get(), 0);
     }
@@ -189,7 +191,7 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(0), "OTHER", 123));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("OTHER", 123)));
         assertFalse(latch.await(100, TimeUnit.MILLISECONDS));
         assertNotEquals(countEvent.get(), 0);
     }
@@ -199,7 +201,7 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(1), "ASK", 123));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(1), ImmutableMap.of("ASK", 123)));
         assertFalse(latch.await(100, TimeUnit.MILLISECONDS));
         assertNotEquals(countEvent.get(), 0);
     }
@@ -209,8 +211,8 @@ public class SubscriptionManagerTest {
         Sessions.mockStartedSession();
         DataChangeListener lst = getListener(1);
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(0), "ASK", 123));
-        queue.add(new Data(new CorrelationID(0), "ASK", 123));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 123)));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 123)));
         assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
         assertEquals(countEvent.get(), 0);
     }
@@ -222,7 +224,7 @@ public class SubscriptionManagerTest {
         final AtomicInteger expectedInvocations = new AtomicInteger();
         new MockUp<ConcurrentConflatedEventsManager>() {
             @Mock
-            public void addEventListener(String ticker, CorrelationID id, RealtimeField field, DataChangeListener lst) {
+            public void addEventListener(String ticker, CorrelationID id, Set<RealtimeField> fields, DataChangeListener lst) {
                 if ((ticker.equals("ABC") && id.value() == 0) || (ticker.equals("DEF") && id.value() == 1)) {
                     expectedInvocations.incrementAndGet();
                 } else {
@@ -253,8 +255,8 @@ public class SubscriptionManagerTest {
             }
         };
         sm.subscribe(new SubscriptionBuilder().addSecurity("ABC").addSecurity("DEF").addField(RealtimeField.ASK).addListener(lst));
-        queue.add(new Data(new CorrelationID(0), "ASK", 123));
-        queue.add(new Data(new CorrelationID(1), "ASK", 456));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(0), ImmutableMap.of("ASK", 123)));
+        queue.add(DataOrSubscriptionError.of(new CorrelationID(1), ImmutableMap.of("ASK", 456)));
         assertTrue(latch1.await(10000, TimeUnit.MILLISECONDS));
         assertTrue(latch2.await(10000, TimeUnit.MILLISECONDS));
     }

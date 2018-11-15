@@ -5,9 +5,11 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.CorrelationID;
+import com.google.common.collect.ImmutableMap;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -48,16 +50,16 @@ public class EventsManagerTest {
     @Test
     public void testFire_FieldNotRegistered() throws Exception {
         DataChangeListener lst = getDataChangeListener(1);
-        em.addEventListener(ticker, id, field, lst);
-        em.fireEvent(id, RealtimeField.ASK_ALL_SESSION, 1234);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst);
+        em.fireEvents(id, ImmutableMap.of(RealtimeField.ASK_ALL_SESSION, 1234));
         assertFalse(latch.await(10, TimeUnit.MILLISECONDS));
     }
 
     @Test
     public void testFire_Ok() throws Exception {
         DataChangeListener lst = getDataChangeListener(1);
-        em.addEventListener(ticker, id, field, lst);
-        em.fireEvent(id, field, 1234);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst);
+        em.fireEvents(id, ImmutableMap.of(field, 1234));
         assertTrue(latch.await(10, TimeUnit.MILLISECONDS));
         assertEquals(evt.getDataName(), "ASK");
         assertNull(evt.getOldValue());
@@ -67,9 +69,9 @@ public class EventsManagerTest {
     @Test
     public void testFire_SameValueTwiceSentOnce() throws Exception {
         DataChangeListener lst = getDataChangeListener(2);
-        em.addEventListener(ticker, id, field, lst);
-        em.fireEvent(id, field, 1234);
-        em.fireEvent(id, field, 1234);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst);
+        em.fireEvents(id, ImmutableMap.of(field, 1234));
+        em.fireEvents(id, ImmutableMap.of(field, 1234));
         assertFalse(latch.await(10, TimeUnit.MILLISECONDS)); //second event not sent to listener
         assertEquals(evt.getDataName(), "ASK");
         assertNull(evt.getOldValue());
@@ -87,10 +89,10 @@ public class EventsManagerTest {
         List<DataChangeEvent> events = new CopyOnWriteArrayList<>();
         DataChangeListener lst1 = getDataChangeListener(latch, events);
         DataChangeListener lst2 = getDataChangeListener(latch, events);
-        em.addEventListener(ticker, id, field, lst1);
-        em.addEventListener(ticker, id, field, lst2);
-        em.fireEvent(id, field, 1);
-        em.fireEvent(id, field, 2);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst1);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst2);
+        em.fireEvents(id, ImmutableMap.of(field, 1));
+        em.fireEvents(id, ImmutableMap.of(field, 2));
         assertTrue(latch.await(500, TimeUnit.MILLISECONDS), msg(latch, events));
         assertEquals(events.size(), 4);
         assertEquals(events.get(0).getDataName(), "ASK");
@@ -109,7 +111,7 @@ public class EventsManagerTest {
         latch = new CountDownLatch(2);
         CorrelationID id1 = new CorrelationID(0);
         CorrelationID id2 = new CorrelationID(1);
-        em.addEventListener("SEC 1", id1, field, new DataChangeListener() {
+        em.addEventListener("SEC 1", id1, Collections.singleton(field), new DataChangeListener() {
             @Override
             public void dataChanged(DataChangeEvent e) {
                 assertEquals(e.getSource(), "SEC 1");
@@ -119,7 +121,7 @@ public class EventsManagerTest {
                 latch.countDown();
             }
         });
-        em.addEventListener("SEC 2", id2, field, new DataChangeListener() {
+        em.addEventListener("SEC 2", id2, Collections.singleton(field), new DataChangeListener() {
             @Override
             public void dataChanged(DataChangeEvent e) {
                 assertEquals(e.getSource(), "SEC 2");
@@ -129,8 +131,8 @@ public class EventsManagerTest {
                 latch.countDown();
             }
         });
-        em.fireEvent(id1, field, 123);
-        em.fireEvent(id2, field, 456);
+        em.fireEvents(id1, ImmutableMap.of(field, 123));
+        em.fireEvents(id2, ImmutableMap.of(field, 456));
         assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
     }
 
@@ -158,10 +160,10 @@ public class EventsManagerTest {
                 }
             }
         };
-        em.addEventListener("SEC 1", id1, field, lst);
-        em.addEventListener("SEC 2", id2, field, lst);
-        em.fireEvent(id1, field, 123);
-        em.fireEvent(id2, field, 456);
+        em.addEventListener("SEC 1", id1, Collections.singleton(field), lst);
+        em.addEventListener("SEC 2", id2, Collections.singleton(field), lst);
+        em.fireEvents(id1, ImmutableMap.of(field, 123));
+        em.fireEvents(id2, ImmutableMap.of(field, 456));
         assertTrue(latch1.await(100, TimeUnit.MILLISECONDS));
         assertTrue(latch2.await(100, TimeUnit.MILLISECONDS));
     }
@@ -181,7 +183,7 @@ public class EventsManagerTest {
                 latch.countDown();
             }
         };
-        em.addEventListener(ticker, id, field, lst);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst);
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
         for (int i = 0; i < NUM_THREADS; i++) {
@@ -190,7 +192,7 @@ public class EventsManagerTest {
                 @Override
                 public void run() {
                     for (int i = start; i < start + NUM_PER_THREAD; i++) {
-                        em.fireEvent(id, field, i);
+                        em.fireEvents(id, ImmutableMap.of(field, i));
                     }
                 }
             };
@@ -224,7 +226,7 @@ public class EventsManagerTest {
                 countEvent.getAndIncrement();
             }
         };
-        em.addEventListener(ticker, id, field, lst);
+        em.addEventListener(ticker, id, Collections.singleton(field), lst);
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
         for (int i = 0; i < NUM_THREADS; i++) {
@@ -233,7 +235,7 @@ public class EventsManagerTest {
                 @Override
                 public void run() {
                     for (int i = start; i < start + NUM_PER_THREAD; i++) {
-                        em.fireEvent(id, field, i);
+                        em.fireEvents(id, ImmutableMap.of(field, i));
                     }
                 }
             };

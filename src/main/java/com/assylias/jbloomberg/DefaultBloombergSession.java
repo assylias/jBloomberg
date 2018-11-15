@@ -91,7 +91,7 @@ public class DefaultBloombergSession implements BloombergSession {
     /**
      * The queue that is used to transfer subscription data from Bloomberg to the interested parties
      */
-    private final BlockingQueue<Data> subscriptionDataQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<DataOrSubscriptionError> subscriptionDataQueue = new LinkedBlockingQueue<>();
     /**
      * The event handler used by this session to process results asynchronously
      */
