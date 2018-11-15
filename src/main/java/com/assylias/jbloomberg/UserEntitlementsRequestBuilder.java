@@ -6,7 +6,7 @@ import com.bloomberglp.blpapi.Request;
 public class UserEntitlementsRequestBuilder extends AbstractRequestBuilder<UserEntitlements> {
     private final int uuid;
 
-    public UserEntitlementsRequestBuilder(final int uuid) {
+    public UserEntitlementsRequestBuilder(int uuid) {
         this.uuid = uuid;
     }
 

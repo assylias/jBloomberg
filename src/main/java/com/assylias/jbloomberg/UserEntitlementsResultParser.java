@@ -12,11 +12,11 @@ public class UserEntitlementsResultParser extends AbstractResultParser<UserEntit
     }
 
     @Override
-    protected void parseResponseNoError(final Element response, final UserEntitlements result) {
+    protected void parseResponseNoError(Element response, UserEntitlements result) {
         if (response.name().equals(USERENTITLEMENTS_RESPONSE)) {
             Element returnedEids = response.getElement("eids");
-            int numeids = returnedEids.numValues();
-            for (int i = 0; i < numeids; ++i) {
+            int numIds = returnedEids.numValues();
+            for (int i = 0; i < numIds; ++i) {
                 result.addPermission(returnedEids.getValueAsInt32(i));
             }
         }
