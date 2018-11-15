@@ -4,6 +4,8 @@
  */
 package com.assylias.jbloomberg;
 
+import com.bloomberglp.blpapi.Identity;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -58,8 +60,17 @@ public interface BloombergSession {
     void stop();
 
     /**
-     * Submits a request to the Bloomberg Session and returns immediately. The generic paramater enables to distinguish
-     * between single and multiple securities requests. The RequestResult object will be based on that type.
+     * Creates an identity using the given authorisation method. It is important to note that the authorisation process is
+     * slow and it is advisable to store and reuse the result.
+     *
+     * @param authorisation an authorisation method (e.g. Desktop API, Server API etc.). Pre-built methods can be found in {@link Authorisation}.
+     * @return a Future that contains an identity to be used when submitting requests to the session.
+     */
+    CompletableFuture<Identity> authorise(Authorisation authorisation);
+
+    /**
+     * Submits a request to the Bloomberg Session using the given Identity and returns immediately. The generic paramater enables to distinguish
+     * between different types of requests. The RequestResult object will be based on that type.
      *
      * Calling get() on the returned future may block forever - it is advised to use the get(timeout) version.<br>
      * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
@@ -70,6 +81,9 @@ public interface BloombergSession {
      * <li><code>CancellationException</code> - if the request execution was cancelled (interrupted) before completion
      * </ul>
      *
+     * @param request a request to be submitted
+     * @param identity a handle to the user whose privileges are to be used for this request
+     *
      * @return a Future that contains the result of the request. The future can be cancelled to cancel a long running
      *         request.
      *
@@ -77,20 +91,63 @@ public interface BloombergSession {
      * @throws NullPointerException  if request is null
      *
      */
-    <T extends RequestResult> CompletableFuture<T> submit(RequestBuilder<T> request);
+    <T extends RequestResult> CompletableFuture<T> submit(RequestBuilder<T> request, Identity identity);
+
+    /**
+     * Submits a request to the Bloomberg Session and returns immediately.The generic paramater enables to distinguish
+     * between different types of requests. The RequestResult object will be based on that type.
+     *
+     * No Identity is provided: this method suitable for Desktop API calls that do not require user authorisation.
+     *
+     * Calling get() on the returned future may block forever - it is advised to use the get(timeout) version.<br>
+     * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
+     * future.get()). It is the responsibility of the caller to check and handle those exceptions:
+     * <ul>
+     * <li><code>BloombergException</code> - if the session or the required service could not be started or if the
+     * request execution could not be completed
+     * <li><code>CancellationException</code> - if the request execution was cancelled (interrupted) before completion
+     * </ul>
+     *
+     * @param request a request to be submitted
+     *
+     * @return a Future that contains the result of the request. The future can be cancelled to cancel a long running
+     *         request.
+     *
+     * @throws IllegalStateException if the start method was not called before this method
+     * @throws NullPointerException  if request is null
+     *
+     */
+    default <T extends RequestResult> CompletableFuture<T> submit(RequestBuilder<T> request) {
+        //Bloomberg ignores identity when it's null
+        return submit(request, null);
+    }
+
+    /**
+     * Subscribes to a stream of real time update using the given Identity. The SubscriptionBuilder object is used to specify the securities and
+     * fields that need to be monitored. It also specifies the DataChangeListener that will be informed of the updates.
+     *
+     * @param subscription contains the parameters of the real time data that needs to be monitored.
+     * @param identity a handle to the user whose privileges are to be used for this request
+     */
+    void subscribe(SubscriptionBuilder subscription, Identity identity);
 
     /**
      * Subscribes to a stream of real time update. The SubscriptionBuilder object is used to specify the securities and
      * fields that need to be monitored. It also specifies the DataChangeListener that will be informed of the updates.
      *
+     * No Identity is provided: this method suitable for Desktop API calls that do not require user authorisation.
+     *
      * @param subscription contains the parameters of the real time data that needs to be monitored.
      */
-    void subscribe(SubscriptionBuilder subscription);
+    default void subscribe(SubscriptionBuilder subscription) {
+        //Bloomberg ignores identity when it's null
+        subscribe(subscription, null);
+    }
 
     /**
      * Returns the current {@link SessionState} of this Session. Note that there may be a slight delay between a change in
      * the state of the underlying Bloomberg connection and this method reflecting the change.
-     * 
+     *
      * @return The current {@link SessionState} of this Session.
      *
      * @throws UnsupportedOperationException if the operation is not supported.

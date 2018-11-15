@@ -83,7 +83,12 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
         <configuration>
-          <compilerArgument>-Xlint</compilerArgument>
+          <compilerArgs>
+            <arg>-Xlint</arg>
+            <arg>-Xlint:-auxiliaryclass</arg>
+          </compilerArgs>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
       <plugin>

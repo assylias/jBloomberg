@@ -4,18 +4,18 @@
  */
 package com.assylias.jbloomberg;
 
-import static com.assylias.jbloomberg.SessionState.NEW;
-import static com.assylias.jbloomberg.SessionState.STARTED;
-import static com.assylias.jbloomberg.SessionState.STARTING;
-import static com.assylias.jbloomberg.SessionState.STARTUP_FAILURE;
-import static com.assylias.jbloomberg.SessionState.TERMINATED;
 import com.bloomberglp.blpapi.CorrelationID;
 import com.bloomberglp.blpapi.DuplicateCorrelationIDException;
+import com.bloomberglp.blpapi.Identity;
 import com.bloomberglp.blpapi.InvalidRequestException;
 import com.bloomberglp.blpapi.Request;
 import com.bloomberglp.blpapi.RequestQueueOverflowException;
+import com.bloomberglp.blpapi.Service;
 import com.bloomberglp.blpapi.Session;
 import com.bloomberglp.blpapi.SessionOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
-import static java.util.Objects.requireNonNull;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.BlockingQueue;
@@ -40,8 +39,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.assylias.jbloomberg.SessionState.NEW;
+import static com.assylias.jbloomberg.SessionState.STARTED;
+import static com.assylias.jbloomberg.SessionState.STARTING;
+import static com.assylias.jbloomberg.SessionState.STARTUP_FAILURE;
+import static com.assylias.jbloomberg.SessionState.TERMINATED;
+import static java.util.Objects.requireNonNull;
 
 /**
  * The default implementation of the BloombergSession interface.
@@ -224,73 +227,86 @@ public class DefaultBloombergSession implements BloombergSession {
         }
     }
 
-    /**
-     * Submits a request to the Bloomberg Session and returns immediately.
-     *
-     * Calling get() on the returned future may block for a very long time - it is advised to use the get(timeout)
-     * version.<br>
-     * Additional exceptions may be thrown within the future (causing an ExecutionException when calling
-     * future.get()). It is the responsibility of the caller to check and handle those exceptions:
-     * <ul>
-     * <li><code>BloombergException</code> - if the session or the required service could not be started or if the
-     * request execution could not be completed
-     * <li><code>CancellationException</code> - if the request execution was cancelled (interrupted) before completion
-     * </ul>
-     *
-     * @return a Future that contains the result of the request. The future can be cancelled to cancel a long running
-     *         request.
-     *
-     * @throws IllegalStateException if the start method was not called before this method
-     * @throws NullPointerException  if request is null
-     *
-     */
+    @Override public CompletableFuture<Identity> authorise(Authorisation authorisation) {
+        return CompletableFuture.supplyAsync(() -> {
+            logger.debug("Authorising user using {}", authorisation);
+            Identity identity = authorisation.getIdentity(this::getIdentity, this::getToken);
+            logger.debug("Successfully authorised user {}", authorisation);
+            return identity;
+        });
+    }
+
+    Identity getIdentity(Consumer<Request> requestAuthSetter) {
+        CorrelationID cId = getNextCorrelationId();
+        try {
+            // open service first to ensure we are connected
+            openService(BloombergServiceType.API_AUTHORIZATION);
+            Service service = session.getService(BloombergServiceType.API_AUTHORIZATION.getUri());
+            Request authRequest = service.createAuthorizationRequest();
+
+            requestAuthSetter.accept(authRequest);
+
+            Identity identity = session.createIdentity();
+            ResultParser<AuthorisationResultParser.Result> parser = new AuthorisationResultParser();
+            eventHandler.setParser(cId, parser);
+            session.sendAuthorizationRequest(authRequest, identity, cId);
+            AuthorisationResultParser.Result auth = parser.getResult();
+
+            if (!auth.isAuthorised()) throw new IllegalStateException("Failed to authorise user - " + auth.getError());
+            return identity;
+        } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException | IllegalStateException e) {
+            throw new BloombergException("Could not process the authorisation request", e);
+        } catch (InterruptedException e) {
+            session.cancel(cId);
+            throw new CancellationException("The authorisation request was cancelled");
+        }
+    }
+
+    String getToken()  {
+        CorrelationID cId = getNextCorrelationId();
+        try {
+            //We open the authorisation service as a "hack" to wait for the session to be started.
+            //Note that it's not a waste of time because that service will be open when creating an identity from the token anyway.
+            openService(BloombergServiceType.API_AUTHORIZATION);
+            TokenResultParser tokenResultParser = new TokenResultParser();
+            eventHandler.setParser(cId, tokenResultParser);
+            session.generateToken(cId);
+            TokenResultParser.Result token = tokenResultParser.getResult();
+            if (token.isEmpty()) throw new IllegalStateException("Failed to generate token - " + token.getError());
+            logger.debug("Successfully generated authorisation token: {}", token.getToken());
+            return token.getToken();
+        } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException | IllegalStateException e) {
+            throw new BloombergException("Could not process the token request", e);
+        } catch (InterruptedException e) {
+            session.cancel(cId);
+            throw new CancellationException("The token request was cancelled");
+        }
+    }
+
     @Override
-    public <T extends RequestResult> CompletableFuture<T> submit(final RequestBuilder<T> request) {
+    public <T extends RequestResult> CompletableFuture<T> submit(RequestBuilder<T> request, Identity identity) {
         requireNonNull(request, "request cannot be null");
         if (state.get() == NEW) {
             throw new IllegalStateException("A request can't be submitted before the session is started");
         }
         logger.debug("Submitting request {}", request);
         Supplier<T> task = () -> {
-          BloombergServiceType serviceType = request.getServiceType();
-          CorrelationID cId = getNextCorrelationId();
-          try {
-            openService(serviceType);
-            ResultParser<T> parser = request.getResultParser();
-            eventHandler.setParser(cId, parser);
-            sendRequest(request, cId);
-            return parser.getResult();
-          } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException |
-                  IllegalStateException e) {
-            throw new BloombergException("Could not process the request", e);
-          } catch (InterruptedException e) {
-            session.cancel(cId);
-            throw new CancellationException("The request was cancelled");
-          }
+            BloombergServiceType serviceType = request.getServiceType();
+            CorrelationID cId = getNextCorrelationId();
+            try {
+                openService(serviceType);
+                ResultParser<T> parser = request.getResultParser();
+                eventHandler.setParser(cId, parser);
+                sendRequest(request, cId, identity);
+                return parser.getResult();
+            } catch (IOException | InvalidRequestException | RequestQueueOverflowException | DuplicateCorrelationIDException | IllegalStateException e) {
+                throw new BloombergException("Could not process the request", e);
+            } catch (InterruptedException e) {
+                session.cancel(cId);
+                throw new CancellationException("The request was cancelled");
+            }
         };
         return CompletableFuture.supplyAsync(task, executor);
-    }
-
-    @Override
-    public void subscribe(SubscriptionBuilder subscription) {
-        if (state.get() == SessionState.NEW) {
-            throw new IllegalStateException("A request can't be submitted before the session is started");
-        }
-        try {
-            sessionStartup.await(); //once the latch counts down, we know that the session has been set.
-            if (state.get() != SessionState.STARTED) {
-                throw new BloombergException("The Bloomberg session could not be started");
-            }
-            subscriptionManager.subscribe(subscription);
-        } catch (IOException e) {
-            throw new BloombergException("Could not complete subscription request", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override public SessionState getSessionState() {
-        return state.get();
     }
 
     /**
@@ -300,7 +316,7 @@ public class DefaultBloombergSession implements BloombergSession {
      * @throws IOException          if the service could not be opened (Bloomberg API exception)
      * @throws InterruptedException if the current thread is interrupted while opening the service
      */
-    private synchronized void openService(final BloombergServiceType serviceType) throws IOException, InterruptedException, BloombergException {
+    private synchronized void openService(BloombergServiceType serviceType) throws IOException, InterruptedException, BloombergException {
         if (openingServices.contains(serviceType)) {
             return; //only start the session once
         }
@@ -317,27 +333,47 @@ public class DefaultBloombergSession implements BloombergSession {
         openingServices.add(serviceType);
     }
 
-    private boolean onlyConnectToLocalAddresses() {
-        return Arrays.stream(sessionOptions.getServerAddresses())
-                .map(SessionOptions.ServerAddress::host)
-                .allMatch(NetworkUtils::isLocalhost);
-    }
-
     /**
+     * This method has been extracted to document the potential exceptions.
      *
-     * @return the result of the request
-     * <p>
      * @throws IllegalStateException           If the session is not established
      * @throws InvalidRequestException         If the request is not compliant with the schema for the request
      * @throws RequestQueueOverflowException   If this session has too many enqueued requests
      * @throws IOException                     If any error occurs while sending the request
      * @throws DuplicateCorrelationIDException If the specified correlationId is already active for this Session
      */
-    private CorrelationID sendRequest(final RequestBuilder<?> request, CorrelationID cId) throws IOException {
+    private void sendRequest(RequestBuilder<?> request, CorrelationID cId, Identity identity) throws IOException {
         Request bbRequest = request.buildRequest(session);
         logger.trace("{}", bbRequest);
-        session.sendRequest(bbRequest, cId);
-        return cId;
+        session.sendRequest(bbRequest, identity, cId);
+    }
+
+    @Override
+    public void subscribe(SubscriptionBuilder subscription, Identity identity) {
+        if (state.get() == SessionState.NEW) {
+            throw new IllegalStateException("A request can't be submitted before the session is started");
+        }
+        try {
+            sessionStartup.await(); //once the latch counts down, we know that the session has been set.
+            if (state.get() != SessionState.STARTED) {
+                throw new BloombergException("The Bloomberg session could not be started");
+            }
+            subscriptionManager.subscribe(subscription, identity);
+        } catch (IOException e) {
+            throw new BloombergException("Could not complete subscription request", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override public SessionState getSessionState() {
+        return state.get();
+    }
+
+    private boolean onlyConnectToLocalAddresses() {
+        return Arrays.stream(sessionOptions.getServerAddresses())
+                .map(SessionOptions.ServerAddress::host)
+                .allMatch(NetworkUtils::isLocalhost);
     }
 
     CorrelationID getNextCorrelationId() {

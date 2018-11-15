@@ -3,3 +3,4 @@
 /*.iml
 .idea
 /pit-reports/
+/src/test/resources/auth_setup

@@ -86,6 +86,8 @@ final class BloombergEventHandler implements EventHandler {
                     }
                     break;
                 case RESPONSE:
+                case TOKEN_STATUS:
+                case AUTHORIZATION_STATUS:
                     Set<CorrelationID> endOfTransmission = new HashSet<>();
                     for (Message msg : event) {
                         logger.trace("[{}] {}", type, msg);

@@ -1,0 +1,24 @@
+##Create an "auth_setup" file based on this template and adjust the values as required
+##Authorisation methods that are not supported should be removed from this file and the tests will be skipped
+##If the file doesn't exist or is empty, only the Desktop API authorisation method will run (no Identity provided)
+##Lines starting with a # and empty lines are ignored
+
+##Server API parameters
+
+sapi.serverHost=sapi-server
+sapi.uuid=123456789
+sapi.ipAddress=8.8.8.8
+
+##Enterprise authorisation
+
+enterprise.serverHost=ent-server
+
+#Enterprise with Auth ID
+
+enterprise.authId=ABC
+enterprise.ipAddress=8.8.8.8
+enterprise.appName=my_app
+
+##Enterprise with token
+
+enterprise.token
