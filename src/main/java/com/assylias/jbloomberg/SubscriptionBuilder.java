@@ -149,9 +149,10 @@ public final class SubscriptionBuilder {
     }
 
     /**
-     *
+     * This method should not be used as it may be removed in a future release.
      * @return the list of fields that will be monitored by this subscription
      */
+    @Deprecated
     public Set<RealtimeField> getFields() {
         return Sets.immutableEnumSet(fields);
     }
