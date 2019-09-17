@@ -122,29 +122,55 @@ public final class SubscriptionBuilder {
         return this;
     }
 
-    Set<DataChangeListener> getListeners() {
+    /**
+     * Returns a non-null set of listeners that have been registered using {@link #addListener(DataChangeListener)}.
+     * The set can be empty.
+     * @return a non-null set of listeners
+     */
+    public Set<DataChangeListener> getListeners() {
         return ImmutableSet.copyOf(dataListeners);
     }
 
-    SubscriptionErrorListener getErrorListener() {
+    /**
+     * Returns a non-null SubscriptionErrorListener that has been registered using {@link #onError(SubscriptionErrorListener)}.
+     * If no error listener has been registered, returns a no-op listener.
+     * @return the non-null error listener
+     */
+    public SubscriptionErrorListener getErrorListener() {
         return errorListener;
     }
 
-    Set<String> getSecurities() {
+    /**
+     *
+     * @return the list of securities that will be monitored by this subscription
+     */
+    public Set<String> getSecurities() {
         return ImmutableSet.copyOf(securities);
     }
 
-    Set<RealtimeField> getFields() {
+    /**
+     *
+     * @return the list of fields that will be monitored by this subscription
+     */
+    public Set<RealtimeField> getFields() {
         return Sets.immutableEnumSet(fields);
     }
 
-    Set<String> getFieldsAsString() {
+    /**
+     *
+     * @return the list of fields that will be monitored by this subscription
+     */
+    public Set<String> getFieldsAsString() {
         ImmutableSet.Builder<String> set = ImmutableSet.builder();
         for (RealtimeField f : fields) {set.add(f.toString());}
         return set.build();
     }
 
-    double getThrottle() {
+    /**
+     *
+     * @return the value of the throttling frequency or 0 if none has been set.
+     */
+    public double getThrottle() {
         return throttle;
     }
 }
