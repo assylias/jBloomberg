@@ -3,9 +3,9 @@ jdk:
  - openjdk8
 
 before_install:
- - wget -q https://software.tech.bloomberg/BLPAPI-Stable-Generic/blpapi_java_3.8.8.2.zip
- - unzip blpapi_java_3.8.8.2.zip
- - mvn install:install-file -Dfile=blpapi_java_3.8.8.2/bin/blpapi-3.8.8-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.8-2 -Dpackaging=jar
+ - wget -q https://bcms.bloomberg.com/BLPAPI-Generic/blpapi_java_3.16.1.2.zip
+ - unzip blpapi_java_3.16.1.2.zip
+ - mvn install:install-file -Dfile=blpapi_java_3.16.1.2/bin/blpapi-3.16.1-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.16.1-2 -Dpackaging=jar
 
 script:
  - mvn test -Dgroups=unit -DexcludedGroups=windows
