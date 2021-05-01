@@ -5,7 +5,7 @@ Although most features of the underlying Bloomberg API are available, some optio
 
 You can browse the [javadoc](http://assylias.github.io/jBloomberg/apidocs/index.html) for more information, including example usages on the package page.
 
-[![Build Status](https://travis-ci.org/assylias/jBloomberg.svg?branch=master)](https://travis-ci.org/assylias/jBloomberg)
+[![Build Status](https://travis-ci.com/assylias/jBloomberg.svg?branch=master)](https://travis-ci.com/assylias/jBloomberg)
 
 ### Requirements
 
