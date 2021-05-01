@@ -60,6 +60,11 @@ public class MockMessage extends Message {
   }
 
   @Override
+  public Recap recapType()  {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
   public CorrelationID correlationID() {
     return cId;
   }
@@ -241,6 +246,11 @@ public class MockMessage extends Message {
 
   @Override
   public Name getElementAsName(String name) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public String getRequestId() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

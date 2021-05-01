@@ -10,6 +10,8 @@ import com.bloomberglp.blpapi.Message;
 import com.bloomberglp.blpapi.impl.eB;
 import java.util.Iterator;
 import java.util.List;
+
+import com.bloomberglp.blpapi.impl.iS;
 import mockit.Mock;
 
 public class MockEvent extends Event {
@@ -38,7 +40,7 @@ public class MockEvent extends Event {
   }
 
   @Override
-  protected eB d() {
+  protected iS i() {
     throw new UnsupportedOperationException();
   }
 }

@@ -3,7 +3,7 @@
 jBloomberg is a high-level API that wraps the [Bloomberg Desktop Java API](https://www.bloomberg.com/professional/support/api-library/).
 Although most features of the underlying Bloomberg API are available, some options might not be reachable through the jBloomberg API.
 
-You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index.html) for more information, including example usages on the package page.
+You can browse the [javadoc](http://assylias.github.io/jBloomberg/apidocs/index.html) for more information, including example usages on the package page.
 
 [![Build Status](https://travis-ci.org/assylias/jBloomberg.svg?branch=master)](https://travis-ci.org/assylias/jBloomberg)
 
@@ -11,7 +11,7 @@ You can browse the [javadoc](http://assylias.github.com/jBloomberg/apidocs/index
 
 **As of v3, Java 8 is required.**
 
-The library is compatible with Java 9.
+The library is compatible with Java 9+.
 
 ### Usage
 
@@ -29,9 +29,9 @@ You can create a Maven dependency to download jBloomberg artifact:
 
 You need to manually install the jar of the Bloomberg API in your maven repository for this to work.
 
-Download the file (version 3.8.8-2) from Bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
+Download the file (version 3.16.1-2) from Bloomberg's website. Extract and save the main jar file to a folder, c:/temp for example. Then run:
 
-    mvn install:install-file -Dfile=c:/temp/blpapi-3.8.8-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.8.8-2 -Dpackaging=jar
+    mvn install:install-file -Dfile=c:/temp/blpapi-3.16.1-2.jar -DgroupId=com.bloombergblp -DartifactId=blpapi -Dversion=3.16.1-2 -Dpackaging=jar
 
 ### Description
 
@@ -63,7 +63,7 @@ Apache License v2.0
 
 - guava (Apache License v2.0)
 - slf4j (MIT License)
-- Bloomberg BLPAPI (tested with 3.8.8-2) (MIT-like License)
+- Bloomberg BLPAPI (tested with 3.16.1-2) (MIT-like License)
 
 #### Test dependencies
 
