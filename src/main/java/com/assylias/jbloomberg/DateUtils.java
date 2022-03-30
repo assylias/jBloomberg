@@ -100,6 +100,6 @@ final class DateUtils {
     int offsetInSeconds = hasTz ? dt.timezoneOffsetMinutes() * 60 : 0;
     ZoneOffset offset = ZoneOffset.ofTotalSeconds(offsetInSeconds);
 
-    return OffsetTime.of(dt.hour(), dt.minute(), dt.second(), dt.nanosecond(), offset);
+    return OffsetTime.of(dt.hour() % 24, dt.minute(), dt.second(), dt.nanosecond(), offset);
   }
 }

@@ -75,6 +75,18 @@ public class DateUtilsTest {
     assertEquals(actual, expected);
   }
 
+  //Sometimes, Bloomberg sets the hour of day to 24, use 0 instead?
+  @Test public void toOffsetTime_24() {
+    OffsetTime expected = OffsetTime.of(0, 0, 0, 0, ZoneOffset.ofHoursMinutes(0, 0));
+    Datetime dt = new Datetime(24, expected.getMinute(), expected.getSecond(), 0);
+    dt.setNanosecond(expected.getNano());
+    dt.setTimezoneOffsetMinutes(0);
+
+    OffsetTime actual = DateUtils.toOffsetTime(dt);
+
+    assertEquals(actual, expected);
+  }
+
   @Test public void toLocalDate_ok() {
     LocalDate expected = LocalDate.of(2015, 1, 1);
     Datetime dt = new Datetime(2015, 1, 1);
