@@ -34,7 +34,7 @@ import static com.assylias.jbloomberg.AbstractResultParser.SecurityDataElements.
 abstract class AbstractResultParser<T extends AbstractRequestResult> implements ResultParser<T> {
     private static final Logger logger = LoggerFactory.getLogger(AbstractResultParser.class);
 
-    protected static final DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE; //'2011-12-03'
+    protected static final DateTimeFormatter BB_RESULT_DATE_FORMATTER = DateTimeFormatter.ISO_DATE; //'2011-12-03' or '2011-12-03+00:00'
     protected static final DateTimeFormatter BB_RESULT_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     /**

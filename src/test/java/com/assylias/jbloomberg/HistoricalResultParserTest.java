@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -82,5 +83,14 @@ public class HistoricalResultParserTest {
                 .fill(HistoricalRequestBuilder.Fill.NIL_VALUE).days(HistoricalRequestBuilder.Days.ALL_CALENDAR_DAYS);
         RequestResult data = session.submit(hrb).get(TIMEOUT, TimeUnit.SECONDS);
         assertFalse(data.isEmpty());
+    }
+
+    @Test
+    public void testParseDate() {
+        LocalDate expected = LocalDate.of(2021, 1, 1);
+        LocalDate actual = HistoricalResultParser.parseLocalDate("2021-01-01");
+        assertEquals(actual, expected);
+        actual = HistoricalResultParser.parseLocalDate("2021-01-01+00:00");
+        assertEquals(actual, expected);
     }
 }

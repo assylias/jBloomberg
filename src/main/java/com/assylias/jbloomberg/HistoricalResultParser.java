@@ -5,6 +5,7 @@
 package com.assylias.jbloomberg;
 
 import com.bloomberglp.blpapi.Element;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.time.LocalDate;
 
@@ -31,7 +32,7 @@ final class HistoricalResultParser extends AbstractResultParser<HistoricalData> 
             if (!DATE.equals(firstField.name())) {
                 throw new AssertionError("Date field is supposed to be first but got: " + firstField.name());
             }
-            final LocalDate date = BB_RESULT_DATE_FORMATTER.parse(firstField.getValueAsString(), LocalDate::from);
+            final LocalDate date = parseLocalDate(firstField.getValueAsString());
 
             int numElements = fieldData.numElements();
             for (int j = 1; j < numElements; j++) {
@@ -39,6 +40,11 @@ final class HistoricalResultParser extends AbstractResultParser<HistoricalData> 
                 result.add(date, security, field.name().toString(), BloombergUtils.getSpecificObjectOf(field));
             }
         }
+    }
+
+    @VisibleForTesting
+    static LocalDate parseLocalDate(String bbDate) {
+        return BB_RESULT_DATE_FORMATTER.parse(bbDate, LocalDate::from);
     }
 
     @Override
