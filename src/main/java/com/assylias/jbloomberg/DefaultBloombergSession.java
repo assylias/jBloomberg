@@ -216,7 +216,7 @@ public class DefaultBloombergSession implements BloombergSession {
         try {
             logger.info("Stopping Bloomberg session #{}", sessionId);
             boolean started = sessionStartup.await(1, TimeUnit.SECONDS); //with 3.6.1.0, if the session is not started yet, the call to stop can block
-            if (!started) logger.info("I waited for 1 second but Bloomberg session #{} is still not started...");
+            if (!started) logger.info("I waited for 1 second but Bloomberg session #{} is still not started...", sessionId);
             executor.shutdownNow();
             subscriptionManager.stop(this);
             session.stop();//started ? SYNC : ASYNC); //if not started, something's wrong, don't spend too much time here...
